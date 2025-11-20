@@ -10,15 +10,15 @@ export default function MenuLeft() {
             to="/"
             className="block p-2 bg-white rounded hover:bg-blue-100 text-blue-700 font-medium"
           >
-            Sinh Viên
+            Home
           </Link>
         </li>
         <li>
           <Link
-            to="/bangdiem"
+            to="/login"
             className="block p-2 bg-white rounded hover:bg-blue-100 text-blue-700 font-medium"
           >
-            Bảng Điểm
+            Login
           </Link>
         </li>
       </ul>
