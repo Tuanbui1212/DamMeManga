@@ -2,13 +2,14 @@ import React, { Fragment } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import DefaultLayout from "./presentation/Layouts/DefaultLayout";
 import { publicRoutes, privateRoutes } from "./presentation/routes";
+import './lib/chart'
 
 export default function App() {
   return (
     <BrowserRouter>
       <div className="App">
         <Routes>
-          {/* 🟢 ROUTE CÔNG KHAI */}
+          {/* ROUTE CÔNG KHAI */}
           {publicRoutes.map((route, index) => {
             const Page = route.component;
             let Layout = DefaultLayout;
@@ -32,7 +33,7 @@ export default function App() {
             );
           })}
 
-          {/* 🔒 ROUTE RIÊNG TƯ */}
+          {/*  ROUTE RIÊNG TƯ */}
           {privateRoutes.map((route, index) => {
             const Page = route.component;
             let Layout = DefaultLayout;
@@ -48,11 +49,11 @@ export default function App() {
                 key={index}
                 path={route.path}
                 element={
-                  <PrivateRoute>
+                  // <PrivateRoute>
                     <Layout>
                       <Page />
                     </Layout>
-                  </PrivateRoute>
+                  // </PrivateRoute>
                 }
               />
             );
