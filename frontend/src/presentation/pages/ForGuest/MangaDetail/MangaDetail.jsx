@@ -1,10 +1,10 @@
 import { useState } from "react";
-import MangaPoster from "../../../components/MangaDetail/MangaPoster.jsx";
-import MangaInfo from "../../../components/MangaDetail/MangaInfo.jsx";
-import MangaActions from "../../../components/MangaDetail/MangaActions.jsx";
-import MangaChapters from "../../../components/MangaDetail/MangaChapters.jsx";
-import MangaStats from "../../../components/MangaDetail/MangaStats.jsx";
-import MangaComments from "../../../components/MangaDetail/MangaComments.jsx";
+import MangaPoster from "./MangaPoster.jsx";
+import MangaInfo from "./MangaInfo.jsx";
+import MangaActions from "./MangaActions.jsx";
+import MangaChapters from "./MangaChapters.jsx";
+import MangaStats from "./MangaStats.jsx";
+import MangaComments from "./MangaComments.jsx";
 
 // import { mangaInfo, chapters as chaptersData, commentsData, statsData } from "../data/mangaDetailData.js";
 

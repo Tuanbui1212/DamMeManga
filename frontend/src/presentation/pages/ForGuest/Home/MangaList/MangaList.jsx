@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import usePagination from "./hooks/usePagination";
 import MangaGrid from "./MangaGrid";
 import PaginationButtons from "./PaginationButtons";
-import "../../../styles/font.css"
+import "../../../../../styles/font.css"
 
 const mangaData = [
     {

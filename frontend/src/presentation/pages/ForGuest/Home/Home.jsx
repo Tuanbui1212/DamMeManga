@@ -1,6 +1,6 @@
-import Slide from "../../../components/SlideShow/Slide";
-import MangaList from "../../../components/MangaList/MangaList";
-import TopManga from "../../../components/TopManga/TopManga";
+import Slide from "./Slide/SlideShow";
+import MangaList from "./MangaList/MangaList";
+import TopManga from "./TopManga/TopManga";
 
 function Home() {
   return (

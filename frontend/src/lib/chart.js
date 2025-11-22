@@ -12,7 +12,6 @@ import {
   Filler,
 } from "chart.js";
 
-// Đăng ký TẤT CẢ các thành phần cần thiết - CHỈ 1 LẦN DUY NHẤT
 ChartJS.register(
   CategoryScale,
   LinearScale,

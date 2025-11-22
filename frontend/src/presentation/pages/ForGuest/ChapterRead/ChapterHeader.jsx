@@ -1,5 +1,4 @@
 import { X, Menu } from "lucide-react";
-import Header from "../../components/Header/Header";
 
 export default function ChapterHeader({ showUI, toggleUI }) {
   return (
@@ -17,7 +16,6 @@ export default function ChapterHeader({ showUI, toggleUI }) {
       {/* Header */}
       {showUI && (
         <div className="fixed top-0 left-0 right-0 z-40">
-          <Header />
         </div>
       )}
     </>

@@ -1,8 +1,8 @@
 import { useState, useRef } from "react";
-import ChapterHeader from "../../../components/Chapter/ChapterHeader";
-import ChapterPages from "../../../components/Chapter/ChapterPages";
-import ChapterNavigation from "../../../components/Chapter/ChapterNavigation";
-import ChapterListPopup from "../../../components/Chapter/ChapterListPopup";
+import ChapterHeader from "./ChapterHeader";
+import ChapterPages from "./ChapterPages";
+import ChapterNavigation from "./ChapterNavigation";
+import ChapterListPopup from "./ChapterListPopup";
 
   const pagesData = [
     "https://ik.imagekit.io/cuongphung241103/BTL_JAVA/OnePunchMan/Chap%201/1.jpeg?updatedAt=1762838219233",
