@@ -1,6 +1,6 @@
 import { useState } from "react";
 import "../../../../styles/font.css";
-
+import { Helmet } from "react-helmet-async";
 import GenreFilter from "./GenreFilter";
 import StatusFilter from "./StatusFilter";
 import MangaCard from "./MangaCard";
@@ -29,20 +29,26 @@ function MangaLib() {
     });
 
     return (
-        <div className="min-h-screen bg-gray-100 pt-20 quicksand-uniquifier">
-            <div className="p-6 max-w-5xl mx-auto">
-                <h2 className="text-2xl font-bold mb-4">Danh sách truyện</h2>
+        <>
+            <Helmet>
+                <title>Danh sách truyện | DMManga</title>
+            </Helmet>
+            <div className="min-h-screen bg-gray-100 pt-20 quicksand-uniquifier">
+                <div className="p-6 max-w-5xl mx-auto">
+                    <h2 className="text-2xl font-bold mb-4">Danh sách truyện</h2>
 
-                <GenreFilter genres={genres} genreFilter={genreFilter} setGenreFilter={setGenreFilter} />
-                <StatusFilter statusFilter={statusFilter} setStatusFilter={setStatusFilter} />
+                    <GenreFilter genres={genres} genreFilter={genreFilter} setGenreFilter={setGenreFilter} />
+                    <StatusFilter statusFilter={statusFilter} setStatusFilter={setStatusFilter} />
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-                    {filteredManga.map((manga) => (
-                        <MangaCard key={manga.id} manga={manga} />
-                    ))}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+                        {filteredManga.map((manga) => (
+                            <MangaCard key={manga.id} manga={manga} />
+                        ))}
+                    </div>
                 </div>
             </div>
-        </div>
+        </>
+
     );
 }
 
