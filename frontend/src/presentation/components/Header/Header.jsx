@@ -15,7 +15,7 @@ import {
 function Header() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [account, setAccount] = useState(localStorage.getItem("account") || "");
-
+  const [role, setRole] = useState(localStorage.getItem("role") || "");
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [showHeader, setShowHeader] = useState(true);
@@ -24,6 +24,14 @@ function Header() {
   const dropdownRef = useRef(null);
   const searchRef = useRef(null);
   const lastScrollY = useRef(0);
+
+  useEffect(() => {
+    const handleStorageChange = () => {
+      setRole(localStorage.getItem("role") || "");
+    };
+    window.addEventListener("storage", handleStorageChange);
+    return () => window.removeEventListener("storage", handleStorageChange);
+  }, []);
 
   useEffect(() => {
     const storedAccount = localStorage.getItem("account");
@@ -210,18 +218,35 @@ function Header() {
                   Thiết lập
                 </Link>
 
+                {role === "admin" && (
+                  <Link
+                    to="/dashboard"
+                    className="flex items-center gap-3 px-4 py-2 hover:bg-gray-50 dark:hover:bg-gray-700 text-sm text-gray-700 dark:text-gray-200"
+                    onClick={() => setIsDropdownOpen(false)}
+                  >
+                    <User className="w-4 h-4 text-green-600" />
+                    Quản lý
+                  </Link>
+                )}
+
+
                 <div className="border-t border-gray-100 dark:border-gray-700 mt-1">
                   <Link
                     to="/login"
                     className="flex items-center gap-3 px-4 py-2 hover:bg-red-50 dark:hover:bg-red-900/20 text-red-600 w-full text-sm transition"
                     onClick={() => {
                       setIsDropdownOpen(false);
-                      localStorage.removeItem("token"); // Xoá token trước khi chuyển trang
+                      // Xoá toàn bộ thông tin user
+                      localStorage.removeItem("token");
+                      localStorage.removeItem("account");
+                      localStorage.removeItem("role");
+                      setAccount(""); // reset state ngay lập tức
                     }}
                   >
                     <LogOut className="w-4 h-4" />
                     Đăng xuất
                   </Link>
+
                 </div>
               </motion.div>
             )}

@@ -23,7 +23,7 @@ export default function LoginForm() {
 
             // Điều hướng theo role
             if (user.role === "admin") {
-                navigate("/dashboard");
+                navigate("/");
             } else {
                 navigate("/");
             }

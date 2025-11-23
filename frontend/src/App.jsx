@@ -49,11 +49,11 @@ export default function App() {
                 key={index}
                 path={route.path}
                 element={
-                  // <PrivateRoute>
+                  <publicRoutes>
                     <Layout>
                       <Page />
                     </Layout>
-                  // </PrivateRoute>
+                  </publicRoutes>
                 }
               />
             );
