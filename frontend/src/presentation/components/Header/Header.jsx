@@ -10,24 +10,43 @@ import {
   History,
   Settings,
   LogOut,
-  Sun,
-  Moon,
 } from "lucide-react";
 
 function Header() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [isDarkMode, setIsDarkMode] = useState(
-    localStorage.getItem("theme") === "dark"
-  );
+  const [account, setAccount] = useState(localStorage.getItem("account") || "");
+
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [showHeader, setShowHeader] = useState(true);
 
+  // const [user, setUser] = useState(null);
   const dropdownRef = useRef(null);
   const searchRef = useRef(null);
   const lastScrollY = useRef(0);
 
-  // Ẩn/hiện header khi cuộn
+  useEffect(() => {
+    const storedAccount = localStorage.getItem("account");
+    if (storedAccount) setAccount(storedAccount);
+  }, []);
+
+  // Nếu muốn Header tự cập nhật khi login/logout trong cùng tab
+  useEffect(() => {
+    const handleStorageChange = () => {
+      setAccount(localStorage.getItem("account") || "");
+    };
+    window.addEventListener("storage", handleStorageChange);
+    return () => window.removeEventListener("storage", handleStorageChange);
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("account");
+    localStorage.removeItem("role");
+    setAccount(""); // reset state ngay lập tức
+  };
+
+
   useEffect(() => {
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
@@ -47,16 +66,7 @@ function Header() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Áp dụng theme
-  useEffect(() => {
-    if (isDarkMode) {
-      document.documentElement.classList.add("dark");
-      localStorage.setItem("theme", "dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-      localStorage.setItem("theme", "light");
-    }
-  }, [isDarkMode]);
+
 
   // Đóng dropdown & search khi click ra ngoài
   useEffect(() => {
@@ -90,7 +100,7 @@ function Header() {
         bg-white/70 
         backdrop-blur-md 
         w-full 
-        h-12 
+        h-15
         flex 
         items-center 
         justify-between 
@@ -142,14 +152,6 @@ function Header() {
           </AnimatePresence>
         </div>
 
-        {/* Toggle Dark/Light */}
-        <div
-          className="bg-gray-400 p-3 rounded-full hover:bg-gray-600 transition-colors duration-200 cursor-pointer"
-          onClick={() => setIsDarkMode(!isDarkMode)}
-          title={isDarkMode ? "Chuyển sang chế độ sáng" : "Chuyển sang chế độ tối"}
-        >
-          {isDarkMode ? <Sun size={16} color="white" /> : <Moon size={16} color="white" />}
-        </div>
 
         {/* Notification */}
         <div className="bg-gray-400 p-3 rounded-full hover:bg-gray-600 transition-colors duration-200 cursor-pointer">
@@ -176,9 +178,8 @@ function Header() {
                   <User className="w-5 h-5 text-blue-600" />
                   <div>
                     <p className="font-semibold text-gray-800 dark:text-white text-sm">
-                      UserName123
+                      {account || "Guest"}
                     </p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">@username</p>
                   </div>
                 </div>
 
