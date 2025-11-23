@@ -8,6 +8,8 @@ import EditManga from "../pages/ForAdmin/EditManga/EditManga";
 import CreateChapter from "../pages/ForAdmin/CreateChapter/CreateChapter";
 import ChapterDetail from "../pages/ForAdmin/ChapterDetail/ChapterDetail"
 import AuthorManagement from "../pages/ForAdmin/Author/AuthorManagement";
+import CreateManga from "../pages/ForAdmin/CreateManga/CreateManga";
+
 
 export const adminRoutes = [
   { path: "/dashboard", component: Dashboard , layout : OnlySidebarLayout },
@@ -19,4 +21,5 @@ export const adminRoutes = [
   { path: "/edit-manga/:id", component: EditManga , layout : OnlySidebarLayout },
   { path: "/create-chapter/:id", component: CreateChapter , layout : OnlySidebarLayout },
   { path: "/manga-detail-management/:id/chapter-detail/:id", component: ChapterDetail , layout : OnlySidebarLayout },
+  { path: "/create-manga", component: CreateManga , layout : OnlySidebarLayout },
 ];

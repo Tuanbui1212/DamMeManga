@@ -70,8 +70,6 @@ export default function MangaManagement() {
     };
 
     const handleAddStory = () => {
-        // Sau này mở modal thêm truyện
-        alert("Chức năng thêm truyện sẽ được triển khai!");
     };
 
     return (
