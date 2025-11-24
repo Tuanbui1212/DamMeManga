@@ -1,4 +1,3 @@
-// src/components/author-management/AuthorModal.jsx
 import React from "react";
 
 export default function AuthorModal({
@@ -24,6 +23,7 @@ export default function AuthorModal({
       {/* Modal */}
       <div className="relative w-full max-w-md mx-4 animate-fade-in">
         <div className="bg-gradient-to-b from-gray-900 to-gray-800 border border-gray-700 rounded-lg shadow-2xl overflow-hidden">
+          
           {/* Header */}
           <div className="flex items-center justify-between p-6 border-b border-gray-700">
             <h4 className="text-lg font-semibold text-gray-100">
@@ -43,11 +43,13 @@ export default function AuthorModal({
               <label className="block text-sm font-medium text-gray-300 mb-2">
                 Tên tác giả <span className="text-red-400">*</span>
               </label>
+
+              {/* FIXED: dùng nameAuthor */}
               <input
                 type="text"
-                value={author?.name || ""}
+                value={author?.nameAuthor || ""}
                 onChange={(e) =>
-                  onChange({ ...author, name: e.target.value })
+                  onChange({ ...author, nameAuthor: e.target.value })
                 }
                 className="w-full px-4 py-2.5 bg-gray-800/70 border border-gray-700 rounded-md text-gray-100 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-600 focus:border-transparent transition"
                 placeholder="Ví dụ: Eiichiro Oda"

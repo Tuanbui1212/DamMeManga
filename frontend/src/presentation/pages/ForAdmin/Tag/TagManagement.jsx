@@ -25,7 +25,6 @@ export default function TagManagement() {
     const fetchData = async () => {
       try {
         const data = await categoryRepo.getAllCategories();
-        // backend trả idCategory → đổi name cho đúng UI
         const mapped = data.map((c, index) => ({
           id: index + 1,
           realId: c.idCategory,
@@ -105,8 +104,6 @@ export default function TagManagement() {
   const handleUpdate = async (category) => {
     try {
       const res = await categoryRepo.updateCategory(category.idCategory, category.nameCategory, category.description);
-
-      // Cập nhật state cục bộ
       setGenres(prev =>
         prev.map(g =>
           g.realId === res.idCategory
