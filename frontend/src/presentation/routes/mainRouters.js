@@ -7,8 +7,8 @@ import Chapter from "../pages/ForGuest/ChapterRead/Chapter"
 
 export const mainRoutes = [
   { path: "/", component: Home },
-  { path: "/login", component: AuthForm, layout: OnlyHeader },
-  { path: "/mangalibrary", component: MangaLibrary, layout: OnlyHeader },
-  { path: "/manga/:id", component: MangaDetail, layout: OnlyHeader },
-  { path: "/manga/:id/chapter/:chapterId", component: Chapter, layout: OnlyHeader }
+  { path: "/login", component: AuthForm },
+  { path: "/mangalibrary", component: MangaLibrary },
+  { path: "/manga/:id", component: MangaDetail },
+  { path: "/manga/:id/chapter/:chapterId", component: Chapter , layout : OnlyHeader}
 ];

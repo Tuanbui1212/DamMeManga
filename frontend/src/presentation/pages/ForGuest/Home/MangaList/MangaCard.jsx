@@ -2,17 +2,17 @@ export default function MangaCard({ manga, onClick }) {
   return (
     <div
       onClick={() => onClick(manga.id)}
-      className="group relative overflow-hidden rounded-lg shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 cursor-pointer"
+      className="group relative overflow-hidden rounded-lg transition-all duration-300 transform cursor-pointer"
     >
-      <div className="relative">
+      <div className="relative rounded-lg shadow hover:shadow-lg fine-transition overflow-hidden">
         <img
           src={manga.imgPoster}
           alt={manga.name}
-          className="w-full h-56 sm:h-60 object-cover rounded-t-lg transition-transform duration-300 group-hover:scale-105"
+          className="w-full h-56 sm:h-60 object-cover rounded-xl"
         />
-        <div className="absolute inset-0 bg-black opacity-0 group-hover:opacity-40 transition-opacity duration-300 rounded-t-lg"></div>
+        <div className="absolute inset-0 bg-black opacity-0 transition-opacity duration-300"></div>
       </div>
-      <div className="p-3 bg-white rounded-b-lg">
+      <div className="p-3">
         <h3 className="text-center text-black font-semibold text-sm truncate">{manga.name}</h3>
         <p className="text-center text-xs text-gray-600 mt-1">{manga.latestChapter}</p>
       </div>
