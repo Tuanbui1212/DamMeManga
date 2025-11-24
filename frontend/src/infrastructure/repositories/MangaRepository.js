@@ -4,15 +4,16 @@ import { Manga } from "../../domain/models/Manga";
 export default class BangDiemRepository {
   async layDanhSachManga() {
     try {
-      const res = await axios.get("/manga");
+      const res = await axios.get("/api/mangas");
       return res.data.map(
         (item) =>
           new Manga(
             item.id,
-            item.nameManga,
+            item.name,
             item.authorId,
             item.description,
             item.bannerUrl,
+            item.posterUrl,
             item.status,
             item.countView,
             item.createdAt,

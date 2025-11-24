@@ -90,7 +90,7 @@ function Header() {
         bg-white/70 
         backdrop-blur-md 
         w-full 
-        h-12 
+        h-15
         flex 
         items-center 
         justify-between 
@@ -104,8 +104,9 @@ function Header() {
     >
       {/* Logo */}
       <div className="flex items-center h-20">
-        <Link to="/"><h1 className="text-2xl font-bold text-black">DMManga</h1></Link>
-
+        <Link to="/">
+          <h1 className="text-2xl font-bold text-black">DMManga</h1>
+        </Link>
       </div>
 
       {/* Icon group */}
@@ -146,9 +147,15 @@ function Header() {
         <div
           className="bg-gray-400 p-3 rounded-full hover:bg-gray-600 transition-colors duration-200 cursor-pointer"
           onClick={() => setIsDarkMode(!isDarkMode)}
-          title={isDarkMode ? "Chuyển sang chế độ sáng" : "Chuyển sang chế độ tối"}
+          title={
+            isDarkMode ? "Chuyển sang chế độ sáng" : "Chuyển sang chế độ tối"
+          }
         >
-          {isDarkMode ? <Sun size={16} color="white" /> : <Moon size={16} color="white" />}
+          {isDarkMode ? (
+            <Sun size={16} color="white" />
+          ) : (
+            <Moon size={16} color="white" />
+          )}
         </div>
 
         {/* Notification */}
@@ -178,7 +185,9 @@ function Header() {
                     <p className="font-semibold text-gray-800 dark:text-white text-sm">
                       UserName123
                     </p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">@username</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                      @username
+                    </p>
                   </div>
                 </div>
 
