@@ -5,6 +5,8 @@ import OnlyHeader from "../Layouts/OnlyHeader";
 import MangaDetail from "../pages/ForGuest/MangaDetail/MangaDetail";
 import Chapter from "../pages/ForGuest/ChapterRead/Chapter"
 import Setting from "../pages/ForGuest/Setting/Setting"
+import History from "../pages/ForGuest/History/History"
+import Follow from "../pages/ForGuest/Follow/Follow"
 
 export const mainRoutes = [
   { path: "/", component: Home },
@@ -12,6 +14,7 @@ export const mainRoutes = [
   { path: "/mangalibrary", component: MangaLibrary },
   { path: "/manga/:id", component: MangaDetail },
   { path: "/settings", component: Setting },
-  { path: "/manga/:id/chapter/:chapterId", component: Chapter, layout: OnlyHeader }
-
+  { path: "/manga/:id/chapter/:chapterId", component: Chapter, layout: OnlyHeader },
+  { path: "/history", component: History},
+  { path: "/follow", component: Follow}
 ];

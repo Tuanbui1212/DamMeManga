@@ -1,23 +1,45 @@
-package org.example.backend.domain.model;
+package org.example.backend.infrastructure.entity;
 
+import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
-public class Manga {
+@Entity
+@Table(name = "manga")
+public class MangaEntity {
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name = "id_manga")
     private String id;
+
+    @Column(name = "name_manga")
     private String name;
+
+    @Column(name = "author_id")
     private String authorId;
+
     private String description;
+
+    @Column(name = "banner_url")
     private String bannerUrl;
+
+    @Column(name = "poster_url")
     private String posterUrl;
-    private String status;      // e.g., "ONGOING", "COMPLETED"
+
+    private String status;
+
+    @Column(name = "count_view")
     private Integer countView;
+
+    @Column(name = "created_at")
     private LocalDateTime createdAt;
+
+    @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    // Constructor, Getter, Setter, Business methods
-    public Manga() {}
+    // Constructor, Getter, Setter
+    public MangaEntity() {}
 
-    public Manga(String id, String name, String authorId, String description, String bannerUrl, String posterUrl, String status, Integer countView, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    public MangaEntity(String id, String name, String authorId, String description, String bannerUrl, String posterUrl, String status, Integer countView, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
         this.name = name;
         this.authorId = authorId;
