@@ -21,7 +21,7 @@ public class JwtUtil {
                 .setSubject(username)
                 .claim("role", role)
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + 1000*60*60*10)) // 10h
+                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10)) // 10h
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
     }
@@ -34,14 +34,18 @@ public class JwtUtil {
         return (String) getClaims(token).get("role");
     }
 
+    public String extractAccount(String token) {
+        return extractUsername(token);
+    }
+
     public boolean isTokenExpired(String token) {
         return getClaims(token).getExpiration().before(new Date());
     }
 
     public boolean validateToken(String token, String username) {
-    return extractUsername(token).equals(username) && !isTokenExpired(token);
-}
+        return extractUsername(token).equals(username) && !isTokenExpired(token);
 
+    }
 
     private Claims getClaims(String token) {
         return Jwts.parserBuilder()
@@ -50,4 +54,5 @@ public class JwtUtil {
                 .parseClaimsJws(token)
                 .getBody();
     }
+
 }

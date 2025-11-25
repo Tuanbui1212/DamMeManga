@@ -4,11 +4,14 @@ import MangaLibrary from "../pages/ForGuest/MangaLibrary/MangaLibrary";
 import OnlyHeader from "../Layouts/OnlyHeader";
 import MangaDetail from "../pages/ForGuest/MangaDetail/MangaDetail";
 import Chapter from "../pages/ForGuest/ChapterRead/Chapter"
+import Setting from "../pages/ForGuest/Setting/Setting"
 
 export const mainRoutes = [
   { path: "/", component: Home },
   { path: "/login", component: AuthForm },
   { path: "/mangalibrary", component: MangaLibrary },
   { path: "/manga/:id", component: MangaDetail },
-  { path: "/manga/:id/chapter/:chapterId", component: Chapter , layout : OnlyHeader}
+  { path: "/settings", component: Setting },
+  { path: "/manga/:id/chapter/:chapterId", component: Chapter, layout: OnlyHeader }
+
 ];

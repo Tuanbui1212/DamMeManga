@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import { loginUsecase } from "../../../../usecases/LoginService";
-import { User, Lock, Eye, EyeOff } from "lucide-react"; // <--- Thêm dòng này
+import { User, Lock, Eye, EyeOff } from "lucide-react";
 
 export default function LoginForm() {
     const [account, setAccount] = useState("");
@@ -17,22 +17,25 @@ export default function LoginForm() {
 
         try {
             const user = await loginUsecase(account.trim(), password);
-            
 
             toast.success("Đăng nhập thành công!");
 
-            // Điều hướng theo role
+            // Navigate dựa vào role
             if (user.role === "admin") {
                 navigate("/");
             } else {
                 navigate("/");
             }
-
+            window.location.reload();
+            // Reset form
             setAccount("");
             setPassword("");
-
         } catch (err) {
-            toast.error(err.message || "Lỗi kết nối server!");
+            const message =
+                err.response?.data ||
+                err.message ||
+                "Lỗi kết nối server!";
+            toast.error(message);
         }
     };
 

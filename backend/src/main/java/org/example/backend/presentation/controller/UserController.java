@@ -2,6 +2,7 @@ package org.example.backend.presentation.controller;
 
 import org.example.backend.presentation.dto.AuthRequest;
 import org.example.backend.presentation.dto.AuthResponse;
+import org.example.backend.presentation.dto.ChangePasswordRequest;
 import org.example.backend.domain.model.User;
 import org.example.backend.usecase.UserService;
 import org.example.backend.infrastructure.config.security.JwtUtil;
@@ -75,5 +76,22 @@ public class UserController {
         }
         List<User> users = userService.getAllUsers();
         return ResponseEntity.ok(users);
+    }
+
+    @PostMapping("/change-password")
+    public ResponseEntity<?> changePassword(
+            @RequestHeader("Authorization") String authHeader,
+            @RequestBody ChangePasswordRequest request) {
+
+        try {
+            String token = authHeader.substring(7);
+            String account = jwtUtil.extractAccount(token);
+
+            userService.changePassword(account, request.getOldPassword(), request.getNewPassword());
+
+            return ResponseEntity.ok("Đổi mật khẩu thành công");
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 }

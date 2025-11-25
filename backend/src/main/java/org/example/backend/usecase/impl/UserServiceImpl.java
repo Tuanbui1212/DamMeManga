@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -56,11 +57,31 @@ public class UserServiceImpl implements UserService {
         return userRepository.findAll();
     }
 
-    // UserServiceImpl.java
     @Override
     public User findByAccount(String account) {
         return userRepository.findByAccount(account)
                 .orElse(null);
+    }
+
+    @Override
+    public boolean changePassword(String account, String oldPassword, String newPassword) {
+
+        Optional<User> optionalUser = userRepository.findByAccount(account);
+
+        if (optionalUser.isEmpty()) {
+            throw new RuntimeException("Không tìm thấy tài khoản");
+        }
+
+        User user = optionalUser.get();
+
+        if (!passwordEncoder.matches(oldPassword, user.getPassword())) {
+            throw new RuntimeException("Mật khẩu cũ không đúng");
+        }
+
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
+
+        return true;
     }
 
 }

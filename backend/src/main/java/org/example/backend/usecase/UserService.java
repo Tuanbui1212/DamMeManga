@@ -21,4 +21,6 @@ public interface UserService {
     // UserService.java
     User findByAccount(String account);
 
+    boolean changePassword(String account, String oldPassword, String newPassword);
+
 }
