@@ -8,61 +8,59 @@ import java.time.LocalDateTime;
 public class MangaEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name = "id_manga")
     private String id;
 
-    @Column(nullable = false, length = 255)
-    private String nameManga;
+    @Column(name = "name_manga")
+    private String name;
 
-    @Column(name = "author_id", nullable = false)
-    private String authorId;  // Nếu sau dùng quan hệ thì chuyển sang ManyToOne
+    @Column(name = "author_id")
+    private String authorId;
 
-    @Column(columnDefinition = "TEXT")
     private String description;
 
+    @Column(name = "banner_url")
     private String bannerUrl;
+
+    @Column(name = "poster_url")
     private String posterUrl;
 
-    @Column(nullable = false)
     private String status;
 
-    @Column(nullable = false)
-    private int countView;
+    @Column(name = "count_view")
+    private Integer countView;
 
-    @Column(nullable = false)
+    @Column(name = "created_at")
     private LocalDateTime createdAt;
 
-    @Column(nullable = false)
+    @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
+    // Constructor, Getter, Setter
     public MangaEntity() {}
 
-    @PrePersist
-    public void prePersist() {
-        this.createdAt = LocalDateTime.now();
-        this.updatedAt = LocalDateTime.now();
-    }
-
-    @PreUpdate
-    public void preUpdate() {
-        this.updatedAt = LocalDateTime.now();
-    }
-
-    public MangaEntity(
-            String nameManga,
-            String authorId,
-            String description,
-            String bannerUrl,
-            String posterUrl,
-            String status,
-            int countView
-    ) {
-        this.nameManga = nameManga;
+    public MangaEntity(String id, String name, String authorId, String description, String bannerUrl, String posterUrl, String status, Integer countView, LocalDateTime createdAt, LocalDateTime updatedAt) {
+        this.id = id;
+        this.name = name;
         this.authorId = authorId;
         this.description = description;
         this.bannerUrl = bannerUrl;
         this.posterUrl = posterUrl;
         this.status = status;
         this.countView = countView;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+    }
+
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        this.updatedAt = LocalDateTime.now();
     }
 
     public String getId() {
@@ -73,12 +71,12 @@ public class MangaEntity {
         this.id = id;
     }
 
-    public String getNameManga() {
-        return nameManga;
+    public String getName() {
+        return name;
     }
 
-    public void setNameManga(String nameManga) {
-        this.nameManga = nameManga;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getAuthorId() {
@@ -121,11 +119,11 @@ public class MangaEntity {
         this.status = status;
     }
 
-    public int getCountView() {
+    public Integer getCountView() {
         return countView;
     }
 
-    public void setCountView(int countView) {
+    public void setCountView(Integer countView) {
         this.countView = countView;
     }
 
