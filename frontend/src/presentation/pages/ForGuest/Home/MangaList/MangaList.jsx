@@ -58,7 +58,7 @@ export default function MangaList() {
 
 
             {/* Main */}
-            <div className="container max-w-[1280px] mx-auto py-16 px-4">
+            <div className="container max-w-[1280px] mx-auto py-16">
                 <h2 className="uppercase text-2xl font-bold text-gray-800 mb-12 text-center md:text-left">
                     TRUYỆN MỚI
                 </h2>
@@ -127,7 +127,10 @@ export default function MangaList() {
 
                 {/* Nút tải thêm */}
                 <div className="mt-16 text-end">
-                    <Link to="/mangalibrary" className="px-10 py-4 text-gray-800 font-bold text-[16px]">
+                    <Link
+                        to="/"
+                        className="ml-auto font-semibold text-textPrimary hover:text-blue-300"
+                    >
                         Xem danh sách truyện
                     </Link>
                 </div>

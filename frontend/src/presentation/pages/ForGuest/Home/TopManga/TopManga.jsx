@@ -10,6 +10,7 @@ dayjs.extend(relativeTime);
 const mangaService = new MangaService();
 
 export default function TopManga() {
+
     const [mangas, setMangas] = useState([]);
 
     const scrollRefTopManga = useRef(null);
@@ -31,7 +32,7 @@ export default function TopManga() {
     }, []);
 
     return (
-        <div className="w-full bg-backgroundTopManga">
+        <div className="w-full bg-[#9cafaa]">
             <div className="container max-w-[1280px] py-[80px] mx-auto">
                 <h2 className="uppercase text-[1.25rem]  font-bold mb-12">
                     Truyện nổi bật

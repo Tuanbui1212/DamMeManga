@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
+@CrossOrigin("*")
 @RequestMapping("/api/mangas")
 public class MangaController {
     private final MangaUseCase mangaUseCase;
