@@ -52,6 +52,17 @@ public class MangaEntity {
         this.updatedAt = updatedAt;
     }
 
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        this.updatedAt = LocalDateTime.now();
+    }
+
     public String getId() {
         return id;
     }

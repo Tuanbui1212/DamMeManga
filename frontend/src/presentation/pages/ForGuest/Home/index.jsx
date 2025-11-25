@@ -59,13 +59,11 @@ export default function Home() {
   useEffect(() => {
     const fetchData = async () => {
       const data = await mangaService.layManga();
+      console.log(data);
       setMangas(data);
     };
-
     fetchData();
   }, []);
-
-  console.log(mangas);
 
   const goToPrevious = () => {
     setCurrentIndex((prevIndex) =>
@@ -258,7 +256,8 @@ export default function Home() {
             >
               <div className="grid grid-rows-3 grid-flow-col gap-[15px] p-1">
                 {mangas.map((manga, index) => (
-                  <div
+                  <Link
+                    to={`/mangas/${manga.id_manga}`}
                     key={manga.id_manga}
                     className=" relative flex items-center gap-3 p-4 bg-gray-100 rounded-xl md:w-[288px] lg:w-[384px] h-[117px]"
                   >
@@ -284,7 +283,7 @@ export default function Home() {
                     <span className="text-[2.5rem] opacity-[0.1] font-bold text-black absolute top-[4px] right-[4px] leading-none">
                       {index + 1}
                     </span>
-                  </div>
+                  </Link>
                 ))}
               </div>
             </div>

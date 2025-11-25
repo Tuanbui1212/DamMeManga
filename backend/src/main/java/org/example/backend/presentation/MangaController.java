@@ -32,7 +32,8 @@ public class MangaController {
     }
 
     @DeleteMapping("/{id}")
-    public void deleteManga(@PathVariable String id) {
+    public String deleteManga(@PathVariable String id) {
         mangaUseCase.deleteManga(id);
+        return "Manga has been deleted";
     }
 }
