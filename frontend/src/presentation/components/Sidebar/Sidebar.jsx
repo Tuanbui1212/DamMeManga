@@ -3,6 +3,7 @@ import { menuItems } from "./menuConfig";
 import SidebarHeader from "./SidebarHeader";
 import SidebarMenu from "./SidebarMenu";
 import SidebarFooter from "./SidebarFooter";
+import { House } from 'lucide-react';
 import "../../../styles/font.css";
 
 export default function Sidebar() {

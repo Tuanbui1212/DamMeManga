@@ -8,8 +8,13 @@ function OnlySidebarLayout({ children }) {
   return (
     <div className="flex">
       {/* Sidebar */}
-      <Sidebar isOpen={sidebarOpen} setIsOpen={setSidebarOpen} />
-      <div className="w-full">{children}</div>
+      <div className='sticky top-0 h-screen z-50'>
+        <Sidebar isOpen={sidebarOpen} setIsOpen={setSidebarOpen} />
+      </div>
+      <div className="w-full">
+        {children}
+      </div>
+
     </div>
   );
 }

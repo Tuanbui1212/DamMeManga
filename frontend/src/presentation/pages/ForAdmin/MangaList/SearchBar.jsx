@@ -1,4 +1,7 @@
 // src/components/common/SearchAndAddBar.jsx  ← Tạo chung để dùng lại
+import { Link } from "react-router-dom";
+
+
 export default function SearchAndAddBar({ query, onQueryChange, onAdd, placeholder = "Tìm kiếm..." }) {
   return (
     <div className="flex gap-3 items-center">
@@ -12,12 +15,12 @@ export default function SearchAndAddBar({ query, onQueryChange, onAdd, placehold
         />
       </div>
       {onAdd && (
-        <button
+        <Link to= "/create-manga"
           onClick={onAdd}
           className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-500 text-white px-5 py-2.5 rounded-md font-medium shadow-sm transition"
         >
           Thêm truyện
-        </button>
+        </Link>
       )}
     </div>
   );

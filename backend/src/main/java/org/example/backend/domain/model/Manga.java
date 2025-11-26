@@ -9,7 +9,7 @@ public class Manga {
     private String description;
     private String bannerUrl;
     private String posterUrl;
-    private String status; 
+    private String status;      // e.g., "ONGOING", "COMPLETED"
     private Integer countView;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
