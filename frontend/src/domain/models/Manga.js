@@ -8,13 +8,8 @@ export class Manga {
     poster_url,
     status,
     count_view,
-<<<<<<< HEAD
-    created_at,
-    updated_at
-=======
     create_at,
     update_at
->>>>>>> java/phungcuong
   ) {
     this.id_manga = id_manga;
     this.name_manga = name_manga;
@@ -24,12 +19,7 @@ export class Manga {
     this.poster_url = poster_url;
     this.status = status;
     this.count_view = count_view;
-<<<<<<< HEAD
-    this.created_at = created_at;
-    this.updated_at = updated_at;
-=======
     this.create_at = create_at;
     this.update_at = update_at;
->>>>>>> java/phungcuong
   }
 }

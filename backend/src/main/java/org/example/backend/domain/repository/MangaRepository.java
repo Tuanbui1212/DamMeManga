@@ -1,6 +1,5 @@
 package org.example.backend.domain.repository;
 
-<<<<<<< HEAD
 import org.example.backend.domain.model.Manga;
 
 import java.util.List;
@@ -12,7 +11,3 @@ public interface MangaRepository {
     Manga save(Manga manga);
     void deleteById(String id);
 }
-=======
-public interface MangaRepository {
-}
->>>>>>> java/phungcuong

@@ -12,11 +12,11 @@ export default function AuthorTable({ authors, onEdit, onDelete }) {
         </thead>
         <tbody>
           {authors.map((author) => (
-            <tr key={author.id} className="odd:bg-gray-900 even:bg-gray-800/60 hover:bg-gray-700/40 transition">
+            <tr key={author.idAuthor} className="odd:bg-gray-900 even:bg-gray-800/60 hover:bg-gray-700/40 transition">
               <td className="sticky left-0 bg-gray-900/80 py-3 px-3 text-sm text-gray-300 z-10">
                 {author.id}
               </td>
-              <td className="py-3 px-3 text-sm font-medium">{author.name}</td>
+              <td className="py-3 px-3 text-sm font-medium">{author.nameAuthor}</td>
               <td className="py-3 px-3 text-sm">
                 <div className="flex gap-2 justify-center">
                   <button
@@ -26,7 +26,7 @@ export default function AuthorTable({ authors, onEdit, onDelete }) {
                     Sửa
                   </button>
                   <button
-                    onClick={() => onDelete(author.id)}
+                    onClick={() => onDelete(author)}
                     className="px-3 py-1 rounded-md border border-red-700 bg-red-800/20 hover:bg-red-800/30 text-red-300 text-xs transition"
                   >
                     Xóa
@@ -34,6 +34,7 @@ export default function AuthorTable({ authors, onEdit, onDelete }) {
                 </div>
               </td>
             </tr>
+
           ))}
           {authors.length === 0 && (
             <tr>

@@ -1,6 +1,5 @@
 package org.example.backend.infrastructure.mapper;
 
-<<<<<<< HEAD
 import org.example.backend.domain.model.Manga;
 import org.example.backend.infrastructure.entity.MangaEntity;
 
@@ -36,7 +35,4 @@ public class MangaMapper {
         entity.setUpdatedAt(manga.getUpdatedAt());
         return entity;
     }
-=======
-public class MangaMapper {
->>>>>>> java/phungcuong
 }

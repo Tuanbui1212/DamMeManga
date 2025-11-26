@@ -1,13 +1,8 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Toaster } from "react-hot-toast";
-<<<<<<< HEAD
 import LoginForm from "./LoginForm";
 import RegisterForm from "./RegisterForm";
-=======
-import LoginForm from "../../../components/Auth/LoginForm";
-import RegisterForm from "../../../components/Auth/RegisterForm";
->>>>>>> java/phungcuong
 
 export default function Auth() {
     const [isLogin, setIsLogin] = useState(true);

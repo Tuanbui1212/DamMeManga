@@ -1,13 +1,23 @@
-function MangaCard({ manga }) {
+export default function MangaCard({ manga, onClick }) {
     return (
-        <div className="bg-white rounded shadow p-4 hover:shadow-lg transition-shadow">
-            <h3 className="font-bold text-lg mb-2">{manga.title}</h3>
-            <p className="text-gray-600 mb-1">Thể loại: {manga.genre}</p>
-            <p className={`font-medium ${manga.status === "Đang tiến hành" ? "text-green-600" : "text-gray-500"}`}>
-                {manga.status}
-            </p>
+        <div
+            onClick={() => onClick(manga.id)}
+            className="group relative overflow-hidden rounded-lg transition-all duration-300 transform cursor-pointer"
+        >
+            <div className="relative rounded-lg shadow hover:shadow-lg fine-transition overflow-hidden">
+                <img
+                    src={manga.imgPoster}
+                    alt={manga.name}
+                    className="w-50 h-75 object-cover rounded-xl"
+                />
+                <div className="absolute inset-0 bg-black opacity-0 transition-opacity duration-300"></div>
+            </div>
+            <div className="p-3">
+                <h3 className="text-center text-black font-semibold text-sm truncate">{manga.title}</h3>
+                <h3 className="text-center text-black font-semibold text-sm truncate">{manga.genre}</h3>
+                <p className="text-center text-xs text-gray-600 mt-1">{manga.latestChapter}</p>
+                <p className="text-center text-xs text-gray-600 mt-1">{manga.status}</p>
+            </div>
         </div>
     );
 }
-
-export default MangaCard;

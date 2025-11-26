@@ -1,6 +1,5 @@
 package org.example.backend.domain.model;
 
-<<<<<<< HEAD
 import java.time.LocalDateTime;
 
 public class Manga {
@@ -10,7 +9,7 @@ public class Manga {
     private String description;
     private String bannerUrl;
     private String posterUrl;
-    private String status; 
+    private String status;      // e.g., "ONGOING", "COMPLETED"
     private Integer countView;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
@@ -110,7 +109,4 @@ public class Manga {
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
     }
-=======
-public class Manga {
->>>>>>> java/phungcuong
 }

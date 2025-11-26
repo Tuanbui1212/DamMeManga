@@ -49,11 +49,9 @@ export default function App() {
                 key={index}
                 path={route.path}
                 element={
-                  // <PrivateRoute>
                     <Layout>
                       <Page />
                     </Layout>
-                  // </PrivateRoute>
                 }
               />
             );

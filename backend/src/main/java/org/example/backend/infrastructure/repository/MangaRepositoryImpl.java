@@ -1,6 +1,5 @@
 package org.example.backend.infrastructure.repository;
 
-<<<<<<< HEAD
 import org.example.backend.domain.model.Manga;
 import org.example.backend.domain.repository.MangaRepository;
 import org.example.backend.infrastructure.entity.MangaEntity;
@@ -43,7 +42,4 @@ public class MangaRepositoryImpl implements MangaRepository {
     public void deleteById(String id) {
         mangaJpaRepository.deleteById(id);
     }
-=======
-public class MangaRepositoryImpl {
->>>>>>> java/phungcuong
 }
