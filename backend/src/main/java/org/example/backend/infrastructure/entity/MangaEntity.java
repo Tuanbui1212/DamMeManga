@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 package org.example.backend.infrastructure.entity;
+=======
+package org.example.backend.infrastructure.repository;
+>>>>>>> java/phungcuong
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
@@ -8,6 +12,7 @@ import java.time.LocalDateTime;
 public class MangaEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
+<<<<<<< HEAD
     @Column(name = "id_manga")
     private String id;
 
@@ -42,12 +47,64 @@ public class MangaEntity {
     public MangaEntity(String id, String name, String authorId, String description, String bannerUrl, String posterUrl, String status, Integer countView, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
         this.name = name;
+=======
+    private String id;
+
+    @Column(nullable = false, length = 255)
+    private String nameManga;
+
+    @Column(name = "author_id", nullable = false)
+    private String authorId;  // Nếu sau dùng quan hệ thì chuyển sang ManyToOne
+
+    @Column(columnDefinition = "TEXT")
+    private String description;
+
+    private String bannerUrl;
+    private String posterUrl;
+
+    @Column(nullable = false)
+    private String status;
+
+    @Column(nullable = false)
+    private int countView;
+
+    @Column(nullable = false)
+    private LocalDateTime createdAt;
+
+    @Column(nullable = false)
+    private LocalDateTime updatedAt;
+
+    public MangaEntity() {}
+
+    @PrePersist
+    public void prePersist() {
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    public void preUpdate() {
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    public MangaEntity(
+            String nameManga,
+            String authorId,
+            String description,
+            String bannerUrl,
+            String posterUrl,
+            String status,
+            int countView
+    ) {
+        this.nameManga = nameManga;
+>>>>>>> java/phungcuong
         this.authorId = authorId;
         this.description = description;
         this.bannerUrl = bannerUrl;
         this.posterUrl = posterUrl;
         this.status = status;
         this.countView = countView;
+<<<<<<< HEAD
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }
@@ -61,6 +118,8 @@ public class MangaEntity {
     @PreUpdate
     protected void onUpdate() {
         this.updatedAt = LocalDateTime.now();
+=======
+>>>>>>> java/phungcuong
     }
 
     public String getId() {
@@ -71,12 +130,21 @@ public class MangaEntity {
         this.id = id;
     }
 
+<<<<<<< HEAD
     public String getName() {
         return name;
     }
 
     public void setName(String name) {
         this.name = name;
+=======
+    public String getNameManga() {
+        return nameManga;
+    }
+
+    public void setNameManga(String nameManga) {
+        this.nameManga = nameManga;
+>>>>>>> java/phungcuong
     }
 
     public String getAuthorId() {
@@ -119,11 +187,19 @@ public class MangaEntity {
         this.status = status;
     }
 
+<<<<<<< HEAD
     public Integer getCountView() {
         return countView;
     }
 
     public void setCountView(Integer countView) {
+=======
+    public int getCountView() {
+        return countView;
+    }
+
+    public void setCountView(int countView) {
+>>>>>>> java/phungcuong
         this.countView = countView;
     }
 
@@ -142,4 +218,8 @@ public class MangaEntity {
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
     }
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> java/phungcuong

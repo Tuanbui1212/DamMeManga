@@ -9,7 +9,14 @@ function OnlySidebarLayout({ children }) {
     <div className="flex">
       {/* Sidebar */}
       <Sidebar isOpen={sidebarOpen} setIsOpen={setSidebarOpen} />
+<<<<<<< HEAD
       <div className="w-full">{children}</div>
+=======
+      <div className="w-full">
+        {children}
+      </div>
+
+>>>>>>> java/phungcuong
     </div>
   );
 }

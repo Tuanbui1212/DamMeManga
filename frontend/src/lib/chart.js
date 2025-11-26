@@ -12,6 +12,10 @@ import {
   Filler,
 } from "chart.js";
 
+<<<<<<< HEAD
+=======
+// Đăng ký TẤT CẢ các thành phần cần thiết - CHỈ 1 LẦN DUY NHẤT
+>>>>>>> java/phungcuong
 ChartJS.register(
   CategoryScale,
   LinearScale,

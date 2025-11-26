@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import { useState } from "react";
 import "../../../../styles/font.css";
 import { Helmet } from "react-helmet-async";
@@ -53,3 +54,16 @@ function MangaLib() {
 }
 
 export default MangaLib;
+=======
+import MangaLib from "../../../components/MangaLib/MangaLib";
+
+function MangaLibrary() {
+  return (
+    <>
+        <MangaLib />
+    </>
+  );
+}
+
+export default MangaLibrary;
+>>>>>>> java/phungcuong

@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 import Header from "../../components/Header";
+=======
+import Header from "../../components/Header/Header";
+>>>>>>> java/phungcuong
 
 function OnlyHeaderLayout({ children }) {
   return (

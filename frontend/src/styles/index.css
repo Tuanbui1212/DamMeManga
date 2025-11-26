@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 @import "tailwindcss";
 
 @theme {
@@ -23,3 +24,6 @@
 .hide-scrollbar {
   -ms-overflow-style: none;
 }
+=======
+@import "tailwindcss";
+>>>>>>> java/phungcuong

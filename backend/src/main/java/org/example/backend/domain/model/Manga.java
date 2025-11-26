@@ -1,5 +1,6 @@
 package org.example.backend.domain.model;
 
+<<<<<<< HEAD
 import java.time.LocalDateTime;
 
 public class Manga {
@@ -109,4 +110,7 @@ public class Manga {
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
     }
+=======
+public class Manga {
+>>>>>>> java/phungcuong
 }

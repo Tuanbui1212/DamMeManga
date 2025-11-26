@@ -13,18 +13,27 @@
     "axios": "^1.13.2",
     "chart.js": "^4.5.1",
     "color-thief-react": "^2.1.0",
+<<<<<<< HEAD
     "dayjs": "^1.11.19",
+=======
+>>>>>>> java/phungcuong
     "framer-motion": "^12.23.24",
     "jwt-decode": "^4.0.0",
     "lucide-react": "^0.554.0",
     "react": "^18.3.1",
     "react-chartjs-2": "^5.3.1",
     "react-dom": "^18.3.1",
+<<<<<<< HEAD
     "react-helmet-async": "^2.0.5",
     "react-hot-toast": "^2.6.0",
     "react-router-dom": "^7.9.6",
     "swiper": "^12.0.3",
     "tailwind-scrollbar-hide": "^4.0.0"
+=======
+    "react-hot-toast": "^2.6.0",
+    "react-router-dom": "^7.9.6",
+    "swiper": "^12.0.3"
+>>>>>>> java/phungcuong
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",

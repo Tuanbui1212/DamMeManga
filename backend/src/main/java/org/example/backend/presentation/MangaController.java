@@ -1,5 +1,6 @@
 package org.example.backend.presentation;
 
+<<<<<<< HEAD
 import org.example.backend.domain.model.Manga;
 import org.example.backend.usecase.MangaUseCase;
 import org.springframework.web.bind.annotation.*;
@@ -36,4 +37,7 @@ public class MangaController {
         mangaUseCase.deleteManga(id);
         return "Manga has been deleted";
     }
+=======
+public class MangaController {
+>>>>>>> java/phungcuong
 }

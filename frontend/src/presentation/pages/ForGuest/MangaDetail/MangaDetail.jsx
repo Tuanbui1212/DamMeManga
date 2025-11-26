@@ -1,4 +1,5 @@
 import { useState } from "react";
+<<<<<<< HEAD
 import MangaPoster from "./MangaPoster.jsx";
 import MangaInfo from "./MangaInfo.jsx";
 import MangaActions from "./MangaActions.jsx";
@@ -6,6 +7,14 @@ import MangaChapters from "./MangaChapters.jsx";
 import MangaStats from "./MangaStats.jsx";
 import MangaComments from "./MangaComments.jsx";
 import { Helmet } from "react-helmet-async";
+=======
+import MangaPoster from "../../../components/MangaDetail/MangaPoster.jsx";
+import MangaInfo from "../../../components/MangaDetail/MangaInfo.jsx";
+import MangaActions from "../../../components/MangaDetail/MangaActions.jsx";
+import MangaChapters from "../../../components/MangaDetail/MangaChapters.jsx";
+import MangaStats from "../../../components/MangaDetail/MangaStats.jsx";
+import MangaComments from "../../../components/MangaDetail/MangaComments.jsx";
+>>>>>>> java/phungcuong
 
 // import { mangaInfo, chapters as chaptersData, commentsData, statsData } from "../data/mangaDetailData.js";
 
@@ -51,6 +60,7 @@ function MangaDetailPage() {
     };
 
     return (
+<<<<<<< HEAD
         <>
             <Helmet>
                 <title>{mangaInfo.title} | DMManga</title>
@@ -74,12 +84,35 @@ function MangaDetailPage() {
                                         handleAddComment={handleAddComment}
                                     />
                                 </div>
+=======
+        <div className="quicksand-uniquifier">
+            <div className="h-400 bg-gray-300 relative inset-0">
+                <div className="mx-40 bg-white absolute inset-0 rounded-xl my-20 overflow-hidden">
+                    <div className="flex flex-col">
+                        <MangaPoster posterUrl={mangaInfo.posterUrl} />
+                        <MangaInfo info={mangaInfo} />
+                        <MangaActions />
+                        <div className="flex justify-between mx-5 my-10 gap-10">
+                            <MangaChapters chapters={chapters} />
+                            <div className="w-1/3">
+                                <MangaStats stats={statsData} />
+                                <MangaComments
+                                    comments={comments}
+                                    newComment={newComment}
+                                    setNewComment={setNewComment}
+                                    handleAddComment={handleAddComment}
+                                />
+>>>>>>> java/phungcuong
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
+<<<<<<< HEAD
         </>
+=======
+        </div>
+>>>>>>> java/phungcuong
     );
 }
 
