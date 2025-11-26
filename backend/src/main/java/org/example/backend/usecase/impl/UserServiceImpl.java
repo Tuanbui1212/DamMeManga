@@ -1,7 +1,7 @@
 package org.example.backend.usecase.impl;
 
 import org.example.backend.domain.model.User;
-import org.example.backend.infrastructure.repository.UserRepository;
+import org.example.backend.domain.repository.UserRepository;
 import org.example.backend.usecase.UserService;
 import org.springframework.stereotype.Service;
 import org.springframework.security.crypto.password.PasswordEncoder;

@@ -1,57 +1,90 @@
 package org.example.backend.domain.model;
 
+import jakarta.persistence.*;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
+@Entity
+@Table(name = "manga")
 public class Manga {
-    private String id;
-    private String name;
-    private String authorId;
+
+    @Id
+    @Column(name = "id_manga", length = 100)
+    private String idManga;
+
+    @Column(name = "name_manga")
+    private String nameManga;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "author_id")
+    private Author author;
+
+    @Column(name = "description", length = 1000)
     private String description;
+
+    @Column(name = "banner_url")
     private String bannerUrl;
+
+    @Column(name = "poster_url")
     private String posterUrl;
-    private String status;      // e.g., "ONGOING", "COMPLETED"
-    private Integer countView;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
 
-    // Constructor, Getter, Setter, Business methods
-    public Manga() {}
+    @Column(name = "status")
+    private String status;
 
-    public Manga(String id, String name, String authorId, String description, String bannerUrl, String posterUrl, String status, Integer countView, LocalDateTime createdAt, LocalDateTime updatedAt) {
-        this.id = id;
-        this.name = name;
-        this.authorId = authorId;
-        this.description = description;
-        this.bannerUrl = bannerUrl;
-        this.posterUrl = posterUrl;
-        this.status = status;
-        this.countView = countView;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
+    @Column(name = "count_view")
+    private int countView;
+
+    @Column(name = "create_at")
+    private LocalDateTime createAt;
+
+    @Column(name = "update_at")
+    private LocalDateTime updateAt;
+
+
+    public Manga() {
+        // id + timestamp tự sinh khi tạo object
+        this.idManga = UUID.randomUUID().toString();
+        this.createAt = LocalDateTime.now();
+        this.updateAt = LocalDateTime.now();
     }
 
-    public String getId() {
-        return id;
+    @PrePersist
+    protected void onCreate() {
+        if (idManga == null) {
+            idManga = UUID.randomUUID().toString();
+        }
+        createAt = LocalDateTime.now();
+        updateAt = LocalDateTime.now();
     }
 
-    public void setId(String id) {
-        this.id = id;
+    @PreUpdate
+    protected void onUpdate() {
+        updateAt = LocalDateTime.now();
     }
 
-    public String getName() {
-        return name;
+
+    public String getIdManga() {
+        return idManga;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setIdManga(String idManga) {
+        this.idManga = idManga;
     }
 
-    public String getAuthorId() {
-        return authorId;
+    public String getNameManga() {
+        return nameManga;
     }
 
-    public void setAuthorId(String authorId) {
-        this.authorId = authorId;
+    public void setNameManga(String nameManga) {
+        this.nameManga = nameManga;
+    }
+
+    public Author getAuthor() {
+        return author;
+    }
+
+    public void setAuthor(Author author) {
+        this.author = author;
     }
 
     public String getDescription() {
@@ -86,27 +119,27 @@ public class Manga {
         this.status = status;
     }
 
-    public Integer getCountView() {
+    public int getCountView() {
         return countView;
     }
 
-    public void setCountView(Integer countView) {
+    public void setCountView(int countView) {
         this.countView = countView;
     }
 
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
+    public LocalDateTime getCreateAt() {
+        return createAt;
     }
 
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
+    public void setCreateAt(LocalDateTime createAt) {
+        this.createAt = createAt;
     }
 
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
+    public LocalDateTime getUpdateAt() {
+        return updateAt;
     }
 
-    public void setUpdatedAt(LocalDateTime updatedAt) {
-        this.updatedAt = updatedAt;
+    public void setUpdateAt(LocalDateTime updateAt) {
+        this.updateAt = updateAt;
     }
 }

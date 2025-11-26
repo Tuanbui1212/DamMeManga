@@ -1,7 +1,7 @@
 package org.example.backend.infrastructure.config;
 
 import org.example.backend.domain.model.User;
-import org.example.backend.infrastructure.repository.UserRepository;
+import org.example.backend.domain.repository.UserRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

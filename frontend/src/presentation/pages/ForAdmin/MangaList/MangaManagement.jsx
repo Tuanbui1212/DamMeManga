@@ -1,46 +1,9 @@
-// src/components/manga-management/MangaManagement.jsx
 import React, { useState, useMemo, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import SearchAndAddBar from "./SearchBar";
 import MangaTable from "./MangaTable";
 import Pagination from "./Pagination";
-
-const mockStories = [
-    {
-        id: 1,
-        title: "One Punch Man",
-        author: "ONE, Yusuke Murata",
-        description: "Saitama là một siêu anh hùng có thể đánh bại bất kỳ đối thủ nào chỉ bằng một cú đấm...",
-        chapters: 30,
-        views: 12300,
-        cover: "https://ik.imagekit.io/cuongphung241103/BTL_JAVA/MangaIMG/OnePunchManIMG.jpg",
-    }, {
-        id: 1,
-        title: "One Punch Man",
-        author: "ONE, Yusuke Murata",
-        description: "Saitama là một siêu anh hùng có thể đánh bại bất kỳ đối thủ nào chỉ bằng một cú đấm...",
-        chapters: 30,
-        views: 12300,
-        cover: "https://ik.imagekit.io/cuongphung241103/BTL_JAVA/MangaIMG/OnePunchManIMG.jpg",
-    }, {
-        id: 1,
-        title: "Two Punch Man",
-        author: "ONE, Yusuke Murata",
-        description: "Saitama là một siêu anh hùng có thể đánh bại bất kỳ đối thủ nào chỉ bằng một cú đấm...",
-        chapters: 30,
-        views: 12300,
-        cover: "https://ik.imagekit.io/cuongphung241103/BTL_JAVA/MangaIMG/OnePunchManIMG.jpg",
-    }, {
-        id: 1,
-        title: "Tree Punch Man",
-        author: "ONE, Yusuke Murata",
-        description: "Saitama là một siêu anh hùng có thể đánh bại bất kỳ đối thủ nào chỉ bằng một cú đấm...",
-        chapters: 30,
-        views: 12300,
-        cover: "https://ik.imagekit.io/cuongphung241103/BTL_JAVA/MangaIMG/OnePunchManIMG.jpg",
-    },
-    // ... thêm truyện khác
-];
+import BangDiemService from "../../../../usecases/MangaService";
 
 const ITEMS_PER_PAGE = 6;
 
@@ -48,14 +11,35 @@ export default function MangaManagement() {
     const navigate = useNavigate();
     const [query, setQuery] = useState("");
     const [currentPage, setCurrentPage] = useState(1);
+    const [mangas, setMangas] = useState([]);
+
+    const service = useMemo(() => new BangDiemService(), []);
+
+    useEffect(() => {
+        const fetchMangas = async () => {
+            const data = await service.getAllMangas();
+            const mapped = data.map((item) => ({
+                id: item.id,
+                title: item.name,
+                author: item.authorName,
+                description: item.description,
+                chapters: item.countView,
+                views: item.countView,
+                cover: item.posterUrl,
+            }));
+            setMangas(mapped);
+        };
+
+        fetchMangas();
+    }, [service]);
 
     const filtered = useMemo(() => {
         const q = query.trim().toLowerCase();
-        if (!q) return mockStories;
-        return mockStories.filter(
-            s => s.title.toLowerCase().includes(q) || s.author.toLowerCase().includes(q)
+        if (!q) return mangas;
+        return mangas.filter(
+            (s) => s.title.toLowerCase().includes(q) || s.author.toLowerCase().includes(q)
         );
-    }, [query]);
+    }, [query, mangas]);
 
     const totalPages = Math.ceil(filtered.length / ITEMS_PER_PAGE);
     const paginated = useMemo(() => {
@@ -66,10 +50,11 @@ export default function MangaManagement() {
     useEffect(() => setCurrentPage(1), [query]);
 
     const goToDetail = (id) => {
-        navigate(`/admin/manga-detail-management/${id}`);
+        navigate(`/manga-detail-management/${id}`);
     };
 
     const handleAddStory = () => {
+
     };
 
     return (

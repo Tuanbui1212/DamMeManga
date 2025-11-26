@@ -1,8 +1,8 @@
 package org.example.backend.usecase.impl;
 
 import org.example.backend.domain.model.Category;
+import org.example.backend.domain.repository.CategoryRepository;
 import org.example.backend.usecase.CategoryService;
-import org.example.backend.infrastructure.repository.CategoryRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

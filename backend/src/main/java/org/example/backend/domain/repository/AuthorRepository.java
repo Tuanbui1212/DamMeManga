@@ -1,4 +1,4 @@
-package org.example.backend.infrastructure.repository;
+package org.example.backend.domain.repository;
 
 import org.example.backend.domain.model.Author;
 import org.springframework.data.jpa.repository.JpaRepository;

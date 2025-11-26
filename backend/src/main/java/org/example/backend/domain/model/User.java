@@ -31,13 +31,12 @@ public class User {
         this.role = "guest";
     }
 
-    // --- Constructor cho admin hoặc user tùy role ---
     public User(String account, String password, String role) {
         this.idUser = UUID.randomUUID().toString();
         this.createdAt = LocalDateTime.now();
         this.account = account;
         this.password = password;
-        this.role = role; // "guest" hoặc "admin"
+        this.role = role; 
     }
 
     // --- Getter & Setter ---

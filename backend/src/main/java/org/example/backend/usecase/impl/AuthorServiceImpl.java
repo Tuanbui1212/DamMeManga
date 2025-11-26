@@ -1,7 +1,7 @@
 package org.example.backend.usecase.impl;
 
 import org.example.backend.domain.model.Author;
-import org.example.backend.infrastructure.repository.AuthorRepository;
+import org.example.backend.domain.repository.AuthorRepository;
 import org.example.backend.usecase.AuthorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

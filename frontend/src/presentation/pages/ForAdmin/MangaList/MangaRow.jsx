@@ -31,7 +31,7 @@ export default function MangaRow({ story, index, onViewDetail }) {
                 {story.chapters}
             </td>
             <td className="py-4 px-5 text-center text-gray-200">
-                {story.views.toLocaleString("vi-VN")}
+                {(story.views ?? 0).toLocaleString("vi-VN")}
             </td>
             <td className="py-4 px-5 text-center">
                 <Link
