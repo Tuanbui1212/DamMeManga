@@ -7,7 +7,7 @@ export default function ChapterNavigation({
   totalChapters,
   scrollToTop,
   setShowChapterList,
-  setShowComments,        // nhận được rồi nè
+  setShowComments,      
 }) {
   const navigate = useNavigate();
 
