@@ -7,12 +7,12 @@ import MangaCard from "./MangaCard";
 
 // Dữ liệu giả lập manga
 const mangaData = [
-    { id: 1, title: "One Piece", genre: "Action", status: "Đang tiến hành" },
-    { id: 2, title: "Naruto", genre: "Action", status: "Hoàn thành" },
-    { id: 3, title: "Attack on Titan", genre: "Fantasy", status: "Hoàn thành" },
-    { id: 4, title: "Demon Slayer", genre: "Action", status: "Đang tiến hành" },
-    { id: 5, title: "Fruits Basket", genre: "Romance", status: "Hoàn thành" },
-    { id: 6, title: "Boku No Pico", genre: "Gay", status: "Hoàn thành" },
+    { id: 1, title: "One Piece", imgPoster: 'https://ik.imagekit.io/cuongphung241103/BTL_JAVA/MangaIMG/NRT.jpg?updatedAt=1763293349678', genre: "Action", status: "Đang tiến hành" },
+    { id: 2, title: "Naruto", imgPoster: 'https://ik.imagekit.io/cuongphung241103/BTL_JAVA/MangaIMG/NRT.jpg?updatedAt=1763293349678', genre: "Action", status: "Hoàn thành" },
+    { id: 3, title: "Attack on Titan", imgPoster: 'https://ik.imagekit.io/cuongphung241103/BTL_JAVA/MangaIMG/NRT.jpg?updatedAt=1763293349678', genre: "Fantasy", status: "Hoàn thành" },
+    { id: 4, title: "Demon Slayer", imgPoster: 'https://ik.imagekit.io/cuongphung241103/BTL_JAVA/MangaIMG/NRT.jpg?updatedAt=1763293349678', genre: "Action", status: "Đang tiến hành" },
+    { id: 5, title: "Fruits Basket", imgPoster: 'https://ik.imagekit.io/cuongphung241103/BTL_JAVA/MangaIMG/NRT.jpg?updatedAt=1763293349678', genre: "Romance", status: "Hoàn thành" },
+    { id: 6, title: "Boku No Pico", imgPoster: 'https://ik.imagekit.io/cuongphung241103/BTL_JAVA/MangaIMG/NRT.jpg?updatedAt=1763293349678', genre: "Gay", status: "Hoàn thành" }
 ];
 
 // Lấy danh sách thể loại duy nhất
@@ -34,13 +34,13 @@ function MangaLib() {
                 <title>Danh sách truyện | DMManga</title>
             </Helmet>
             <div className="min-h-screen bg-gray-100 pt-20 quicksand-uniquifier">
-                <div className="p-6 max-w-5xl mx-auto">
+                <div className="p-6 max-w-7xl mx-auto">
                     <h2 className="text-2xl font-bold mb-4">Danh sách truyện</h2>
 
                     <GenreFilter genres={genres} genreFilter={genreFilter} setGenreFilter={setGenreFilter} />
                     <StatusFilter statusFilter={statusFilter} setStatusFilter={setStatusFilter} />
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-6 gap-6">
                         {filteredManga.map((manga) => (
                             <MangaCard key={manga.id} manga={manga} />
                         ))}

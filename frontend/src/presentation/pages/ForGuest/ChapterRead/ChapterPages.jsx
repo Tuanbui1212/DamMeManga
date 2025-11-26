@@ -4,7 +4,7 @@ export default function ChapterPages({ pages, containerRef, showUI }) {
       ref={containerRef}
       className="h-screen w-full overflow-y-auto overflow-x-hidden scrollbar-hide"
       style={{
-        paddingTop: showUI ? "3rem" : "0",
+        paddingTop: showUI ? "0rem" : "0",
         paddingBottom: showUI ? "6rem" : "0",
       }}
     >

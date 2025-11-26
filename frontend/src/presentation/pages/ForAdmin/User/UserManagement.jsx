@@ -4,40 +4,40 @@ import SearchBox from "./SearchBox";
 import UserStats from "./UserStats";
 import UserTable from "./UserTable";
 import Pagination from "./Pagination";
-
-const mockUsers = [
-  { id: 1, username: "admin", password: "******", gmail: "admin@story.com" },
-  { id: 2, username: "user123", password: "******", gmail: "user123@gmail.com" },
-  { id: 3, username: "manga_fan", password: "******", gmail: "fan@manga.vn" },
-  { id: 4, username: "otaku_kun", password: "******", gmail: "otaku@gmail.com" },
-  { id: 5, username: "reader99", password: "******", gmail: "reader99@yahoo.com" },
-  { id: 6, username: "shounen_love", password: "******", gmail: "shounen@outlook.com" },
-  { id: 7, username: "dark_manga", password: "******", gmail: "dark@seinen.jp" },
-  { id: 8, username: "romance_queen", password: "******", gmail: "queen@love.com" },
-  { id: 9, username: "comedy_king", password: "******", gmail: "king@humor.net" },
-  { id: 10, username: "isekai_master", password: "******", gmail: "master@isekai.world" },
-  { id: 11, username: "slice_of_life", password: "******", gmail: "sol@daily.jp" },
-  { id: 12, username: "horror_night", password: "******", gmail: "night@horror.tv" },
-  { id: 13, username: "mystery_solver", password: "******", gmail: "solver@clue.com" },
-  { id: 14, username: "sci_fi_geek", password: "******", gmail: "geek@sci.fi" },
-];
+import UserRepositoryImpl from "../../../../infrastructure/repositories/AuthRepository";
 
 const ITEMS_PER_PAGE = 9;
+const userRepo = new UserRepositoryImpl();
 
 export default function UserManagement() {
+  const [users, setUsers] = useState([]);
   const [query, setQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
+  const [loading, setLoading] = useState(true);
 
-  // Lọc dữ liệu
+  // Fetch user từ API khi component mount
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const data = await userRepo.getAllUsers();
+        setUsers(data || []);
+      } catch (err) {
+        console.error("Lỗi khi lấy user:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchUsers();
+  }, []);
+
+  // Lọc dữ liệu theo account
   const filteredUsers = useMemo(() => {
     const q = query.trim().toLowerCase();
-    if (!q) return mockUsers;
-    return mockUsers.filter(
-      (u) =>
-        u.username.toLowerCase().includes(q) ||
-        u.gmail.toLowerCase().includes(q)
+    if (!q) return users;
+    return users.filter(
+      (u) => u.account?.toLowerCase().includes(q) // chỉ filter theo account
     );
-  }, [query]);
+  }, [users, query]);
 
   // Phân trang
   const totalPages = Math.ceil(filteredUsers.length / ITEMS_PER_PAGE);
@@ -61,7 +61,7 @@ export default function UserManagement() {
 
         <main>
           <section className="bg-gray-900/30 border border-gray-800 rounded-lg p-4">
-            <UserStats total={mockUsers.length} filtered={filteredUsers.length} />
+            <UserStats total={users.length} filtered={filteredUsers.length} />
 
             <UserTable users={paginatedUsers} />
 

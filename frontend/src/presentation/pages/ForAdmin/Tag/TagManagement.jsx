@@ -1,4 +1,3 @@
-// src/components/tag-management/TagManagement.jsx
 import React, { useState, useMemo, useEffect } from "react";
 import SearchAndAddBar from "./SearchAndAddBar";
 import TagStats from "./TagStats";
@@ -7,35 +6,38 @@ import TagModal from "./TagModal";
 import DeleteConfirmModal from "./DeleteConfirmModal";
 import ToastNotification from "./ToastNotification";
 import Pagination from "./Pagination";
+import CategoryRepositoryImpl from "../../../../infrastructure/repositories/CategoryRepository"
 
-const initialGenres = [
-  { id: 1, name: "Shounen", description: "Hành động, phiêu lưu cho thanh thiếu niên nam." },
-  { id: 2, name: "Seinen", description: "Nội dung trưởng thành, sâu sắc, dành cho người lớn." },
-  { id: 3, name: "Romance", description: "Tình yêu, lãng mạn, cảm xúc nhẹ nhàng." },
-  { id: 4, name: "Comedy", description: "Hài hước, vui nhộn, giải trí." },
-  { id: 5, name: "Fantasy", description: "Thế giới phép thuật, quái vật, anh hùng." },
-  { id: 6, name: "Isekai", description: "Nhân vật chính chuyển sinh sang thế giới khác." },
-  { id: 7, name: "Slice of Life", description: "Cuộc sống thường ngày, nhẹ nhàng, chân thực." },
-  { id: 8, name: "Horror", description: "Kinh dị, ma quỷ, ám ảnh tâm lý." },
-  { id: 9, name: "Mystery", description: "Bí ẩn, điều tra, phá án." },
-  { id: 10, name: "Sci-Fi", description: "Khoa học viễn tưởng, công nghệ, tương lai." },
-  { id: 11, name: "Mecha", description: "Robot khổng lồ, chiến đấu không gian." },
-  { id: 12, name: "Sports", description: "Thể thao, thi đấu, tinh thần đồng đội." },
-  { id: 13, name: "Drama", description: "Cảm xúc mạnh, bi kịch, xung đột nội tâm." },
-  { id: 14, name: "Adventure", description: "Khám phá, hành trình, thử thách." },
-];
-
+const categoryRepo = new CategoryRepositoryImpl();
 const ITEMS_PER_PAGE = 9;
 
 export default function TagManagement() {
   const [query, setQuery] = useState("");
-  const [genres, setGenres] = useState(initialGenres);
   const [currentPage, setCurrentPage] = useState(1);
+  const [genres, setGenres] = useState([]);
   const [selected, setSelected] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalMode, setModalMode] = useState("add");
   const [deleteId, setDeleteId] = useState(null);
   const [toast, setToast] = useState({ show: false, message: "", type: "success" });
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const data = await categoryRepo.getAllCategories();
+        const mapped = data.map((c, index) => ({
+          id: index + 1,
+          realId: c.idCategory,
+          name: c.nameCategory,
+          description: c.description
+        }));
+        setGenres(mapped);
+      } catch (error) {
+        console.error("Error loading categories:", error);
+      }
+    };
+    fetchData();
+  }, []);
 
   // Lọc & phân trang
   const filtered = useMemo(() => {
@@ -72,26 +74,78 @@ export default function TagManagement() {
     setIsModalOpen(true);
   };
 
-  const saveGenre = () => {
+  const saveGenre = async () => {
     if (modalMode === "add") {
-      const newId = Math.max(0, ...genres.map(g => g.id)) + 1;
-      setGenres(prev => [{ id: newId, ...selected }, ...prev]);
-      showToast("Thêm thể loại thành công!", "success");
+      try {
+        const res = await categoryRepo.createCategory(selected.name, selected.description);
+        const newTag = {
+          id: genres.length + 1,
+          realId: res.idCategory,
+          name: res.nameCategory,
+          description: res.description,
+        };
+        setGenres(prev => [newTag, ...prev]);
+        showToast("Thêm thể loại thành công!", "success");
+        setIsModalOpen(false);
+      } catch (error) {
+        console.error(error);
+        showToast("Thêm thể loại thất bại!", "error");
+      }
     } else {
-      setGenres(prev => prev.map(g => g.id === selected.id ? selected : g));
-      showToast("Cập nhật thể loại thành công!", "success");
+      await handleUpdate({
+        idCategory: selected.realId,
+        nameCategory: selected.name,
+        description: selected.description
+      });
     }
-    setIsModalOpen(false);
   };
+
+
+  const handleUpdate = async (category) => {
+    try {
+      const res = await categoryRepo.updateCategory(category.idCategory, category.nameCategory, category.description);
+      setGenres(prev =>
+        prev.map(g =>
+          g.realId === res.idCategory
+            ? { ...g, name: res.nameCategory, description: res.description }
+            : g
+        )
+      );
+
+      showToast("Cập nhật thể loại thành công!", "success");
+      setIsModalOpen(false);
+    } catch (error) {
+      console.error(error);
+      showToast("Cập nhật thể loại thất bại!", "error");
+    }
+  };
+
+
 
   const confirmDelete = (id) => setDeleteId(id);
 
-  const executeDelete = () => {
-    setGenres(prev => prev.filter(g => g.id !== deleteId));
-    showToast("Xóa thể loại thành công!", "success");
-    setDeleteId(null);
-    if (paginated.length === 1 && currentPage > 1) setCurrentPage(p => p - 1);
+  const executeDelete = async () => {
+    if (deleteId == null) return;
+
+    try {
+      const tagToDelete = genres.find(g => g.id === deleteId);
+      if (!tagToDelete) return;
+
+      await categoryRepo.deleteCategory(tagToDelete.realId);
+
+      // Cập nhật state cục bộ
+      setGenres(prev => prev.filter(g => g.id !== deleteId));
+      showToast("Xóa thể loại thành công!", "success");
+      setDeleteId(null);
+
+      // Giảm trang nếu cần
+      if (paginated.length === 1 && currentPage > 1) setCurrentPage(p => p - 1);
+    } catch (error) {
+      console.error(error);
+      showToast("Xóa thể loại thất bại!", "error");
+    }
   };
+
 
   const truncate = (text, len = 50) => text?.length > len ? text.slice(0, len) + "..." : text;
 

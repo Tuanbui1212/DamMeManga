@@ -1,9 +1,9 @@
-import { useState, useRef } from "react";
-import ChapterHeader from "./ChapterHeader";
 import ChapterPages from "./ChapterPages";
 import ChapterNavigation from "./ChapterNavigation";
 import ChapterListPopup from "./ChapterListPopup";
-// import { Helmet } from "react-helmet-async";
+import CommentSidebar from "./CommentSidebar";        // Thêm cái này
+import { useState, useRef, useEffect } from "react";
+import { motion } from "framer-motion";
 
 const pagesData = [
   "https://ik.imagekit.io/cuongphung241103/BTL_JAVA/OnePunchMan/Chap%201/1.jpeg?updatedAt=1762838219233",
@@ -29,46 +29,73 @@ const pagesData = [
 
 const allChapters = Array.from({ length: 20 }, (_, i) => `Chap ${i + 1}`);
 const chapterNumber = 1;
-const prevChapter = "#";
-const nextChapter = "#";
 
 function ChapterReadPage() {
   const [showUI, setShowUI] = useState(true);
   const [showChapterList, setShowChapterList] = useState(false);
+  const [showComments, setShowComments] = useState(false);   // Đưa vào đúng chỗ đây nè!
+
   const containerRef = useRef(null);
+  const lastScrollY = useRef(0);
 
   const scrollToTop = () => {
     containerRef.current?.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  const toggleUI = () => setShowUI((prev) => !prev);
+  // Ẩn/hiện thanh điều hướng khi cuộn
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    const handleScroll = () => {
+      const currentY = container.scrollTop;
+      if (currentY > lastScrollY.current + 10) {
+        setShowUI(false);
+      } else if (currentY < lastScrollY.current - 10) {
+        setShowUI(true);
+      }
+      lastScrollY.current = currentY;
+    };
+
+    container.addEventListener("scroll", handleScroll);
+    return () => container.removeEventListener("scroll", handleScroll);
+  }, []);
 
   return (
-    <>
-      {/* <Helmet>
-        <title>Chapter {chapterNumber} | DMManga</title>
-      </Helmet> */}
-      <div className="quicksand-uniquifier relative h-screen w-screen overflow-hidden bg-gray-200">
-        <ChapterHeader showUI={showUI} toggleUI={toggleUI} />
-        <ChapterPages pages={pagesData} containerRef={containerRef} showUI={showUI} />
-        {showUI && (
-          <ChapterNavigation
-            prevChapter={prevChapter}
-            nextChapter={nextChapter}
-            chapterNumber={chapterNumber}
-            scrollToTop={scrollToTop}
-            setShowChapterList={setShowChapterList}
-          />
-        )}
-        {showChapterList && (
-          <ChapterListPopup
-            allChapters={allChapters}
-            chapterNumber={chapterNumber}
-            setShowChapterList={setShowChapterList}
-          />
-        )}
-      </div>
-    </>
+    <div className="quicksand-uniquifier relative h-screen w-screen overflow-hidden bg-gray-200">
+
+      {/* Ảnh truyện */}
+      <ChapterPages pages={pagesData} containerRef={containerRef} showUI={showUI} />
+
+      {/* Sidebar bình luận - hiện từ bên trái */}
+      <CommentSidebar isOpen={showComments} onClose={() => setShowComments(false)} />
+
+      {/* Thanh điều hướng dưới cùng */}
+      <motion.div
+        initial={{ y: 0 }}
+        animate={{ y: showUI ? 0 : 100 }}
+        transition={{ duration: 0.3, ease: "easeInOut" }}
+        className="absolute bottom-0 w-full"
+      >
+        <ChapterNavigation
+          mangaId="one-punch-man"                 // bạn thay bằng id thật sau
+          chapterNumber={chapterNumber}
+          totalChapters={allChapters.length}
+          scrollToTop={scrollToTop}
+          setShowChapterList={setShowChapterList}
+          setShowComments={setShowComments}       // truyền xuống đây
+        />
+      </motion.div>
+
+      {/* Popup danh sách chapter */}
+      {showChapterList && (
+        <ChapterListPopup
+          allChapters={allChapters}
+          chapterNumber={chapterNumber}
+          setShowChapterList={setShowChapterList}
+        />
+      )}
+    </div>
   );
 }
 

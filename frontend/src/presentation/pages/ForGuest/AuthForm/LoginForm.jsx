@@ -1,40 +1,41 @@
 import { useState } from "react";
-import { User, Lock, Eye, EyeOff } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
+import { loginUsecase } from "../../../../usecases/LoginService";
+import { User, Lock, Eye, EyeOff } from "lucide-react";
 
-export default function LoginForm({ onLoginSuccess }) {
+export default function LoginForm() {
     const [account, setAccount] = useState("");
     const [password, setPassword] = useState("");
     const [showPass, setShowPass] = useState(false);
+
+    const navigate = useNavigate();
 
     const handleLogin = async (e) => {
         e.preventDefault();
         toast.dismiss();
 
-        if (!account.trim() || !password) {
-            toast.error("Vui lòng nhập đầy đủ tài khoản và mật khẩu!");
-            return;
-        }
-
         try {
-            const res = await fetch("http://localhost:8080/api/users/login", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ account: account.trim(), password }),
-            });
+            const user = await loginUsecase(account.trim(), password);
 
-            if (!res.ok) {
-                const msg = await res.text();
-                throw new Error(msg || "Đăng nhập thất bại!");
+            toast.success("Đăng nhập thành công!");
+
+            // Navigate dựa vào role
+            if (user.role === "admin") {
+                navigate("/");
+            } else {
+                navigate("/");
             }
-
-            const user = await res.json();
-            localStorage.setItem("user", JSON.stringify(user));
-            toast.success(`Chào mừng ${user.account}! Đăng nhập thành công 🎉`, { duration: 4000 });
-            setAccount(""); setPassword("");
-            if (onLoginSuccess) onLoginSuccess(user);
+            window.location.reload();
+            // Reset form
+            setAccount("");
+            setPassword("");
         } catch (err) {
-            toast.error(err.message || "Lỗi kết nối server!");
+            const message =
+                err.response?.data ||
+                err.message ||
+                "Lỗi kết nối server!";
+            toast.error(message);
         }
     };
 

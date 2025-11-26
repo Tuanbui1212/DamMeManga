@@ -1,4 +1,3 @@
-// src/components/author-management/AuthorManagement.jsx
 import React, { useState, useMemo, useEffect } from "react";
 import SearchAndAddBar from "./SearchAndAddBar";
 import AuthorStats from "./AuthorStats";
@@ -7,41 +6,47 @@ import AuthorModal from "./AuthorModal";
 import DeleteConfirmModal from "./DeleteConfirmModal";
 import ToastNotification from "./ToastNotification";
 import Pagination from "./Pagination";
+import AuthorRepositoryImpl from "../../../../infrastructure/repositories/AuthorRepository"
 
-const initialAuthors = [
-  { id: 1, name: "Fujiko F. Fujio" },
-  { id: 2, name: "Eiichiro Oda" },
-  { id: 3, name: "Masashi Kishimoto" },
-  { id: 4, name: "Rumiko Takahashi" },
-  { id: 5, name: "CLAMP" },
-  { id: 6, name: "Kentaro Miura" },
-  { id: 7, name: "Hirohiko Araki" },
-  { id: 8, name: "Naoko Takeuchi" },
-  { id: 9, name: "Yoshihiro Togashi" },
-  { id: 10, name: "Tetsuya Nomura" },
-  { id: 11, name: "Sui Ishida" },
-  { id: 12, name: "Koyoharu Gotouge" },
-  { id: 13, name: "Gege Akutami" },
-  { id: 14, name: "Haruichi Furudate" },
-];
 
 const ITEMS_PER_PAGE = 9;
+const authorRepo = new AuthorRepositoryImpl();
+
 
 export default function AuthorManagement() {
   const [query, setQuery] = useState("");
-  const [authors, setAuthors] = useState(initialAuthors);
+  const [authors, setAuthors] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [selected, setSelected] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [modalMode, setModalMode] = useState("add");
   const [deleteId, setDeleteId] = useState(null);
   const [toast, setToast] = useState({ show: false, message: "", type: "success" });
 
-  // Lọc & phân trang
+  useEffect(() => {
+    const fetchAuthors = async () => {
+      try {
+        const data = await authorRepo.getAllAuthors();
+        const mapped = data.map((a, index) => ({
+          id: index + 1,
+          realId: a.idAuthor,
+          nameAuthor: a.nameAuthor
+        }));
+        setAuthors(mapped);
+      } catch (error) {
+        console.error("Lỗi khi lấy danh sách tác giả:", error);
+        showToast("Lấy danh sách tác giả thất bại", "error");
+      }
+    };
+
+    fetchAuthors();
+  }, []);
+
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
     if (!q) return authors;
-    return authors.filter(a => a.name.toLowerCase().includes(q));
+    return authors.filter(a => a.nameAuthor.toLowerCase().includes(q));
   }, [query, authors]);
 
   const totalPages = Math.ceil(filtered.length / ITEMS_PER_PAGE);
@@ -59,9 +64,11 @@ export default function AuthorManagement() {
 
   const openAdd = () => {
     setModalMode("add");
-    setSelected({ name: "" });
+    setSelected({ nameAuthor: "" });
     setIsModalOpen(true);
   };
+
+
 
   const openEdit = (author) => {
     setModalMode("edit");
@@ -69,31 +76,96 @@ export default function AuthorManagement() {
     setIsModalOpen(true);
   };
 
+  const handleUpdate = async (author) => {
+    try {
+      const res = await authorRepo.updateAuthor(
+        author.realId,
+        author.nameAuthor
+      );
+
+      // cập nhật UI theo dữ liệu backend trả về
+      setAuthors(prev =>
+        prev.map(a =>
+          a.realId === res.idAuthor
+            ? { ...a, nameAuthor: res.nameAuthor }
+            : a
+        )
+      );
+
+      showToast("Cập nhật tác giả thành công!", "success");
+      setIsModalOpen(false);
+    } catch (error) {
+      console.error(error);
+      showToast("Cập nhật tác giả thất bại!", "error");
+    }
+  };
+
+  const handleAdd = async (author) => {
+    try {
+      const res = await authorRepo.createAuthor(author.nameAuthor);
+      const newId = Math.max(0, ...authors.map(a => a.id)) + 1;
+
+      const newAuthor = {
+        id: newId,
+        realId: res.idAuthor,
+        nameAuthor: res.nameAuthor
+      };
+
+      setAuthors(prev => [newAuthor, ...prev]);
+      showToast("Thêm tác giả thành công!", "success");
+      setIsModalOpen(false);
+
+    } catch (error) {
+      console.error(error);
+      showToast("Thêm tác giả thất bại!", "error");
+    }
+  };
+
+  const handleDelete = async (author) => {
+    try {
+      await authorRepo.deleteAuthor(author.realId);
+
+      setAuthors(prev => prev.filter(a => a.realId !== author.realId));
+
+      showToast("Xóa tác giả thành công!", "success");
+      setIsConfirmOpen(false);
+
+    } catch (error) {
+      console.error(error);
+      showToast("Xóa tác giả thất bại!", "error");
+    }
+  };
+
   const saveAuthor = () => {
-    if (!selected?.name?.trim()) {
+    if (!selected?.nameAuthor?.trim()) {
       showToast("Vui lòng nhập tên tác giả!", "error");
       return;
     }
 
     if (modalMode === "add") {
-      const newId = Math.max(0, ...authors.map(a => a.id)) + 1;
-      setAuthors(prev => [{ id: newId, name: selected.name.trim() }, ...prev]);
-      showToast("Thêm tác giả thành công!", "success");
-    } else {
-      setAuthors(prev => prev.map(a => a.id === selected.id ? { ...a, name: selected.name.trim() } : a));
-      showToast("Cập nhật tác giả thành công!", "success");
+      handleAdd(selected);
+      return;
     }
+    else {
+      handleUpdate(selected);
+      return;
+    }
+
     setIsModalOpen(false);
   };
 
-  const confirmDelete = (id) => setDeleteId(id);
+  const confirmDelete = (author) => {
+    setSelected(author);
+    setIsConfirmOpen(true);
+  };
 
   const executeDelete = () => {
-    setAuthors(prev => prev.filter(a => a.id !== deleteId));
+    setAuthors(prev => prev.filter(a => a.realId !== deleteId));
     showToast("Xóa tác giả thành công!", "success");
     setDeleteId(null);
     if (paginated.length === 1 && currentPage > 1) setCurrentPage(p => p - 1);
   };
+
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800 text-gray-100 p-6 relative">
@@ -106,7 +178,9 @@ export default function AuthorManagement() {
         <main>
           <section className="bg-gray-900/30 border border-gray-800 rounded-lg p-4">
             <AuthorStats total={authors.length} filtered={filtered.length} />
-            <AuthorTable authors={paginated} onEdit={openEdit} onDelete={confirmDelete} />
+            <AuthorTable authors={paginated}
+              onEdit={openEdit}
+              onDelete={confirmDelete} />
             {totalPages > 1 && (
               <Pagination
                 currentPage={currentPage}
@@ -129,9 +203,9 @@ export default function AuthorManagement() {
         />
 
         <DeleteConfirmModal
-          isOpen={deleteId !== null}
-          onClose={() => setDeleteId(null)}
-          onConfirm={executeDelete}
+          isOpen={isConfirmOpen}
+          onClose={() => setIsConfirmOpen(false)}
+          onConfirm={() => handleDelete(selected)}
         />
 
         <ToastNotification toast={toast} onClose={() => setToast(prev => ({ ...prev, show: false }))} />
