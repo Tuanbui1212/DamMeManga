@@ -1,1 +1,25 @@
 @import "tailwindcss";
+
+@theme {
+  --color-test: #ccc;
+  --color-textPrimary: #1e2a3a;
+  --color-buttonHome: #131838;
+  --color-buttonHomeHover: #131838;
+  --color-backgroundNewManga: #dbdee3;
+  --color-backgroundTopManga: #9cafab;
+}
+
+/* Ẩn scrollbar trên Chrome, Edge, Safari */
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Ẩn scrollbar trên Firefox */
+.hide-scrollbar {
+  scrollbar-width: none;
+}
+
+/* Ẩn scrollbar trên IE */
+.hide-scrollbar {
+  -ms-overflow-style: none;
+}

@@ -40,8 +40,8 @@ public class UserController {
     public ResponseEntity<?> login(@RequestBody AuthRequest request) {
         try {
             User user = userService.login(request.getAccount(), request.getPassword());
-            String token = jwtUtil.generateToken(user.getAccount(), user.getRole());
-            return ResponseEntity.ok(new AuthResponse(token, user.getRole(), user.getAccount()));
+            String token = jwtUtil.generateToken(user.getAccount(), user.getRole().name());
+            return ResponseEntity.ok(new AuthResponse(token, user.getRole().name(), user.getAccount()));
         } catch (RuntimeException e) {
             return ResponseEntity.status(401).body(e.getMessage());
         }
@@ -50,12 +50,11 @@ public class UserController {
     // --- Create admin (admin-only) ---
     @PostMapping("/admin")
     public ResponseEntity<?> createAdmin(@RequestHeader("Authorization") String authHeader,
-            @RequestBody AuthRequest request) {
+                                         @RequestBody AuthRequest request) {
         try {
-            // Check token
             String token = authHeader.substring(7);
             String role = jwtUtil.extractRole(token);
-            if (!"admin".equals(role)) {
+            if (!User.Role.ADMIN.name().equals(role)) {
                 return ResponseEntity.status(403).body("Chỉ admin mới tạo admin được");
             }
 
@@ -71,13 +70,14 @@ public class UserController {
     public ResponseEntity<?> getAllUsers(@RequestHeader("Authorization") String authHeader) {
         String token = authHeader.substring(7);
         String role = jwtUtil.extractRole(token);
-        if (!"admin".equals(role)) {
+        if (!User.Role.ADMIN.name().equals(role)) {
             return ResponseEntity.status(403).body("Chỉ admin mới xem được danh sách");
         }
         List<User> users = userService.getAllUsers();
         return ResponseEntity.ok(users);
     }
 
+    // --- Change password ---
     @PostMapping("/change-password")
     public ResponseEntity<?> changePassword(
             @RequestHeader("Authorization") String authHeader,

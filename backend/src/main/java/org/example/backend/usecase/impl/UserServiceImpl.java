@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -25,9 +24,7 @@ public class UserServiceImpl implements UserService {
         if (userRepository.existsByAccount(account)) {
             throw new RuntimeException("Account đã tồn tại");
         }
-        User user = new User();
-        user.setAccount(account);
-        user.setPassword(passwordEncoder.encode(password));
+        User user = new User(account, password, User.Role.GUEST);
         return userRepository.save(user);
     }
 
@@ -48,7 +45,7 @@ public class UserServiceImpl implements UserService {
         if (userRepository.existsByAccount(account)) {
             throw new RuntimeException("Account đã tồn tại");
         }
-        User admin = new User(account, passwordEncoder.encode(password), "admin");
+        User admin = new User(account, password, User.Role.ADMIN);
         return userRepository.save(admin);
     }
 
@@ -66,13 +63,8 @@ public class UserServiceImpl implements UserService {
     @Override
     public boolean changePassword(String account, String oldPassword, String newPassword) {
 
-        Optional<User> optionalUser = userRepository.findByAccount(account);
-
-        if (optionalUser.isEmpty()) {
-            throw new RuntimeException("Không tìm thấy tài khoản");
-        }
-
-        User user = optionalUser.get();
+        User user = userRepository.findByAccount(account)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy tài khoản"));
 
         if (!passwordEncoder.matches(oldPassword, user.getPassword())) {
             throw new RuntimeException("Mật khẩu cũ không đúng");
@@ -83,5 +75,4 @@ public class UserServiceImpl implements UserService {
 
         return true;
     }
-
 }

@@ -1,12 +1,20 @@
 package org.example.backend.domain.model;
 
 import jakarta.persistence.*;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+
 import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
 @Table(name = "users")
 public class User {
+
+    public enum Role {
+        GUEST, ADMIN
+    }
+
+    private static final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     @Id
     @Column(name = "id_user", length = 100)
@@ -18,66 +26,51 @@ public class User {
     @Column(name = "password", length = 255, nullable = false)
     private String password;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "role", length = 10, nullable = false)
-    private String role; // "guest" hoặc "admin"
+    private Role role;
 
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 
-    // --- Constructor mặc định: tạo user bình thường (guest) ---
+    // --- Constructor mặc định: guest user ---
     public User() {
         this.idUser = UUID.randomUUID().toString();
         this.createdAt = LocalDateTime.now();
-        this.role = "guest";
+        this.role = Role.GUEST;
     }
 
-    // --- Constructor cho admin hoặc user tùy role ---
-    public User(String account, String password, String role) {
+    // --- Constructor cho account/password + role ---
+    public User(String account, String password, Role role) {
         this.idUser = UUID.randomUUID().toString();
         this.createdAt = LocalDateTime.now();
         this.account = account;
-        this.password = password;
-        this.role = role; // "guest" hoặc "admin"
-    }
-
-    // --- Getter & Setter ---
-    public String getIdUser() {
-        return idUser;
-    }
-
-    public void setIdUser(String idUser) {
-        this.idUser = idUser;
-    }
-
-    public String getAccount() {
-        return account;
-    }
-
-    public void setAccount(String account) {
-        this.account = account;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public String getRole() {
-        return role;
-    }
-
-    public void setRole(String role) {
+        this.password = passwordEncoder.encode(password);
         this.role = role;
     }
 
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(LocalDateTime createdAt) {
+    // --- Constructor đầy đủ ---
+    public User(String idUser, String account, String password, Role role, LocalDateTime createdAt) {
+        this.idUser = idUser;
+        this.account = account;
+        this.password = passwordEncoder.encode(password);
+        this.role = role;
         this.createdAt = createdAt;
     }
+
+    // --- Getter & Setter ---
+    public String getIdUser() { return idUser; }
+    public void setIdUser(String idUser) { this.idUser = idUser; }
+
+    public String getAccount() { return account; }
+    public void setAccount(String account) { this.account = account; }
+
+    public String getPassword() { return password; }
+    public void setPassword(String password) { this.password = passwordEncoder.encode(password); }
+
+    public Role getRole() { return role; }
+    public void setRole(Role role) { this.role = role; }
+
+    public LocalDateTime getCreatedAt() { return createdAt; }
+    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
 }

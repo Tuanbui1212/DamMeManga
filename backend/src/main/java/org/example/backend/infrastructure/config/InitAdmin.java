@@ -14,10 +14,8 @@ public class InitAdmin {
     CommandLineRunner init(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         return args -> {
             if (!userRepository.existsByAccount("admin")) {
-                User admin = new User();
-                admin.setAccount("admin");
-                admin.setPassword(passwordEncoder.encode("admin"));
-                admin.setRole("admin");
+                // Sử dụng constructor với role ADMIN
+                User admin = new User("admin", "admin", User.Role.ADMIN);
                 userRepository.save(admin);
                 System.out.println(">>> Admin account created !");
             }
