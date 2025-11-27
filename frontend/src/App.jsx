@@ -2,6 +2,7 @@ import React, { Fragment } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import DefaultLayout from "./presentation/Layouts/DefaultLayout";
 import { publicRoutes, privateRoutes } from "./presentation/routes";
+import AdminRoute from "./presentation/routes/AdminRoute";
 import './lib/chart'
 
 export default function App() {
@@ -12,13 +13,7 @@ export default function App() {
           {/* ROUTE CÔNG KHAI */}
           {publicRoutes.map((route, index) => {
             const Page = route.component;
-            let Layout = DefaultLayout;
-
-            if (route.layout) {
-              Layout = route.layout;
-            } else if (route.layout === null) {
-              Layout = Fragment;
-            }
+            let Layout = route.layout ?? DefaultLayout;
 
             return (
               <Route
@@ -33,25 +28,21 @@ export default function App() {
             );
           })}
 
-          {/*  ROUTE RIÊNG TƯ */}
+          {/* ROUTE RIÊNG TƯ (bọc AdminRoute) */}
           {privateRoutes.map((route, index) => {
             const Page = route.component;
-            let Layout = DefaultLayout;
-
-            if (route.layout) {
-              Layout = route.layout;
-            } else if (route.layout === null) {
-              Layout = Fragment;
-            }
+            let Layout = route.layout ?? DefaultLayout;
 
             return (
               <Route
                 key={index}
                 path={route.path}
                 element={
+                  <AdminRoute>
                     <Layout>
                       <Page />
                     </Layout>
+                  </AdminRoute>
                 }
               />
             );

@@ -22,8 +22,11 @@ public class SecurityConfig {
         http.csrf().disable()
                 .authorizeRequests()
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                .requestMatchers("/api/users/register", "/api/users/login", "api/category" , "/api/authors" , "/api/mangas").permitAll()
-                .requestMatchers("/api/users/admin", "/api/users/all").hasRole("ADMIN") // chỉ admin
+                .requestMatchers("/api/users/register", "/api/users/login", "api/category", "/api/authors",
+                        "/api/mangas", "/api/manga-category", "/api/manga-category/manga/**")
+                .permitAll()
+                .requestMatchers("/api/users/admin", "/api/users/all").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.PUT, "/api/mangas/**").hasRole("ADMIN")
                 .anyRequest().authenticated()
                 .and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);

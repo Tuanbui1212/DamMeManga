@@ -1,4 +1,4 @@
-package org.example.backend.presentation.dto;
+package org.example.backend.infrastructure.dto;
 
 public class ChangePasswordRequest {
     private String oldPassword;

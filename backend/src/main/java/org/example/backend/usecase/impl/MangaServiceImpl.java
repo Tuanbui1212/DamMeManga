@@ -1,8 +1,8 @@
 package org.example.backend.usecase.impl;
 
-import org.example.backend.presentation.dto.MangaDTO;
 import org.example.backend.domain.model.Manga;
 import org.example.backend.domain.repository.MangaRepository;
+import org.example.backend.infrastructure.dto.MangaDTO;
 import org.example.backend.usecase.MangaService;
 import org.springframework.stereotype.Service;
 

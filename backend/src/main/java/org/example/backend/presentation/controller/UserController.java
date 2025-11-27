@@ -1,11 +1,11 @@
 package org.example.backend.presentation.controller;
 
-import org.example.backend.presentation.dto.AuthRequest;
-import org.example.backend.presentation.dto.AuthResponse;
-import org.example.backend.presentation.dto.ChangePasswordRequest;
 import org.example.backend.domain.model.User;
 import org.example.backend.usecase.UserService;
 import org.example.backend.infrastructure.config.security.JwtUtil;
+import org.example.backend.infrastructure.dto.AuthRequest;
+import org.example.backend.infrastructure.dto.AuthResponse;
+import org.example.backend.infrastructure.dto.ChangePasswordRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

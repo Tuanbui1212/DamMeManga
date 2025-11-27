@@ -1,32 +1,76 @@
-// package org.example.backend.presentation.controller;
+package org.example.backend.presentation.controller;
 
-// import org.example.backend.presentation.dto.MangaCategoryCreateDTO;
-// import org.example.backend.presentation.dto.MangaWithCategoriesDTO;
-// import org.example.backend.usecase.MangaCategoryService;
-// import org.springframework.web.bind.annotation.*;
+import org.example.backend.infrastructure.dto.MangaCategoryDTO;
+import org.example.backend.infrastructure.dto.MangaCategoryRequest;
+import org.example.backend.usecase.MangaCategoryUseCase;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
-// import java.util.List;
+import java.util.List;
 
-// @RestController
-// @RequestMapping("/manga-category")
-// @CrossOrigin(origins = "*")
-// public class MangaCategoryController {
+@RestController
+@CrossOrigin(origins = "*")
+@RequestMapping("/api/manga-category")
+public class MangaCategoryController {
 
-//     private final MangaCategoryService mangaCategoryService;
+    private final MangaCategoryUseCase mangaCategoryUseCase;
 
-//     public MangaCategoryController(MangaCategoryService mangaCategoryService) {
-//         this.mangaCategoryService = mangaCategoryService;
-//     }
+    public MangaCategoryController(MangaCategoryUseCase mangaCategoryUseCase) {
+        this.mangaCategoryUseCase = mangaCategoryUseCase;
+    }
 
-//     @GetMapping("/list")
-//     public List<MangaWithCategoriesDTO> getAll() {
-//         return mangaCategoryService.getAllMangaWithCategories();
-//     }
+    // Lấy tất cả manga-category
+    @GetMapping
+    public ResponseEntity<List<MangaCategoryDTO>> getAll() {
+        List<MangaCategoryDTO> list = mangaCategoryUseCase.getAll();
+        return ResponseEntity.ok(list);
+    }
 
-//     @PostMapping("/add")
-//     public String addCategoryToManga(@RequestBody MangaCategoryCreateDTO dto) {
-//         mangaCategoryService.addCategoryToManga(dto.getMangaId(), dto.getCategoryId());
-//         return "Added category to manga successfully";
-//     }
+    // Lấy theo ID
+    @GetMapping("/{id}")
+    public ResponseEntity<MangaCategoryDTO> getById(@PathVariable String id) {
+        MangaCategoryDTO dto = mangaCategoryUseCase.getById(id);
+        if (dto == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(dto);
+    }
 
-// }
+    @GetMapping("/manga/{idManga}")
+    public ResponseEntity<List<MangaCategoryDTO>> getCategoriesByManga(@PathVariable String idManga) {
+        List<MangaCategoryDTO> categories = mangaCategoryUseCase.getCategoriesByMangaId(idManga);
+        return ResponseEntity.ok(categories);
+    }
+
+    // Tạo mới
+    @PostMapping
+    public ResponseEntity<MangaCategoryDTO> create(@RequestBody MangaCategoryRequest request) {
+        MangaCategoryDTO dto = mangaCategoryUseCase.create(request);
+        return ResponseEntity.ok(dto);
+    }
+
+    // Cập nhật
+    @PutMapping("/{id}")
+    public ResponseEntity<MangaCategoryDTO> update(
+            @PathVariable String id,
+            @RequestBody MangaCategoryRequest request) {
+        MangaCategoryDTO dto = mangaCategoryUseCase.update(id, request);
+        return ResponseEntity.ok(dto);
+    }
+
+    // Xóa
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable String id) {
+        mangaCategoryUseCase.delete(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/{idManga}/categories")
+    public ResponseEntity<Void> syncCategories(
+            @PathVariable String idManga,
+            @RequestBody List<String> categoryIds) {
+        mangaCategoryUseCase.syncCategoriesForManga(idManga, categoryIds);
+        return ResponseEntity.ok().build();
+    }
+
+}

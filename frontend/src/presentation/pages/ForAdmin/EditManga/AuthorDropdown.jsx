@@ -1,9 +1,17 @@
-// src/components/edit-manga/AuthorDropdown.jsx
-import { ChevronDown, Check } from "lucide-react";
-import { useState } from "react";
+import { ChevronDown, Check, Search } from "lucide-react";
+import { useState, useMemo } from "react";
 
 export default function AuthorDropdown({ selected, options, onSelect }) {
   const [isOpen, setIsOpen] = useState(false);
+  const [searchText, setSearchText] = useState("");
+
+  // Lọc options dựa trên searchText
+  const filteredOptions = useMemo(() => {
+    if (!searchText) return options;
+    return options.filter(opt =>
+      opt.toLowerCase().includes(searchText.toLowerCase())
+    );
+  }, [searchText, options]);
 
   return (
     <div>
@@ -21,16 +29,36 @@ export default function AuthorDropdown({ selected, options, onSelect }) {
 
         {isOpen && (
           <div className="absolute z-20 w-full mt-1 bg-gray-800 border border-gray-700 rounded-lg shadow-2xl max-h-64 overflow-y-auto">
-            {options.map((author) => (
-              <button
-                key={author}
-                onClick={() => { onSelect(author); setIsOpen(false); }}
-                className="w-full px-4 py-3 text-left hover:bg-gray-700 flex justify-between items-center transition"
-              >
-                {author}
-                {selected === author && <Check size={16} className="text-green-400" />}
-              </button>
-            ))}
+            
+            {/* Input tìm kiếm */}
+            <div className="px-3 py-2">
+              <div className="relative">
+                <input
+                  type="text"
+                  value={searchText}
+                  onChange={(e) => setSearchText(e.target.value)}
+                  placeholder="Tìm tác giả..."
+                  className="w-full pl-10 pr-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+                <Search size={16} className="absolute left-3 top-2.5 text-gray-400" />
+              </div>
+            </div>
+
+            {/* List options */}
+            {filteredOptions.length > 0 ? (
+              filteredOptions.map((author) => (
+                <button
+                  key={author}
+                  onClick={() => { onSelect(author); setIsOpen(false); setSearchText(""); }}
+                  className="w-full px-4 py-3 text-left hover:bg-gray-700 flex justify-between items-center transition"
+                >
+                  {author}
+                  {selected === author && <Check size={16} className="text-green-400" />}
+                </button>
+              ))
+            ) : (
+              <div className="px-4 py-3 text-gray-400">Không tìm thấy tác giả</div>
+            )}
           </div>
         )}
       </div>

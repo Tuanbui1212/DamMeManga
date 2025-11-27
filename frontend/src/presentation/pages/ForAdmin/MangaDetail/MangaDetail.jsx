@@ -9,6 +9,7 @@ import StatsCard from "./StatsCard";
 import CommentSection from "./CommentSection";
 import DeleteConfirmModal from "./DeleteConfirmModal";
 import MangaService from "../../../../usecases/MangaService";
+import MangaCategoryService from "../../../../usecases/MangaCategoryService";
 
 export default function MangaDetail() {
   const { id } = useParams();
@@ -20,29 +21,35 @@ export default function MangaDetail() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const service = new MangaService();
-        const data = await service.getMangaById(id);
+        const mangaService = new MangaService();
+        const mangaData = await mangaService.getMangaById(id);
 
-        if (data) {
-          const mapped = {
-            id: data.id,
-            title: data.name,
-            author: data.authorName,
-            description: data.description,
-            chapters: data.countView,
-            views: data.countView * 100,
-            cover: data.bannerUrl,
-            poster: data.posterUrl,
-            genres: ["Updating..."],
-            lastUpdate: "Updating...",
-            chaptersList: [],
-            comments: [],
-          };
-
-          setStory(mapped);
-        } else {
+        if (!mangaData) {
           setStory(null);
+          return;
         }
+
+        // Lấy genres trực tiếp theo idManga
+        const categoryService = new MangaCategoryService();
+        const mangaCategories = await categoryService.getCategoriesByManga(id);
+        const genres = mangaCategories.map(mc => mc.nameCategory);
+
+        const mapped = {
+          id: mangaData.id,
+          title: mangaData.name,
+          author: mangaData.authorName,
+          description: mangaData.description,
+          chapters: mangaData.countView,
+          views: mangaData.countView * 100,
+          cover: mangaData.bannerUrl,
+          poster: mangaData.posterUrl,
+          genres: genres.length > 0 ? genres : ["Updating..."],
+          lastUpdate: "Updating...",
+          chaptersList: [],
+          comments: [],
+        };
+
+        setStory(mapped);
       } catch (e) {
         console.error("Lỗi load manga:", e);
         setStory(null);
@@ -50,6 +57,7 @@ export default function MangaDetail() {
         setIsLoading(false);
       }
     };
+
 
     fetchData();
   }, [id]);

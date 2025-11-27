@@ -1,7 +1,7 @@
 package org.example.backend.presentation.controller;
 
-import org.example.backend.presentation.dto.MangaDTO;
 import org.example.backend.domain.model.Manga;
+import org.example.backend.infrastructure.dto.MangaDTO;
 import org.example.backend.usecase.MangaService;
 import org.springframework.web.bind.annotation.*;
 

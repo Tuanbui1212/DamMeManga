@@ -1,7 +1,7 @@
 package org.example.backend.usecase;
 
-import org.example.backend.presentation.dto.MangaDTO;
 import org.example.backend.domain.model.Manga;
+import org.example.backend.infrastructure.dto.MangaDTO;
 
 import java.util.List;
 
