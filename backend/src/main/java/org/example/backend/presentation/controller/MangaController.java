@@ -6,6 +6,7 @@ import org.example.backend.usecase.MangaService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/mangas")
@@ -19,13 +20,18 @@ public class MangaController {
     }
 
     @PostMapping
-    public Manga create(@RequestBody Manga manga) {
-        return mangaService.create(manga);
+    public MangaDTO create(@RequestBody Manga manga) {
+        return mangaService.create(manga); // trả MangaDTO
     }
 
     @PutMapping("/{id}")
-    public Manga update(@PathVariable String id, @RequestBody Manga manga) {
-        return mangaService.update(id, manga);
+    public MangaDTO update(@PathVariable String id, @RequestBody Manga manga) {
+        return mangaService.update(id, manga); // trả MangaDTO
+    }
+
+    @PatchMapping("/{id}")
+    public MangaDTO patch(@PathVariable String id, @RequestBody Map<String, Object> updates) {
+        return mangaService.patchManga(id, updates); // trả MangaDTO
     }
 
     @DeleteMapping("/{id}")

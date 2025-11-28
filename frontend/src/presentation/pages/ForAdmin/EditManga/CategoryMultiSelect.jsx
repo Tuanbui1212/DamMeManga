@@ -50,7 +50,7 @@ export default function CategoryMultiSelect({ selected, categories, onToggle }) 
             {filteredOptions.length > 0 ? (
               filteredOptions.map((c) => (
                 <button
-                  key={c.id}    
+                  key={c.idCategory}    
                   onClick={() => {
                     onToggle(c.nameCategory);
                     setSearchText("");
@@ -77,7 +77,7 @@ export default function CategoryMultiSelect({ selected, categories, onToggle }) 
 
           return (
             <span
-              key={categoryObj?.id || name}   // 🔥 FIX: fallback nếu không tìm thấy
+              key={categoryObj?.idCategory || name}   // 🔥 FIX: fallback nếu không tìm thấy
               className="px-3 py-1.5 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-full text-xs"
             >
               {name}

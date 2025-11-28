@@ -4,12 +4,18 @@ import toast from "react-hot-toast";
 import { loginUsecase } from "../../../../usecases/LoginService";
 import { User, Lock, Eye, EyeOff } from "lucide-react";
 
+// 👉 Import UserContext
+import { useUser } from "../../../context/UserContext";
+
 export default function LoginForm() {
     const [account, setAccount] = useState("");
     const [password, setPassword] = useState("");
     const [showPass, setShowPass] = useState(false);
 
     const navigate = useNavigate();
+
+    // 👉 Lấy hàm login từ UserContext
+    const { login } = useUser();
 
     const handleLogin = async (e) => {
         e.preventDefault();
@@ -18,16 +24,18 @@ export default function LoginForm() {
         try {
             const user = await loginUsecase(account.trim(), password);
 
+            // 👉 Lưu user vào Context + localStorage
+            login({
+                account: user.account,
+                role: user.role,
+                token: user.token
+            });
+
             toast.success("Đăng nhập thành công!");
 
-            // Navigate dựa vào role
-            if (user.role === "admin") {
-                navigate("/");
-            } else {
-                navigate("/");
-            }
+            navigate("/");
             window.location.reload();
-            // Reset form
+
             setAccount("");
             setPassword("");
         } catch (err) {
@@ -48,7 +56,7 @@ export default function LoginForm() {
                     value={account}
                     onChange={(e) => setAccount(e.target.value)}
                     placeholder="Tên người dùng"
-                    className="w-full border border-gray-300 rounded-lg p-3 pl-10 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                    className="w-full border border-gray-300 rounded-lg p-3 pl-10"
                     required
                 />
             </div>
@@ -60,28 +68,25 @@ export default function LoginForm() {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="Mật khẩu"
-                    className="w-full border border-gray-300 rounded-lg p-3 pl-10 pr-10 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                    className="w-full border border-gray-300 rounded-lg p-3 pl-10 pr-10"
                     required
                 />
                 {showPass ? (
                     <EyeOff
                         size={20}
-                        className="absolute right-3 top-3 cursor-pointer text-gray-500"
+                        className="absolute right-3 top-3 cursor-pointer"
                         onClick={() => setShowPass(false)}
                     />
                 ) : (
                     <Eye
                         size={20}
-                        className="absolute right-3 top-3 cursor-pointer text-gray-500"
+                        className="absolute right-3 top-3 cursor-pointer"
                         onClick={() => setShowPass(true)}
                     />
                 )}
             </div>
 
-            <button
-                type="submit"
-                className="bg-black text-white py-3 rounded-lg hover:bg-gray-800 transition duration-300 mt-2 w-full"
-            >
+            <button type="submit" className="bg-black text-white py-3 rounded-lg">
                 Đăng nhập
             </button>
         </form>

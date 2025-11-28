@@ -30,8 +30,10 @@ export default class MangaCategoryRepositoryImpl {
     }
 
     async updateCategoriesToManga(idManga, categoryIds) {
-        const body = { categoryIds };
-        const response = await axiosClient.post(`/manga-category/${idManga}/categories`, body);
+        const response = await axiosClient.post(
+            `/manga-category/${idManga}/categories`,
+            categoryIds 
+        );
         return response.data;
     }
 

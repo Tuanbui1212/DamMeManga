@@ -13,6 +13,7 @@ import MangaService from "../../../../usecases/MangaService";
 import AuthorService from "../../../../usecases/AuthorService";
 import CategoryService from "../../../../usecases/CategoryService";
 import MangaCategoryService from "../../../../usecases/MangaCategoryService";
+import { uploadImageKitFile } from "../../../../utils/imagekitUpload";
 
 export default function EditManga() {
   const { id } = useParams();
@@ -23,7 +24,8 @@ export default function EditManga() {
 
   const [formData, setFormData] = useState({
     title: "",
-    author: "",
+    authorId: "",
+    authorName: "",
     description: "",
     tags: [],
     cover: "",
@@ -32,6 +34,11 @@ export default function EditManga() {
 
   const [authors, setAuthors] = useState([]);
   const [categories, setCategories] = useState([]);
+  const [tempFiles, setTempFiles] = useState({
+    cover: null,
+    poster: null,
+  });
+
 
   useEffect(() => {
     const fetchData = async () => {
@@ -48,7 +55,10 @@ export default function EditManga() {
         if (mangaData) {
           setFormData({
             title: mangaData.name,
-            author: mangaData.authorName,
+            author: {
+              id: mangaData.authorId,      // cần có ID từ backend
+              name: mangaData.authorName
+            },
             description: mangaData.description,
             tags: [],
             cover: mangaData.bannerUrl,
@@ -57,8 +67,12 @@ export default function EditManga() {
         }
 
         // Load authors
+        // Load authors
         const authorList = await authorService.getAllAuthors();
-        setAuthors(authorList.map(a => a.nameAuthor));
+        // Lưu nguyên object {id, nameAuthor} thay vì chỉ name
+        setAuthors(authorList.map(a => ({ id: a.idAuthor, name: a.nameAuthor })));
+        console.log("Danh sách tác giả:", authorList);
+
 
         // Load all categories
         const categoryList = await categoryService.getAllCategories();
@@ -85,18 +99,31 @@ export default function EditManga() {
   // -------------------------
   // UPLOAD ẢNH
   // -------------------------
-  const uploadImage = async (file) => {
-    await new Promise(r => setTimeout(r, 800));
-    toast.success("Upload ảnh thành công!");
-    return URL.createObjectURL(file);
+  const uploadImage = async (file, type) => {
+    try {
+      const url = await uploadImageKitFile(file); // chỉ cần upload file
+      toast.success("Upload ảnh thành công!");
+      return url;
+    } catch (err) {
+      console.error("Upload ảnh lỗi:", err);
+      toast.error("Upload ảnh thất bại!");
+      return null;
+    }
   };
 
-  const handleImageChange = async (e, type) => {
+  const handleTempFileChange = (e, type) => {
     const file = e.target.files[0];
     if (!file) return;
-    const url = await uploadImage(file);
-    if (url) setFormData(prev => ({ ...prev, [type]: url }));
+
+    setTempFiles(prev => ({ ...prev, [type]: file }));
+
+    // Hiển thị preview tạm thời
+    setFormData(prev => ({
+      ...prev,
+      [type]: URL.createObjectURL(file),
+    }));
   };
+
 
   // -------------------------
   // SAVE
@@ -110,19 +137,27 @@ export default function EditManga() {
     setIsSaving(true);
 
     try {
+      // Upload ảnh chỉ khi có file mới
+      if (tempFiles.cover) {
+        formData.cover = await uploadImageKitFile(tempFiles.cover);
+      }
+      if (tempFiles.poster) {
+        formData.poster = await uploadImageKitFile(tempFiles.poster);
+      }
+
       const mangaService = new MangaService();
       const mangaCategoryService = new MangaCategoryService();
 
       // Cập nhật info manga
       const payload = {
         name: formData.title,
-        authorName: formData.author,
+        authorId: formData.author?.id,
         description: formData.description,
         bannerUrl: formData.cover,
         posterUrl: formData.poster,
-        countView: 0,
       };
-      await mangaService.updateManga(id, payload);
+      console.log("Payload PATCH gửi đi:", payload);
+      await mangaService.patchManga(id, payload);
 
       // Đồng bộ category
       const uniqueTags = [...new Set(formData.tags)];
@@ -130,7 +165,7 @@ export default function EditManga() {
       const categoryIds = uniqueTags
         .map(tagName => {
           const obj = categories.find(c => c.nameCategory === tagName);
-          return obj?.id;
+          return obj?.idCategory;
         })
         .filter(Boolean);
 
@@ -176,8 +211,8 @@ export default function EditManga() {
           <ImageUploader
             cover={formData.cover}
             poster={formData.poster}
-            onCoverChange={(e) => handleImageChange(e, "cover")}
-            onPosterChange={(e) => handleImageChange(e, "poster")}
+            onCoverChange={(e) => handleTempFileChange(e, "cover")}
+            onPosterChange={(e) => handleTempFileChange(e, "poster")}
           />
 
           <div className="lg:col-span-2 space-y-7">
@@ -197,22 +232,35 @@ export default function EditManga() {
             </div>
 
             <AuthorDropdown
-              selected={formData.author}
-              options={authors}
+              selected={formData.author} // {id, name}
+              options={authors}          // [{id, name}]
               onSelect={(author) => setFormData(prev => ({ ...prev, author }))}
             />
+
 
             <CategoryMultiSelect
               selected={formData.tags}
               categories={categories}
               onToggle={(categoryName) =>
-                setFormData(prev => ({
-                  ...prev,
-                  tags: prev.tags.includes(categoryName)
+                setFormData(prev => {
+                  const newTags = prev.tags.includes(categoryName)
                     ? prev.tags.filter(t => t !== categoryName)
-                    : [...prev.tags, categoryName],
-                }))
+                    : [...prev.tags, categoryName];
+
+                  // ⭐ Lấy ra danh sách ID theo các tag đang chọn
+                  const selectedCategoryIds = newTags
+                    .map(tag => categories.find(c => c.nameCategory === tag)?.idCategory)
+                    .filter(Boolean);
+                  console.log("Categories:", categories);
+                  console.log("✔ ID các thể loại đã chọn:", selectedCategoryIds);
+
+                  return {
+                    ...prev,
+                    tags: newTags,
+                  };
+                })
               }
+
             />
 
             <DescriptionField

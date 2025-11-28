@@ -1,5 +1,5 @@
 import { ChevronDown, Check, Search } from "lucide-react";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 
 export default function AuthorDropdown({ selected, options, onSelect }) {
   const [isOpen, setIsOpen] = useState(false);
@@ -9,9 +9,15 @@ export default function AuthorDropdown({ selected, options, onSelect }) {
   const filteredOptions = useMemo(() => {
     if (!searchText) return options;
     return options.filter(opt =>
-      opt.toLowerCase().includes(searchText.toLowerCase())
+      opt.name.toLowerCase().includes(searchText.toLowerCase())
     );
   }, [searchText, options]);
+
+  // Log danh sách tác giả hiển thị
+  useEffect(() => {
+    console.log("Danh sách tác giả hiển thị:");
+    filteredOptions.forEach(opt => console.log(`ID: ${opt.id}, Name: ${opt.name}`));
+  }, [filteredOptions]);
 
   return (
     <div>
@@ -22,7 +28,7 @@ export default function AuthorDropdown({ selected, options, onSelect }) {
           className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-left flex justify-between items-center hover:border-gray-600 transition"
         >
           <span className={selected ? "text-white" : "text-gray-500"}>
-            {selected || "Chọn tác giả..."}
+            {selected?.name || "Chọn tác giả..."}
           </span>
           <ChevronDown size={18} className="text-gray-400" />
         </button>
@@ -48,12 +54,17 @@ export default function AuthorDropdown({ selected, options, onSelect }) {
             {filteredOptions.length > 0 ? (
               filteredOptions.map((author) => (
                 <button
-                  key={author}
-                  onClick={() => { onSelect(author); setIsOpen(false); setSearchText(""); }}
+                  key={author.id}
+                  onClick={() => { 
+                    onSelect(author); 
+                    setIsOpen(false); 
+                    setSearchText(""); 
+                    console.log("Tác giả được chọn:", author); // log ID + name
+                  }}
                   className="w-full px-4 py-3 text-left hover:bg-gray-700 flex justify-between items-center transition"
                 >
-                  {author}
-                  {selected === author && <Check size={16} className="text-green-400" />}
+                  {author.name}
+                  {selected?.id === author.id && <Check size={16} className="text-green-400" />}
                 </button>
               ))
             ) : (

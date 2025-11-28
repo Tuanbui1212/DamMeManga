@@ -41,13 +41,22 @@ public class JwtFilter extends OncePerRequestFilter {
             token = authHeader.substring(7);
             try {
                 username = jwtUtil.extractUsername(token);
+
+                // 🔹 Thêm log debug
+                System.out.println("==== JWT DEBUG ====");
+                System.out.println("AuthHeader: " + authHeader);
+                System.out.println("Username from token: " + username);
+                System.out.println("Role from token: " + jwtUtil.extractRole(token));
+                System.out.println("===================");
             } catch (Exception e) {
-                // Token không hợp lệ
+                System.out.println("Token không hợp lệ: " + e.getMessage());
             }
         }
 
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            User user = userService.findByAccount(username); // dùng findByAccount
+            User user = userService.findByAccount(username);
+            System.out.println("User from DB: " + user);
+
             if (user != null && jwtUtil.validateToken(token, user.getAccount())) {
                 UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                         user,

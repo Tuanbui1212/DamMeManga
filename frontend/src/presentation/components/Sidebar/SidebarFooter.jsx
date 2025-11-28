@@ -9,7 +9,7 @@ export default function SidebarFooter({ isOpen }) {
     localStorage.removeItem("token");
     localStorage.removeItem("account");
     localStorage.removeItem("role");
-
+    localStorage.removeItem("user");
     // Chuyển về trang login
     navigate("/login");
   };

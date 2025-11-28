@@ -6,27 +6,33 @@ export default class MangaService {
     this.mangaRepository = new MangaRepositoryImpl();
   }
 
-  async layManga() {
-    return await this.mangaRepository.getAllMangas();
-  }
-
+  // Lấy danh sách tất cả manga
   async getAllMangas() {
-    return await this.mangaRepository.getAllMangas();
+    return await this.mangaRepository.getAllMangas(); // trả về list MangaDTO
   }
 
+  // Lấy 1 manga theo id
   async getMangaById(id) {
-    return await this.mangaRepository.getMangaById(id);
+    return await this.mangaRepository.getMangaById(id); // MangaDTO
   }
 
+  // Tạo manga mới
   async createManga(manga) {
-    return await this.mangaRepository.createManga(manga);
+    return await this.mangaRepository.createManga(manga); // MangaDTO
   }
 
+  // Cập nhật manga toàn bộ (PUT)
   async updateManga(id, manga) {
-    return await this.mangaRepository.updateManga(id, manga);
+    return await this.mangaRepository.updateManga(id, manga); // MangaDTO
   }
 
+  // Cập nhật một phần (PATCH)
+  async patchManga(id, updates) {
+    return await this.mangaRepository.patchManga(id, updates); // MangaDTO
+  }
+
+  // Xoá manga
   async deleteManga(id) {
-    return await this.mangaRepository.deleteManga(id);
+    return await this.mangaRepository.deleteManga(id); // string "Deleted"
   }
 }

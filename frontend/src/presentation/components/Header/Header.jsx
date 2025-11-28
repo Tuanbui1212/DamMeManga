@@ -237,9 +237,10 @@ function Header() {
                     onClick={() => {
                       setIsDropdownOpen(false);
                       // Xoá toàn bộ thông tin user
-                      localStorage.removeItem("token");
                       localStorage.removeItem("account");
+                      localStorage.removeItem("token");
                       localStorage.removeItem("role");
+                      localStorage.removeItem("user");
                       setAccount(""); // reset state ngay lập tức
                     }}
                   >
