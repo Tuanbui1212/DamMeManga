@@ -33,7 +33,8 @@ public class SecurityConfig {
                         "/api/category/**",
                         "/api/authors/**",
                         "/api/mangas/**",
-                        "/api/manga-category/**"
+                        "/api/manga-category/**",
+                        "/api/upload/**"
                 ).permitAll()
                 
                 // Admin-only endpoints

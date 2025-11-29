@@ -9,17 +9,6 @@ import StatsBox from "./StatsBox";
 
 const IMGBB_API_KEY = "0340594a6f5577fe462eb5783e474022";
 
-const mockChapterData = {
-  id: "chap-123",
-  number: 31,
-  images: [
-    "https://i.ibb.co/0jZqY8K/page1.jpg",
-    "https://i.ibb.co/3dGbs7v/page2.jpg",
-    "https://i.ibb.co/4pDwkZf/page3.jpg",
-    "https://i.ibb.co/5xY8v9k/page4.jpg",
-  ],
-};
-
 export default function ChapterDetail() {
   const { storyId, chapterId } = useParams();
   const navigate = useNavigate();
@@ -28,7 +17,7 @@ export default function ChapterDetail() {
   const [isSaving, setIsSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [chapterNumber, setChapterNumber] = useState("");
-  const [images, setImages] = useState([]); // { id, url?, preview?, file?, isNew? }
+  const [images, setImages] = useState([]); 
 
   useEffect(() => {
     setTimeout(() => {

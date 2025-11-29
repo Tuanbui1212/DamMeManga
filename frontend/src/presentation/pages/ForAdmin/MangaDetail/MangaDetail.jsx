@@ -41,8 +41,8 @@ export default function MangaDetail() {
           description: mangaData.description,
           chapters: mangaData.countView,
           views: mangaData.countView * 100,
-          cover: mangaData.bannerUrl,
-          poster: mangaData.posterUrl,
+          cover: mangaData.posterUrl,
+          poster: mangaData.bannerUrl,
           genres: genres.length > 0 ? genres : ["Updating..."],
           lastUpdate: "Updating...",
           chaptersList: [],
@@ -62,10 +62,26 @@ export default function MangaDetail() {
     fetchData();
   }, [id]);
 
-  const handleDeleteStory = () => {
-    toast.success("Xóa truyện thành công!");
-    navigate("/manga-management");
+  const handleDeleteStory = async () => {
+    try {
+      const mangaCategoryService = new MangaCategoryService();
+      const mangaService = new MangaService();
+
+      // Xóa hết category
+      await mangaCategoryService.updateCategoriesToManga(id, []);
+
+      // Xóa manga
+      await mangaService.deleteManga(id);
+
+      toast.success("Xóa truyện thành công!");
+      setShowDeleteConfirm(false);
+      setTimeout(() => navigate("/manga-management"), 1000);
+    } catch (err) {
+      console.error("Xóa truyện lỗi:", err);
+      toast.error("Xóa truyện thất bại!");
+    }
   };
+
 
   const goToEdit = () => navigate(`/edit-manga/${id}`);
   const goToCreateChapter = () => navigate(`/create-chapter/${id}`);

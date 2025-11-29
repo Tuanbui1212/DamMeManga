@@ -33,6 +33,11 @@ public class JwtFilter extends OncePerRequestFilter {
             @NonNull HttpServletResponse response,
             @NonNull FilterChain filterChain) throws ServletException, IOException {
 
+        if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
         final String authHeader = request.getHeader("Authorization");
         String username = null;
         String token = null;
@@ -42,7 +47,7 @@ public class JwtFilter extends OncePerRequestFilter {
             try {
                 username = jwtUtil.extractUsername(token);
 
-                // 🔹 Thêm log debug
+                // 🔹 Log debug
                 System.out.println("==== JWT DEBUG ====");
                 System.out.println("AuthHeader: " + authHeader);
                 System.out.println("Username from token: " + username);

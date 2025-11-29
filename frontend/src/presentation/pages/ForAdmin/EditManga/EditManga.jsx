@@ -13,7 +13,7 @@ import MangaService from "../../../../usecases/MangaService";
 import AuthorService from "../../../../usecases/AuthorService";
 import CategoryService from "../../../../usecases/CategoryService";
 import MangaCategoryService from "../../../../usecases/MangaCategoryService";
-import { uploadImageKitFile } from "../../../../utils/imagekitUpload";
+import UploadImageService from "../../../../usecases/UploadImageService";
 
 export default function EditManga() {
   const { id } = useParams();
@@ -39,6 +39,7 @@ export default function EditManga() {
     poster: null,
   });
 
+  const uploadService = new UploadImageService();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -52,27 +53,22 @@ export default function EditManga() {
 
         // Load manga
         const mangaData = await mangaService.getMangaById(id);
-        if (mangaData) {
-          setFormData({
-            title: mangaData.name,
-            author: {
-              id: mangaData.authorId,      // cần có ID từ backend
-              name: mangaData.authorName
-            },
-            description: mangaData.description,
-            tags: [],
-            cover: mangaData.bannerUrl,
-            poster: mangaData.posterUrl,
-          });
-        }
+        setFormData({
+          title: mangaData.name,
+          author: {
+            id: mangaData.authorId,
+            name: mangaData.authorName,
+          },
+          description: mangaData.description,
+          tags: [],
+          cover: mangaData.posterUrl,
+          poster: mangaData.bannerUrl,
+        });
 
-        // Load authors
+
         // Load authors
         const authorList = await authorService.getAllAuthors();
-        // Lưu nguyên object {id, nameAuthor} thay vì chỉ name
         setAuthors(authorList.map(a => ({ id: a.idAuthor, name: a.nameAuthor })));
-        console.log("Danh sách tác giả:", authorList);
-
 
         // Load all categories
         const categoryList = await categoryService.getAllCategories();
@@ -96,38 +92,30 @@ export default function EditManga() {
     fetchData();
   }, [id]);
 
-  // -------------------------
-  // UPLOAD ẢNH
-  // -------------------------
-  const uploadImage = async (file, type) => {
-    try {
-      const url = await uploadImageKitFile(file); // chỉ cần upload file
-      toast.success("Upload ảnh thành công!");
-      return url;
-    } catch (err) {
-      console.error("Upload ảnh lỗi:", err);
-      toast.error("Upload ảnh thất bại!");
-      return null;
-    }
-  };
-
   const handleTempFileChange = (e, type) => {
     const file = e.target.files[0];
     if (!file) return;
 
     setTempFiles(prev => ({ ...prev, [type]: file }));
 
-    // Hiển thị preview tạm thời
     setFormData(prev => ({
       ...prev,
       [type]: URL.createObjectURL(file),
     }));
   };
 
+  const uploadImageToBackend = async (file, type) => {
+    try {
+      const url = await uploadService.uploadImage(file);
+      toast.success(`${type === "cover" ? "Cover" : "Poster"} upload thành công!`);
+      return url;
+    } catch (err) {
+      console.error("Upload ảnh lỗi:", err);
+      toast.error(`${type === "cover" ? "Cover" : "Poster"} upload thất bại!`);
+      return null;
+    }
+  };
 
-  // -------------------------
-  // SAVE
-  // -------------------------
   const handleSave = async () => {
     if (!formData.title.trim() || !formData.author) {
       toast.error("Vui lòng nhập tên truyện và chọn tác giả!");
@@ -137,36 +125,30 @@ export default function EditManga() {
     setIsSaving(true);
 
     try {
-      // Upload ảnh chỉ khi có file mới
       if (tempFiles.cover) {
-        formData.cover = await uploadImageKitFile(tempFiles.cover);
+        formData.cover = await uploadImageToBackend(tempFiles.cover, "cover");
       }
       if (tempFiles.poster) {
-        formData.poster = await uploadImageKitFile(tempFiles.poster);
+        formData.poster = await uploadImageToBackend(tempFiles.poster, "poster");
       }
 
       const mangaService = new MangaService();
       const mangaCategoryService = new MangaCategoryService();
 
-      // Cập nhật info manga
       const payload = {
         name: formData.title,
         authorId: formData.author?.id,
         description: formData.description,
-        bannerUrl: formData.cover,
-        posterUrl: formData.poster,
+        bannerUrl: formData.poster,
+        posterUrl: formData.cover,
       };
-      console.log("Payload PATCH gửi đi:", payload);
+
       await mangaService.patchManga(id, payload);
 
-      // Đồng bộ category
       const uniqueTags = [...new Set(formData.tags)];
 
       const categoryIds = uniqueTags
-        .map(tagName => {
-          const obj = categories.find(c => c.nameCategory === tagName);
-          return obj?.idCategory;
-        })
+        .map(tagName => categories.find(c => c.nameCategory === tagName)?.idCategory)
         .filter(Boolean);
 
       await mangaCategoryService.updateCategoriesToManga(id, categoryIds);
@@ -182,9 +164,31 @@ export default function EditManga() {
     }
   };
 
-  // -------------------------
-  // UI
-  // -------------------------
+  const handleDelete = async () => {
+  if (!window.confirm("Bạn có chắc muốn xóa truyện này?")) return;
+
+  setIsSaving(true); // Dùng cùng trạng thái saving để disable UI nếu muốn
+  try {
+    const mangaCategoryService = new MangaCategoryService();
+    const mangaService = new MangaService();
+
+    // 1️⃣ Xóa hết thể loại
+    await mangaCategoryService.updateCategoriesToManga(id, []);
+
+    // 2️⃣ Xóa manga
+    await mangaService.deleteManga(id);
+
+    toast.success("Xóa truyện thành công!");
+    navigate("/manga-management"); // điều hướng về danh sách manga
+  } catch (err) {
+    console.error("Xóa truyện lỗi:", err);
+    toast.error("Xóa truyện thất bại!");
+  } finally {
+    setIsSaving(false);
+  }
+};
+
+
   if (isLoading)
     return (
       <div className="min-h-screen bg-gray-900 flex items-center justify-center text-gray-400 text-xl">
@@ -216,8 +220,6 @@ export default function EditManga() {
           />
 
           <div className="lg:col-span-2 space-y-7">
-
-            {/* Title */}
             <div>
               <label className="block text-sm font-medium text-gray-300 mb-2">
                 Tên truyện
@@ -232,11 +234,10 @@ export default function EditManga() {
             </div>
 
             <AuthorDropdown
-              selected={formData.author} // {id, name}
-              options={authors}          // [{id, name}]
+              selected={formData.author}
+              options={authors}
               onSelect={(author) => setFormData(prev => ({ ...prev, author }))}
             />
-
 
             <CategoryMultiSelect
               selected={formData.tags}
@@ -246,28 +247,17 @@ export default function EditManga() {
                   const newTags = prev.tags.includes(categoryName)
                     ? prev.tags.filter(t => t !== categoryName)
                     : [...prev.tags, categoryName];
-
-                  // ⭐ Lấy ra danh sách ID theo các tag đang chọn
-                  const selectedCategoryIds = newTags
-                    .map(tag => categories.find(c => c.nameCategory === tag)?.idCategory)
-                    .filter(Boolean);
-                  console.log("Categories:", categories);
-                  console.log("✔ ID các thể loại đã chọn:", selectedCategoryIds);
-
                   return {
                     ...prev,
                     tags: newTags,
                   };
                 })
               }
-
             />
 
             <DescriptionField
               value={formData.description}
-              onChange={(e) =>
-                setFormData(prev => ({ ...prev, description: e.target.value }))
-              }
+              onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
             />
           </div>
         </div>

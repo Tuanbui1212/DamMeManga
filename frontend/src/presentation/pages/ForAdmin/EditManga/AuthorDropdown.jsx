@@ -5,7 +5,6 @@ export default function AuthorDropdown({ selected, options, onSelect }) {
   const [isOpen, setIsOpen] = useState(false);
   const [searchText, setSearchText] = useState("");
 
-  // Lọc options dựa trên searchText
   const filteredOptions = useMemo(() => {
     if (!searchText) return options;
     return options.filter(opt =>
@@ -13,7 +12,6 @@ export default function AuthorDropdown({ selected, options, onSelect }) {
     );
   }, [searchText, options]);
 
-  // Log danh sách tác giả hiển thị
   useEffect(() => {
     console.log("Danh sách tác giả hiển thị:");
     filteredOptions.forEach(opt => console.log(`ID: ${opt.id}, Name: ${opt.name}`));
@@ -36,7 +34,6 @@ export default function AuthorDropdown({ selected, options, onSelect }) {
         {isOpen && (
           <div className="absolute z-20 w-full mt-1 bg-gray-800 border border-gray-700 rounded-lg shadow-2xl max-h-64 overflow-y-auto">
             
-            {/* Input tìm kiếm */}
             <div className="px-3 py-2">
               <div className="relative">
                 <input
@@ -50,7 +47,6 @@ export default function AuthorDropdown({ selected, options, onSelect }) {
               </div>
             </div>
 
-            {/* List options */}
             {filteredOptions.length > 0 ? (
               filteredOptions.map((author) => (
                 <button
@@ -59,7 +55,7 @@ export default function AuthorDropdown({ selected, options, onSelect }) {
                     onSelect(author); 
                     setIsOpen(false); 
                     setSearchText(""); 
-                    console.log("Tác giả được chọn:", author); // log ID + name
+                    console.log("Tác giả được chọn:", author); 
                   }}
                   className="w-full px-4 py-3 text-left hover:bg-gray-700 flex justify-between items-center transition"
                 >

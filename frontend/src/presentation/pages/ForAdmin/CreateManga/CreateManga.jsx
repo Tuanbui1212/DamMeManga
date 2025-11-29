@@ -1,308 +1,188 @@
 // src/pages/AddManga.jsx
-import React, { useState } from "react";
-import { ArrowLeft, Upload, ChevronDown, Check } from "lucide-react";
-import toast, { Toaster } from "react-hot-toast";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import toast, { Toaster } from "react-hot-toast";
+
+import MangaService from "../../../../usecases/MangaService";
+import AuthorService from "../../../../usecases/AuthorService";
+import CategoryService from "../../../../usecases/CategoryService";
+import MangaCategoryService from "../../../../usecases/MangaCategoryService";
+import UploadImageService from "../../../../usecases/UploadImageService";
+
+import EditMangaHeader from "../EditManga/EditMangaHeader";
+import ImageUploader from "../EditManga/ImageUploader";
+import AuthorDropdown from "../EditManga/AuthorDropdown";
+import CategoryMultiSelect from "../EditManga/CategoryMultiSelect";
+import DescriptionField from "../EditManga/DescriptionField";
 
 export default function AddManga() {
   const navigate = useNavigate();
   const [isSaving, setIsSaving] = useState(false);
-
   const [formData, setFormData] = useState({
     title: "",
-    author: "",
-    description: "",
+    author: null, // object {id, name}
     tags: [],
+    description: "",
     cover: "",
     poster: "",
   });
 
-  // Danh sách mẫu (sau này lấy từ API)
-  const authors = [
-    "ONE, Yusuke Murata",
-    "Eiichiro Oda",
-    "Tatsuki Fujimoto",
-    "Koyoharu Gotouge",
-    "Gege Akutami",
-    "Tatsuya Endo",
-    "Sui Ishida",
-  ];
+  const [authors, setAuthors] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [tempFiles, setTempFiles] = useState({ cover: null, poster: null });
+  const now = new Date().toISOString();
 
-  const genres = [
-    "Action", "Adventure", "Comedy", "Drama", "Fantasy", "Horror", "Mystery",
-    "Romance", "Sci-Fi", "Seinen", "Shounen", "Slice of Life", "Supernatural",
-    "Isekai", "Mecha", "Psychological", "Sports", "Thriller", "Ecchi", "Harem"
-  ];
+  const uploadService = new UploadImageService();
 
-  // Dropdown
-  const [showAuthorDropdown, setShowAuthorDropdown] = useState(false);
-  const [showGenreDropdown, setShowGenreDropdown] = useState(false);
+  // Load authors & categories
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const authorList = await new AuthorService().getAllAuthors();
+        setAuthors(authorList.map(a => ({ id: a.idAuthor, name: a.nameAuthor })));
 
-  // Upload ảnh qua imgbb (thay YOUR_KEY bằng key thật của bạn)
-  const uploadImage = async (file, type) => {
-    const form = new FormData();
-    form.append("image", file);
-    const API_KEY = "YOUR_IMGBB_API_KEY"; // Thay bằng key thật
-
-    try {
-      const res = await fetch(`https://api.imgbb.com/1/upload?key=${API_KEY}`, {
-        method: "POST",
-        body: form,
-      });
-      const data = await res.json();
-      if (data.success) {
-        toast.success(`${type === "cover" ? "Ảnh bìa" : "Poster"} uploaded!`);
-        return data.data.url;
+        const categoryList = await new CategoryService().getAllCategories();
+        setCategories(categoryList);
+      } catch (err) {
+        console.error(err);
+        toast.error("Lỗi khi tải dữ liệu!");
       }
-    } catch (err) {
-      toast.error("Lỗi upload ảnh!");
-    }
-    return null;
-  };
+    };
+    fetchData();
+  }, []);
 
-  const handleImageChange = async (e, type) => {
+  // Thay đổi ảnh tạm
+  const handleTempFileChange = (e, type) => {
     const file = e.target.files[0];
     if (!file) return;
 
-    // Preview ngay lập tức
-    const previewUrl = URL.createObjectURL(file);
-    setFormData({ ...formData, [type]: previewUrl });
+    setTempFiles(prev => ({ ...prev, [type]: file }));
+    setFormData(prev => ({ ...prev, [type]: URL.createObjectURL(file) }));
+  };
 
-    // Upload thật (nếu muốn lưu luôn)
-    const uploadedUrl = await uploadImage(file, type);
-    if (uploadedUrl) {
-      setFormData({ ...formData, [type]: uploadedUrl });
+  // Upload ảnh thật
+  const uploadImageToBackend = async (file, type) => {
+    try {
+      const url = await uploadService.uploadImage(file);
+      toast.success(`${type === "cover" ? "Cover" : "Poster"} upload thành công!`);
+      return url;
+    } catch (err) {
+      console.error(err);
+      toast.error(`${type === "cover" ? "Cover" : "Poster"} upload thất bại!`);
+      return null;
     }
-  };
-
-  const selectAuthor = (author) => {
-    setFormData({ ...formData, author });
-    setShowAuthorDropdown(false);
-  };
-
-  const toggleGenre = (genre) => {
-    const newTags = formData.tags.includes(genre)
-      ? formData.tags.filter(t => t !== genre)
-      : [...formData.tags, genre];
-    setFormData({ ...formData, tags: newTags });
   };
 
   const handleSave = async () => {
-    if (!formData.title.trim()) {
-      toast.error("Vui lòng nhập tên truyện!");
-      return;
-    }
-    if (!formData.author) {
-      toast.error("Vui lòng chọn tác giả!");
+    if (!formData.title.trim() || !formData.author) {
+      toast.error("Vui lòng nhập tên truyện và chọn tác giả!");
       return;
     }
 
     setIsSaving(true);
-    // Giả lập lưu
-    setTimeout(() => {
-      setIsSaving(false);
+
+    try {
+      // 1️⃣ Upload ảnh nếu có
+      let coverUrl = formData.cover;
+      let posterUrl = formData.poster;
+
+      if (tempFiles.cover) {
+        coverUrl = await uploadImageToBackend(tempFiles.cover, "cover");
+      }
+      if (tempFiles.poster) {
+        posterUrl = await uploadImageToBackend(tempFiles.poster, "poster");
+      }
+
+      // 2️⃣ Tạo manga mới
+      const mangaService = new MangaService();
+      const mangaCategoryService = new MangaCategoryService();
+
+      const payload = {
+        nameManga: formData.title,
+        author: { idAuthor: formData.author.id },
+        description: formData.description,
+        posterUrl: coverUrl,
+        bannerUrl: posterUrl,
+        status: "đang tiến hành",
+        countView: 0,
+      };
+
+      const createdManga = await mangaService.createManga(payload);
+
+      // 3️⃣ Lấy ID manga vừa tạo từ DTO
+      const mangaId = createdManga.id; // ✅ Dùng đúng field DTO
+
+      // 4️⃣ Gắn thể loại nếu có
+      const categoryIds = formData.tags
+        .map(tagName => categories.find(c => c.nameCategory === tagName)?.idCategory)
+        .filter(Boolean);
+
+      if (categoryIds.length > 0) {
+        await mangaCategoryService.updateCategoriesToManga(mangaId, categoryIds);
+      }
+
       toast.success("Thêm truyện thành công!");
-      // navigate("/admin/manga-list"); // Quay về danh sách nếu muốn
-    }, 1200);
+      navigate(`/manga-detail-management/${mangaId}`);
+    } catch (err) {
+      console.error(err);
+      toast.error("Lỗi khi thêm truyện!");
+    } finally {
+      setIsSaving(false);
+    }
   };
+
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800 text-gray-100">
       <Toaster position="top-right" />
 
-      {/* Header */}
-      <div className="border-b border-gray-700 p-6">
-        <div className="max-w-5xl mx-auto flex items-center justify-between">
-          <button
-            onClick={() => navigate(-1)}
-            className="flex items-center gap-2 px-4 py-2 bg-gray-800 hover:bg-gray-700 rounded-lg text-sm transition"
-          >
-            <ArrowLeft size={16} /> Quay lại
-          </button>
-          <h1 className="text-2xl font-bold">Thêm truyện mới</h1>
-          <button
-            onClick={handleSave}
-            disabled={isSaving}
-            className={`flex items-center gap-2 px-6 py-2 rounded-lg text-sm font-medium transition ${
-              isSaving
-                ? "bg-gray-700 text-gray-400 cursor-not-allowed"
-                : "bg-blue-600 hover:bg-blue-700 text-white"
-            }`}
-          >
-            {isSaving ? "Đang lưu..." : "Thêm truyện"}
-          </button>
-        </div>
-      </div>
+      <EditMangaHeader
+        onBack={() => navigate(-1)}
+        onSave={handleSave}
+        isSaving={isSaving}
+      />
 
-      <div className="max-w-5xl mx-auto p-6">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Ảnh bìa & Poster */}
-          <div className="space-y-6">
-            {/* Ảnh bìa */}
-            <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
-                Ảnh bìa (khuyến nghị 800x400)
-              </label>
-              <div className="relative group">
-                {formData.cover ? (
-                  <img
-                    src={formData.cover}
-                    alt="Cover"
-                    className="w-full h-80 object-cover rounded-xl shadow-lg"
-                  />
-                ) : (
-                  <div className="w-full h-80 bg-gray-800 border-2 border-dashed border-gray-600 rounded-xl flex items-center justify-center">
-                    <Upload size={48} className="text-gray-500" />
-                  </div>
-                )}
-                <label className="absolute inset-0 flex items-center justify-center bg-black/60 opacity-0 group-hover:opacity-100 transition rounded-xl cursor-pointer">
-                  <Upload size={32} className="text-white" />
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={(e) => handleImageChange(e, "cover")}
-                    className="hidden"
-                  />
-                </label>
-              </div>
-            </div>
+      <div className="max-w-5xl mx-auto p-6 grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <ImageUploader
+          cover={formData.cover}
+          poster={formData.poster}
+          onCoverChange={(e) => handleTempFileChange(e, "cover")}
+          onPosterChange={(e) => handleTempFileChange(e, "poster")}
+        />
 
-            {/* Poster */}
-            <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
-                Poster (khuyến nghị 300x450)
-              </label>
-              <div className="relative group">
-                {formData.poster ? (
-                  <img
-                    src={formData.poster}
-                    alt="Poster"
-                    className="w-full h-96 object-cover rounded-xl shadow-lg"
-                  />
-                ) : (
-                  <div className="w-full h-96 bg-gray-800 border-2 border-dashed border-gray-600 rounded-xl flex items-center justify-center">
-                    <Upload size={48} className="text-gray-500" />
-                  </div>
-                )}
-                <label className="absolute inset-0 flex items-center justify-center bg-black/60 opacity-0 group-hover:opacity-100 transition rounded-xl cursor-pointer">
-                  <Upload size={32} className="text-white" />
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={(e) => handleImageChange(e, "poster")}
-                    className="hidden"
-                  />
-                </label>
-              </div>
-            </div>
+        <div className="lg:col-span-2 space-y-6">
+          <div>
+            <label className="block text-sm font-medium text-gray-300 mb-2">Tên truyện</label>
+            <input
+              type="text"
+              value={formData.title}
+              onChange={e => setFormData(prev => ({ ...prev, title: e.target.value }))}
+              className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 transition"
+              placeholder="Nhập tên truyện..."
+            />
           </div>
 
-          {/* Form thông tin */}
-          <div className="lg:col-span-2 space-y-6">
-            {/* Tên truyện */}
-            <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">Tên truyện *</label>
-              <input
-                type="text"
-                value={formData.title}
-                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none transition"
-                placeholder="Nhập tên truyện..."
-              />
-            </div>
+          <AuthorDropdown
+            selected={formData.author}
+            options={authors}
+            onSelect={author => setFormData(prev => ({ ...prev, author }))}
+          />
 
-            {/* Tác giả */}
-            <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">Tác giả</label>
-              <div className="relative">
-                <button
-                  type="button"
-                  onClick={() => setShowAuthorDropdown(!showAuthorDropdown)}
-                  className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-left flex justify-between items-center focus:ring-2 focus:ring-blue-500 transition"
-                >
-                  <span className={formData.author ? "text-white" : "text-gray-500"}>
-                    {formData.author || "Chọn tác giả..."}
-                  </span>
-                  <ChevronDown size={18} className="text-gray-400" />
-                </button>
+          <CategoryMultiSelect
+            selected={formData.tags}
+            categories={categories}
+            onToggle={tagName => setFormData(prev => ({
+              ...prev,
+              tags: prev.tags.includes(tagName)
+                ? prev.tags.filter(t => t !== tagName)
+                : [...prev.tags, tagName]
+            }))}
+          />
 
-                {showAuthorDropdown && (
-                  <div className="absolute z-10 w-full mt-1 bg-gray-800 border border-gray-700 rounded-lg shadow-xl max-h-60 overflow-y-auto">
-                    {authors.map((a) => (
-                      <button
-                        key={a}
-                        type="button"
-                        onClick={() => selectAuthor(a)}
-                        className="w-full text-left px-4 py-2 hover:bg-gray-700 text-sm flex justify-between items-center transition"
-                      >
-                        {a}
-                        {formData.author === a && <Check size={16} className="text-green-400" />}
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {/* Thể loại */}
-            <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">Thể loại</label>
-              <div className="relative">
-                <button
-                  type="button"
-                  onClick={() => setShowGenreDropdown(!showGenreDropdown)}
-                  className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-left flex justify-between items-center focus:ring-2 focus:ring-blue-500 transition"
-                >
-                  <span className={formData.tags.length > 0 ? "text-white" : "text-gray-500"}>
-                    {formData.tags.length > 0
-                      ? `${formData.tags.length} thể loại đã chọn`
-                      : "Chọn thể loại..."}
-                  </span>
-                  <ChevronDown size={18} className="text-gray-400" />
-                </button>
-
-                {showGenreDropdown && (
-                  <div className="absolute z-10 w-full mt-1 bg-gray-800 border border-gray-700 rounded-lg shadow-xl max-h-60 overflow-y-auto">
-                    {genres.map((g) => (
-                      <button
-                        key={g}
-                        type="button"
-                        onClick={() => toggleGenre(g)}
-                        className="w-full text-left px-4 py-2 hover:bg-gray-700 text-sm flex justify-between items-center transition"
-                      >
-                        {g}
-                        {formData.tags.includes(g) && <Check size={16} className="text-green-400" />}
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
-
-              {/* Tag hiển thị */}
-              <div className="flex flex-wrap gap-2 mt-3">
-                {formData.tags.map((tag) => (
-                  <span
-                    key={tag}
-                    className="px-3 py-1.5 bg-blue-900/60 text-blue-300 rounded-full text-sm font-medium"
-                  >
-                    {tag}
-                  </span>
-                ))}
-              </div>
-            </div>
-
-            {/* Mô tả */}
-            <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">Mô tả truyện</label>
-              <textarea
-                value={formData.description}
-                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                rows={8}
-                className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 resize-none transition"
-                placeholder="Viết mô tả hấp dẫn cho truyện..."
-              />
-            </div>
-          </div>
+          <DescriptionField
+            value={formData.description}
+            onChange={e => setFormData(prev => ({ ...prev, description: e.target.value }))}
+          />
         </div>
       </div>
     </div>
