@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -11,6 +11,7 @@ import {
   Settings,
   LogOut,
 } from "lucide-react";
+import MangaService from "../../../usecases/MangaService";
 
 function Header() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -19,6 +20,8 @@ function Header() {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [showHeader, setShowHeader] = useState(true);
+  const [mangaData, setMangaData] = useState([]);
+  const navigate = useNavigate();
 
   // const [user, setUser] = useState(null);
   const dropdownRef = useRef(null);
@@ -47,13 +50,34 @@ function Header() {
     return () => window.removeEventListener("storage", handleStorageChange);
   }, []);
 
+  useEffect(() => {
+    const fetchMangas = async () => {
+      try {
+        const service = new MangaService();
+        const mangas = await service.getAllMangas();
+        setMangaData(mangas);
+      } catch (error) {
+        console.error("Lỗi khi lấy danh sách manga:", error);
+      }
+    };
+    fetchMangas();
+  }, []);
+
+  const filteredMangas = useMemo(() => {
+    const query = searchQuery.trim().toLowerCase();
+    if (!query) return [];
+    return mangaData.filter((manga) => {
+      const name = (manga.name || manga.nameManga || "").toLowerCase();
+      return name.includes(query);
+    });
+  }, [searchQuery, mangaData]);
+
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("account");
     localStorage.removeItem("role");
     setAccount(""); // reset state ngay lập tức
   };
-
 
   useEffect(() => {
     const handleScroll = () => {
@@ -74,8 +98,6 @@ function Header() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-
-
   // Đóng dropdown & search khi click ra ngoài
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -93,7 +115,7 @@ function Header() {
   const handleSearchSubmit = (e) => {
     e.preventDefault();
     if (searchQuery.trim()) {
-      console.log("Tìm kiếm:", searchQuery);
+      navigate(`/search/${searchQuery}`);
       setIsSearchOpen(false);
     }
   };
@@ -122,8 +144,9 @@ function Header() {
     >
       {/* Logo */}
       <div className="flex items-center h-20">
-        <Link to="/"><h1 className="text-2xl font-bold text-black">DMManga</h1></Link>
-
+        <Link to="/">
+          <h1 className="text-2xl font-bold text-black">DMManga</h1>
+        </Link>
       </div>
 
       {/* Icon group */}
@@ -139,27 +162,85 @@ function Header() {
 
           <AnimatePresence>
             {isSearchOpen && (
-              <motion.form
-                onSubmit={handleSearchSubmit}
-                initial={{ opacity: 0, width: 0 }}
-                animate={{ opacity: 1, width: 200 }}
-                exit={{ opacity: 0, width: 0 }}
-                transition={{ duration: 0.3 }}
-                className="absolute right-12 h-10 bg-white border border-gray-300 rounded-full overflow-hidden shadow-md flex items-center px-2"
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.25 }}
+                className="fixed inset-0 z-60 h-screen w-screen bg-black/50 backdrop-blur-sm flex flex-col pt-5 px-6"
+                onClick={() => setIsSearchOpen(false)}
               >
-                <input
-                  type="text"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full px-2 py-1 text-sm bg-transparent outline-none text-gray-800"
-                  placeholder="Tìm truyện..."
-                  autoFocus
-                />
-              </motion.form>
+                <motion.form
+                  onSubmit={handleSearchSubmit}
+                  onClick={(e) => e.stopPropagation()}
+                  initial={{ y: -20, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  exit={{ y: -20, opacity: 0 }}
+                  transition={{ duration: 0.25 }}
+                  className="w-full max-w-5xl bg-white rounded-xl shadow-2xl border border-gray-200 flex flex-col md:flex-row items-center gap-3 p-4 mx-auto"
+                >
+                  <div className="flex-1 w-full flex items-center gap-3">
+                    <input
+                      type="text"
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="w-full text-base md:text-lg px-3 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                      placeholder="Tìm kiếm truyện"
+                      autoFocus
+                    />
+                  </div>
+                  <button
+                    type="button"
+                    className="text-sm font-semibold text-blue-600 hover:text-blue-500 whitespace-nowrap cursor-pointer"
+                    onClick={() => navigate(`/search`)}
+                  >
+                    Tìm kiếm nâng cao
+                  </button>
+                </motion.form>
+                {searchQuery && (
+                  <motion.div
+                    initial={{ y: -20, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    exit={{ y: -20, opacity: 0 }}
+                    transition={{ duration: 0.25 }}
+                    className="w-full max-w-5xl my-3 mx-auto rounded-xl bg-white border border-gray-200 shadow-md"
+                  >
+                    <div className="p-4 flex flex-wrap gap-2">
+                      {filteredMangas.length > 0 ? (
+                        filteredMangas.slice(0, 4).map((manga) => {
+                          return (
+                            <div
+                              key={manga.id}
+                              className="w-full border h-24 p-2 border-gray-300 rounded-md px-3 flex gap-10 text-sm font-medium text-gray-800 hover:bg-gray-100 transition-colors duration-200 cursor-pointer"
+                            >
+                              <img
+                                src={manga.posterUrl || ""}
+                                alt={manga.name}
+                                className="w-12 h-full rounded-md object-cover"
+                              />
+                              <div className="ml-2 flex items-start flex-col gap-1">
+                                <span className="block font-bold text-lg">
+                                  {manga.name}
+                                </span>
+                                <span className="text-xs text-gray-500">
+                                  {manga.authorName || ""}
+                                </span>
+                              </div>
+                            </div>
+                          );
+                        })
+                      ) : (
+                        <p className="text-sm text-gray-600">
+                          Không tìm thấy truyện phù hợp.
+                        </p>
+                      )}
+                    </div>
+                  </motion.div>
+                )}
+              </motion.div>
             )}
           </AnimatePresence>
         </div>
-
 
         {/* Notification */}
         <div className="bg-gray-400 p-3 rounded-full hover:bg-gray-600 transition-colors duration-200 cursor-pointer">
@@ -229,7 +310,6 @@ function Header() {
                   </Link>
                 )}
 
-
                 <div className="border-t border-gray-100 dark:border-gray-700 mt-1">
                   <Link
                     to="/login"
@@ -247,7 +327,6 @@ function Header() {
                     <LogOut className="w-4 h-4" />
                     Đăng xuất
                   </Link>
-
                 </div>
               </motion.div>
             )}
