@@ -55,4 +55,9 @@ public class MangaCategoryRepositoryImpl implements MangaCategoryRepository {
     public Optional<MangaCategory> getCategoryById(String idCategory) {
         return jpaRepository.findById(idCategory);
     }
+
+    @Override
+    public long countMangaByCategoryName(String nameCategory) {
+        return jpaRepository.countByCategory_NameCategory(nameCategory);
+    }
 }

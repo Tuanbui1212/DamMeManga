@@ -22,4 +22,6 @@ public interface MangaCategoryRepository {
     void delete(String id);
 
     void syncCategoriesForManga(String idManga, List<String> categoryIds);
+
+    long countMangaByCategoryName(String nameCategory);
 }

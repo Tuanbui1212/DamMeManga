@@ -42,6 +42,12 @@ public class MangaCategoryController {
         return ResponseEntity.ok(categories);
     }
 
+    @GetMapping("/count")
+    public ResponseEntity<Long> countByCategoryName(@RequestParam String category) {
+        long total = mangaCategoryUseCase.countMangaByCategoryName(category);
+        return ResponseEntity.ok(total);
+    }
+
     // Tạo mới
     @PostMapping
     public ResponseEntity<MangaCategoryDTO> create(@RequestBody MangaCategoryRequest request) {
