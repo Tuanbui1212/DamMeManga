@@ -15,7 +15,7 @@ public class Manga {
     @Column(name = "name_manga")
     private String nameManga;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "author_id")
     private Author author;
 
