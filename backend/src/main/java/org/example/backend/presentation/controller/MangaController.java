@@ -49,4 +49,9 @@ public class MangaController {
     public MangaDTO getById(@PathVariable String id) {
         return mangaService.getById(id);
     }
+
+    @GetMapping("/by-categories")
+    public List<MangaDTO> getByCategories(@RequestBody List<String> categories) {
+        return mangaService.getByCategoryNames(categories);
+    }
 }
