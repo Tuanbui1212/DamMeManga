@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { Loader2, Search as SearchIcon } from "lucide-react";
@@ -7,17 +7,19 @@ import CategoryService from "../../../../usecases/CategoryService";
 import MangaCategoryService from "../../../../usecases/MangaCategoryService";
 import MangaCard from "./MangaCard";
 
-const ITEMS_PER_PAGE = 15; // 3 rows x 5 cards max per row
+const ITEMS_PER_PAGE = 15;
 
 const Search = () => {
   const { query: queryParam } = useParams();
   const navigate = useNavigate();
 
+  const mangaService = useMemo(() => new MangaService(), []);
+  const categoryService = useMemo(() => new CategoryService(), []);
+
   const [searchText, setSearchText] = useState(queryParam || "");
   const [mangas, setMangas] = useState([]);
   const [categories, setCategories] = useState([]);
-  const [mangaCategoryMap, setMangaCategoryMap] = useState({});
-  const [selectedCategory, setSelectedCategory] = useState("all");
+  const [selectedCategories, setSelectedCategories] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isRelationLoading, setIsRelationLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
@@ -27,97 +29,74 @@ const Search = () => {
     setCurrentPage(1);
   }, [queryParam]);
 
-  useEffect(() => {
-    const mangaService = new MangaService();
-    const categoryService = new CategoryService();
-    const mangaCategoryService = new MangaCategoryService();
-
-    const fetchData = async () => {
+  const fetchMangas = useCallback(
+    async (categoryList = []) => {
+      setIsLoading(true);
       try {
-        const [mangaRes, categoryRes] = await Promise.all([
-          mangaService.getAllMangas(),
-          categoryService.getAllCategories(),
-        ]);
-        setMangas(mangaRes || []);
-        setCategories(categoryRes || []);
-        setIsLoading(false);
+        const sanitizedCategories = Array.from(
+          new Set(
+            (categoryList || [])
+              .map((name) => (typeof name === "string" ? name.trim() : ""))
+              .filter(Boolean)
+          )
+        );
 
-        try {
-          const relations = await mangaCategoryService.getAllCategoryManga();
-          const categoryLookup = (categoryRes || []).reduce((acc, cat) => {
-            acc[cat.idCategory] = cat;
-            return acc;
-          }, {});
-
-          const map = {};
-          (relations || []).forEach((rel) => {
-            const mangaId = rel.idManga || rel.id_manga || rel.mangaId;
-            const categoryId =
-              rel.idCategory || rel.id_category || rel.categoryId;
-            if (!mangaId || !categoryId) return;
-
-            const category = categoryLookup[categoryId] || {
-              idCategory: categoryId,
-              nameCategory: rel.nameCategory || rel.categoryName,
-              mangaCount: rel.mangaCount,
-            };
-
-            if (!map[mangaId]) map[mangaId] = [];
-            const exists = map[mangaId].some(
-              (c) =>
-                (c.idCategory || c.id_category || c.categoryId) === categoryId
-            );
-            if (!exists) {
-              map[mangaId].push(category);
-            }
-          });
-          setMangaCategoryMap(map);
-        } catch (error) {
-          console.error("Không thể tải danh sách thể loại của manga:", error);
-        } finally {
-          setIsRelationLoading(false);
-        }
+        const data =
+          sanitizedCategories.length > 0
+            ? await mangaService.getMangasByCategories(sanitizedCategories)
+            : await mangaService.getAllMangas();
+        setMangas(data || []);
       } catch (error) {
-        console.error("Lỗi khi tải dữ liệu tìm kiếm:", error);
+        console.error("Lỗi khi tải manga:", error);
+        setMangas([]);
+      } finally {
         setIsLoading(false);
-        setIsRelationLoading(false);
       }
-    };
+    },
+    [mangaService]
+  );
 
-    fetchData();
-  }, []);
+  const fetchCategoriesAndRelations = useCallback(async () => {
+    try {
+      const categoryRes = await categoryService.getAllCategories();
+      setCategories(categoryRes || []);
+    } catch (error) {
+      console.error("Lỗi khi tải danh sách thể loại:", error);
+      setIsRelationLoading(false);
+    } finally {
+      setIsRelationLoading(false);
+    }
+  }, [categoryService]);
+
+  useEffect(() => {
+    fetchCategoriesAndRelations();
+  }, [fetchCategoriesAndRelations]);
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchText, selectedCategory]);
+    fetchMangas(selectedCategories);
+  }, [fetchMangas, selectedCategories]);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchText]);
 
   const filteredMangas = useMemo(() => {
     const term = searchText.trim().toLowerCase();
 
     return (mangas || []).filter((manga) => {
       const title = (manga.name || manga.nameManga || "").toLowerCase();
-      const matchesTerm = term ? title.includes(term) : true;
-      if (!matchesTerm) return false;
-
-      if (selectedCategory === "all") return true;
-
-      const id = manga.id || manga.id_manga;
-      const categoryList =
-        manga.categories ||
-        manga.categoryList ||
-        manga.categoryNames ||
-        mangaCategoryMap[id] ||
-        [];
-
-      if (!Array.isArray(categoryList)) return false;
-
-      return categoryList.some((cat) => {
-        if (typeof cat === "string") return cat === selectedCategory;
-        const catId = cat.idCategory || cat.id_category || cat.categoryId;
-        return catId === selectedCategory;
-      });
+      return term ? title.includes(term) : true;
     });
-  }, [mangas, searchText, selectedCategory, mangaCategoryMap]);
+  }, [mangas, searchText]);
+
+  const selectedCategoryNames = useMemo(
+    () =>
+      categories
+        .filter((cat) => selectedCategories.includes(cat.nameCategory))
+        .map((cat) => cat.nameCategory),
+    [categories, selectedCategories]
+  );
 
   const totalPages = Math.max(
     1,
@@ -142,9 +121,14 @@ const Search = () => {
     currentPage * ITEMS_PER_PAGE
   );
 
-  const handleCategorySelect = (id) => {
-    setSelectedCategory(id);
-    setCurrentPage(1);
+  const handleCategoryToggle = (name) => {
+    const normalized = typeof name === "string" ? name.trim() : "";
+    if (!normalized) return;
+    setSelectedCategories((prev) =>
+      prev.includes(normalized)
+        ? prev.filter((item) => item !== normalized)
+        : [...prev, normalized]
+    );
   };
 
   const handleSubmit = (e) => {
@@ -205,9 +189,9 @@ const Search = () => {
                 <div className="flex flex-wrap gap-2">
                   <button
                     type="button"
-                    onClick={() => handleCategorySelect("all")}
+                    onClick={() => setSelectedCategories([])}
                     className={`px-3 py-2 rounded-full border text-sm font-semibold transition ${
-                      selectedCategory === "all"
+                      selectedCategories.length === 0
                         ? "bg-blue-600 text-white border-blue-600 shadow-sm"
                         : "bg-gray-100 text-gray-700 border-transparent hover:border-gray-200"
                     }`}
@@ -217,11 +201,11 @@ const Search = () => {
 
                   {categories.map((cat) => (
                     <button
-                      key={cat.idCategory}
+                      key={cat.idCategory || cat.nameCategory}
                       type="button"
-                      onClick={() => handleCategorySelect(cat.idCategory)}
+                      onClick={() => handleCategoryToggle(cat.nameCategory)}
                       className={`px-3 py-2 rounded-full border text-sm font-semibold transition flex items-center gap-2 ${
-                        selectedCategory === cat.idCategory
+                        selectedCategories.includes(cat.nameCategory)
                           ? "bg-blue-100 text-blue-700 border-blue-200"
                           : "bg-gray-100 text-gray-800 border-transparent hover:border-gray-200"
                       }`}
@@ -237,9 +221,12 @@ const Search = () => {
 
               <div className="flex items-center text-sm text-gray-600">
                 <span>
-                  {selectedCategory === "all"
+                  {selectedCategories.length === 0
                     ? "Mọi thể loại"
-                    : "Đã lọc theo thể loại"}
+                    : `Đã lọc theo: ${
+                        selectedCategoryNames.join(", ") ||
+                        `${selectedCategories.length} thể loại`
+                      }`}
                 </span>
               </div>
 
@@ -253,17 +240,11 @@ const Search = () => {
                   ))
                 ) : paginatedMangas.length > 0 ? (
                   paginatedMangas.map((manga) => {
-                    const mangaId = manga.id || manga.id_manga;
-                    const tagList =
-                      mangaCategoryMap[mangaId] ||
-                      manga.categories ||
-                      manga.categoryList ||
-                      [];
+                    const mangaId = manga.id;
                     return (
                       <MangaCard
                         key={mangaId}
                         manga={manga}
-                        categories={tagList}
                         onClick={(id) => navigate(`/manga/${id}`)}
                       />
                     );

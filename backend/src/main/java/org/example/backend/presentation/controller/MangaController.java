@@ -39,6 +39,10 @@ public class MangaController {
         mangaService.delete(id);
         return "Deleted";
     }
+    @PostMapping("/by-categories")
+    public List<MangaDTO> getByCategories(@RequestBody List<String> categories) {
+        return mangaService.getByCategoryNames(categories);
+    }
 
     @GetMapping
     public List<MangaDTO> getAll() {
@@ -50,8 +54,4 @@ public class MangaController {
         return mangaService.getById(id);
     }
 
-    @GetMapping("/by-categories")
-    public List<MangaDTO> getByCategories(@RequestBody List<String> categories) {
-        return mangaService.getByCategoryNames(categories);
-    }
 }

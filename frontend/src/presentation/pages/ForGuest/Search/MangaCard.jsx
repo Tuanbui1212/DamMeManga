@@ -1,23 +1,13 @@
 import React from "react";
 import { BookOpen, Eye } from "lucide-react";
 
-const MangaCard = ({ manga, categories = [], onClick }) => {
+const MangaCard = ({ manga, onClick }) => {
   const id = manga.id || manga.id_manga;
   const title = manga.name || manga.nameManga || "Tên truyện";
   const author = manga.authorName || manga.author || "Đang cập nhật";
   const status = manga.status || "Đang cập nhật";
   const views = manga.countView ?? 0;
   const image = manga.posterUrl || manga.bannerUrl;
-
-  const displayedCategories = Array.isArray(categories)
-    ? categories.slice(0, 3).map((cat) => {
-        if (typeof cat === "string") return { id: cat, label: cat };
-        return {
-          id: cat.idCategory || cat.id_category || cat.categoryId || cat.id,
-          label: cat.nameCategory || cat.categoryName || cat.name || cat.label,
-        };
-      })
-    : [];
 
   return (
     <div
@@ -57,18 +47,6 @@ const MangaCard = ({ manga, categories = [], onClick }) => {
             <Eye size={14} /> {Number(views).toLocaleString("vi-VN")}
           </span>
         </div>
-        {displayedCategories.length > 0 && (
-          <div className="flex flex-wrap gap-2 pt-1">
-            {displayedCategories.map((cat) => (
-              <span
-                key={cat.id || cat.label}
-                className="px-2 py-1 rounded-full bg-blue-50 text-blue-700 text-xs font-semibold border border-blue-100"
-              >
-                {cat.label}
-              </span>
-            ))}
-          </div>
-        )}
       </div>
     </div>
   );
