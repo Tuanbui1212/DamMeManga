@@ -67,7 +67,7 @@ function Header() {
     const query = searchQuery.trim().toLowerCase();
     if (!query) return [];
     return mangaData.filter((manga) => {
-      const name = (manga.name || manga.nameManga || "").toLowerCase();
+      const name = (manga.name || "").toLowerCase();
       return name.includes(query);
     });
   }, [searchQuery, mangaData]);
@@ -184,7 +184,7 @@ function Header() {
                       type="text"
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
-                      className="w-full text-base md:text-lg px-3 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                      className="w-full text-base md:text-lg p-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
                       placeholder="Tìm kiếm truyện"
                       autoFocus
                     />
@@ -192,7 +192,11 @@ function Header() {
                   <button
                     type="button"
                     className="text-sm font-semibold text-blue-600 hover:text-blue-500 whitespace-nowrap cursor-pointer"
-                    onClick={() => navigate(`/search`)}
+                    onClick={() => {
+                      setSearchQuery("");
+                      setIsSearchOpen(false);
+                      navigate(`/search`);
+                    }}
                   >
                     Tìm kiếm nâng cao
                   </button>
@@ -211,6 +215,10 @@ function Header() {
                           return (
                             <div
                               key={manga.id}
+                              onClick={() => {
+                                setSearchQuery("");
+                                navigate(`/manga/${manga.id}`);
+                              }}
                               className="w-full border h-24 p-2 border-gray-300 rounded-md px-3 flex gap-10 text-sm font-medium text-gray-800 hover:bg-gray-100 transition-colors duration-200 cursor-pointer"
                             >
                               <img

@@ -18,4 +18,6 @@ public interface MangaService {
     List<MangaDTO> getAll();
 
     MangaDTO getById(String id);
+
+    List<MangaDTO> getByCategoryNames(List<String> categoryNames);
 }
