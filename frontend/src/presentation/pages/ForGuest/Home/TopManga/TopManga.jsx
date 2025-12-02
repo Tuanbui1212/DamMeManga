@@ -1,4 +1,3 @@
-import MangaService from "../../../../../usecases/MangaService";
 import { useEffect, useRef, useState, useCallback } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import dayjs from "dayjs";
@@ -7,10 +6,7 @@ import { Link } from "react-router-dom";
 
 dayjs.extend(relativeTime);
 
-const mangaService = new MangaService();
-
-export default function TopManga() {
-  const [mangas, setMangas] = useState([]);
+export default function TopManga({ mangas }) {
   const scrollRefTopManga = useRef(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
@@ -30,20 +26,6 @@ export default function TopManga() {
   const scrollRightTopManga = () => {
     scrollRefTopManga.current?.scrollBy({ left: 400, behavior: "smooth" });
   };
-
-  // Lấy dữ liệu
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const data = await mangaService.getAllMangas();
-        setMangas(data || []);
-      } catch (err) {
-        console.error("Lỗi khi lấy manga:", err);
-        setMangas([]);
-      }
-    };
-    fetchData();
-  }, []);
 
   // Theo dõi scroll + resize
   useEffect(() => {

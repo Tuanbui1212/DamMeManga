@@ -3,26 +3,12 @@ import { useNavigate } from "react-router-dom";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import MangaService from "../../../../../usecases/MangaService"; // đường dẫn theo project của bạn
 
-export default function MangaList({ title, colorBackground }) {
+export default function MangaList({ mangaData, title, colorBackground }) {
   const navigate = useNavigate();
   const scrollRef = useRef(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
-  const [mangaData, setMangaData] = useState([]);
-
-  // Lấy danh sách manga từ backend
-  useEffect(() => {
-    const fetchMangas = async () => {
-      try {
-        const service = new MangaService();
-        const mangas = await service.getAllMangas();
-        setMangaData(mangas);
-      } catch (error) {
-        console.error("Lỗi khi lấy danh sách manga:", error);
-      }
-    };
-    fetchMangas();
-  }, []);
+  //const [mangaData, setMangaData] = useState([]);
 
   const checkScroll = () => {
     if (!scrollRef.current) return;
