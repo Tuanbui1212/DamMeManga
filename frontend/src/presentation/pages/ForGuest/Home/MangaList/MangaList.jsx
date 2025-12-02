@@ -15,7 +15,7 @@ export default function MangaList({ title, colorBackground }) {
     const fetchMangas = async () => {
       try {
         const service = new MangaService();
-        const mangas = await service.getAllMangas(); // trả về list MangaDTO
+        const mangas = await service.getAllMangas();
         setMangaData(mangas);
       } catch (error) {
         console.error("Lỗi khi lấy danh sách manga:", error);
@@ -54,7 +54,7 @@ export default function MangaList({ title, colorBackground }) {
     };
   }, []);
 
-  const handleMangaClick = (id) => navigate(`/manga/${id}`);
+  const handleMangaClick = (id) => navigate(`/mangas/${id}`);
 
   return (
     <div className={`quicksand-uniquifier min-h-screen ${colorBackground}`}>
@@ -107,7 +107,7 @@ export default function MangaList({ title, colorBackground }) {
                 >
                   <div className="relative overflow-hidden rounded-[10px] shadow-md hover:shadow-xl transition-shadow">
                     <img
-                      src={manga.posterUrl || manga.bannerUrl} // dùng poster hoặc banner
+                      src={manga.posterUrl || manga.bannerUrl}
                       alt={manga.name || manga.nameManga}
                       className="aspect-[2/3] w-full object-cover transition-transform duration-500"
                     />
