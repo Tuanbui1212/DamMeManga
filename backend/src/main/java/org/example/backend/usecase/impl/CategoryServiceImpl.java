@@ -2,6 +2,8 @@ package org.example.backend.usecase.impl;
 
 import org.example.backend.domain.model.Category;
 import org.example.backend.domain.repository.CategoryRepository;
+import org.example.backend.domain.repository.MangaCategoryRepository;
+import org.example.backend.infrastructure.dto.CategoryDTO;
 import org.example.backend.usecase.CategoryService;
 import org.springframework.stereotype.Service;
 
@@ -13,14 +15,24 @@ import java.util.UUID;
 public class CategoryServiceImpl implements CategoryService {
 
     private final CategoryRepository categoryRepository;
+    private final MangaCategoryRepository mangaCategoryRepository;
 
-    public CategoryServiceImpl(CategoryRepository categoryRepository) {
+    public CategoryServiceImpl(CategoryRepository categoryRepository,
+                               MangaCategoryRepository mangaCategoryRepository) {
         this.categoryRepository = categoryRepository;
+        this.mangaCategoryRepository = mangaCategoryRepository;
     }
 
     @Override
-    public List<Category> getAllCategories() {
-        return categoryRepository.findAll();
+    public List<CategoryDTO> getAllCategories() {
+        return categoryRepository.findAll().stream()
+                .map(category -> new CategoryDTO(
+                        category.getIdCategory(),
+                        category.getNameCategory(),
+                        category.getDescription(),
+                        mangaCategoryRepository.countMangaByCategoryId(category.getIdCategory())
+                ))
+                .toList();
     }
 
     @Override

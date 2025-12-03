@@ -39,4 +39,13 @@ export default class MangaRepositoryImpl {
     const response = await axiosClient.delete(`/mangas/${id}`);
     return response.data; // string "Deleted"
   }
+
+  // Lấy danh sách manga theo nhiều thể loại
+  async getMangasByCategories(categories) {
+    const response = await axiosClient.post(
+      "/mangas/by-categories",
+      categories
+    );
+    return response.data; // trả về list MangaDTO
+  }
 }

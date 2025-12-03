@@ -7,6 +7,7 @@ import Chapter from "../pages/ForGuest/ChapterRead/Chapter";
 import Setting from "../pages/ForGuest/Setting/Setting";
 import History from "../pages/ForGuest/History/History";
 import Follow from "../pages/ForGuest/Follow/Follow";
+import Search from "../pages/ForGuest/Search/Search.jsx";
 
 export const mainRoutes = [
   { path: "/", component: Home },
@@ -21,4 +22,5 @@ export const mainRoutes = [
   },
   { path: "/history", component: History },
   { path: "/follow", component: Follow },
+  { path: "/search/:query?", component: Search },
 ];

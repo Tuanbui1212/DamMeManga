@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -124,6 +125,27 @@ public class MangaServiceImpl implements MangaService {
 
         Manga saved = mangaRepository.save(old);
         return toDTO(saved); // trả về DTO
+    }
+
+    @Override
+    public List<MangaDTO> getByCategoryNames(List<String> categoryNames) {
+        if (categoryNames == null || categoryNames.isEmpty()) {
+            return List.of();
+        }
+        Set<String> distinctNames = categoryNames.stream()
+                .filter(name -> name != null && !name.isBlank())
+                .collect(Collectors.toCollection(java.util.LinkedHashSet::new));
+        if (distinctNames.isEmpty()) {
+            return List.of();
+        }
+
+        List<Manga> mangas = mangaRepository.findMangaByAllCategoryNames(
+                List.copyOf(distinctNames),
+                distinctNames.size());
+
+        return mangas.stream()
+                .map(this::toDTO)
+                .collect(Collectors.toList());
     }
 
 }
