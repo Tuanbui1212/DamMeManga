@@ -13,10 +13,10 @@ export const mainRoutes = [
   { path: "/", component: Home },
   { path: "/login", component: AuthForm },
   { path: "/mangalibrary", component: MangaLibrary },
-  { path: "/manga/:id", component: MangaDetail },
+  { path: "/mangas/:id", component: MangaDetail },
   { path: "/settings", component: Setting },
   {
-    path: "/manga/:id/chapter/:chapterId",
+    path: "/mangas/:id/chapter/:chapterId",
     component: Chapter,
     layout: OnlyHeader,
   },
