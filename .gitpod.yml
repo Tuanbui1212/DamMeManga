@@ -1,0 +1,12 @@
+image:
+  file: .gitpod.Dockerfile
+
+# Lệnh chạy khi mở workspace
+tasks:
+  - init: mvn clean install
+    command: mvn spring-boot:run
+
+# Cổng mở sẵn để test backend
+ports:
+  - port: 8080
+    onOpen: open-preview
