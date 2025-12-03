@@ -1,12 +1,13 @@
 package org.example.backend.usecase;
 
 import org.example.backend.domain.model.Category;
+import org.example.backend.infrastructure.dto.CategoryDTO;
 
 import java.util.List;
 import java.util.Optional;
 
 public interface CategoryService {
-    List<Category> getAllCategories();
+    List<CategoryDTO> getAllCategories();
     Optional<Category> getCategoryById(String id);
     Category createCategory(Category category);
     Category updateCategory(String id, Category category);

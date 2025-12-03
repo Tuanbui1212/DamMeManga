@@ -1,6 +1,7 @@
 package org.example.backend.presentation.controller;
 
 import org.example.backend.domain.model.Category;
+import org.example.backend.infrastructure.dto.CategoryDTO;
 import org.example.backend.usecase.CategoryService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,7 +20,7 @@ public class CategoryController {
     }
 
     @GetMapping
-    public List<Category> getAll() {
+    public List<CategoryDTO> getAll() {
         return categoryService.getAllCategories();
     }
 

@@ -1,5 +1,7 @@
 package org.example.backend.domain.model;
 
+import com.fasterxml.jackson.annotation.JsonGetter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
@@ -8,8 +10,7 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "manga")
-public class Manga {
-
+public class MangaDetail {
     @Id
     @Column(name = "id_manga", length = 100)
     private String idManga;
@@ -17,8 +18,9 @@ public class Manga {
     @Column(name = "name_manga")
     private String nameManga;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER, targetEntity = Author.class)
     @JoinColumn(name = "author_id")
+    @JsonIgnore
     private Author author;
 
     @Column(name = "description", length = 1000)
@@ -37,16 +39,19 @@ public class Manga {
     private int countView;
 
     @Column(name = "created_at")
-    private LocalDateTime createAt;
+    private LocalDateTime createdAt;
 
     @Column(name = "updated_at")
-    private LocalDateTime updateAt;
+    private LocalDateTime updatedAt;
 
-    public Manga() {
-        // id + timestamp tự sinh khi tạo object
-        this.idManga = UUID.randomUUID().toString();
-        this.createAt = LocalDateTime.now();
-        this.updateAt = LocalDateTime.now();
+    @OneToMany(mappedBy = "manga", fetch = FetchType.LAZY)
+    @JsonIgnoreProperties({"manga", "author"})
+    private List<Chapter> chapters;
+
+
+    public MangaDetail() {
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
     }
 
     @PrePersist
@@ -54,13 +59,27 @@ public class Manga {
         if (idManga == null) {
             idManga = UUID.randomUUID().toString();
         }
-        createAt = LocalDateTime.now();
-        updateAt = LocalDateTime.now();
+        createdAt = LocalDateTime.now();
+        updatedAt = LocalDateTime.now();
     }
+
+    @JsonGetter("author")
+    public String getAuthorName() {
+        return author != null ? author.getNameAuthor() : null;
+    }
+
 
     @PreUpdate
     protected void onUpdate() {
-        updateAt = LocalDateTime.now();
+        updatedAt = LocalDateTime.now();
+    }
+
+    public List<Chapter> getChapters() {
+        return chapters;
+    }
+
+    public void setChapters(List<Chapter> chapters) {
+        this.chapters = chapters;
     }
 
     public String getIdManga() {
@@ -127,19 +146,19 @@ public class Manga {
         this.countView = countView;
     }
 
-    public LocalDateTime getCreateAt() {
-        return createAt;
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
     }
 
-    public void setCreateAt(LocalDateTime createAt) {
-        this.createAt = createAt;
+    public void setCreatedAt(LocalDateTime createAt) {
+        this.createdAt = createAt;
     }
 
-    public LocalDateTime getUpdateAt() {
-        return updateAt;
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
     }
 
-    public void setUpdateAt(LocalDateTime updateAt) {
-        this.updateAt = updateAt;
+    public void setUpdatedAt(LocalDateTime updateAt) {
+        this.updatedAt = updateAt;
     }
 }

@@ -8,115 +8,103 @@ import MangaStats from "./MangaStats.jsx";
 import MangaComments from "./MangaComments.jsx";
 import { Helmet } from "react-helmet-async";
 
-import MangaService from "../../../../usecases/MangaService";
 import MangaCategoryService from "../../../../usecases/MangaCategoryService";
+import MangaDetailService from "../../../../usecases/MangaDetailService.js";
 
 function MangaDetailPage() {
-    const { id } = useParams(); // lấy id manga từ route
-    const [mangaInfo, setMangaInfo] = useState(null);
-    const [chapters, setChapters] = useState([]);
-    const [comments, setComments] = useState([]);
-    const [statsData, setStatsData] = useState({ chaptersCount: 0, views: 0 });
-    const [newComment, setNewComment] = useState("");
-    const [genres, setGenres] = useState([]);
+  const { id } = useParams(); // lấy id manga từ route
+  const [mangaInfo, setMangaInfo] = useState(null);
+  const [chapters, setChapters] = useState([]);
+  const [comments, setComments] = useState([]);
+  const [statsData, setStatsData] = useState({ chaptersCount: 0, views: 0 });
+  const [newComment, setNewComment] = useState("");
+  const [genres, setGenres] = useState([]);
 
-    useEffect(() => {
-        const fetchManga = async () => {
-            try {
-                const mangaService = new MangaService();
-                const mangaCategoryService = new MangaCategoryService();
-                const manga = await mangaService.getMangaById(id);
-                console.log("MANGA RAW:", manga);
-                setMangaInfo({
-                    title: manga.name,
-                    authors: manga.authorName,
-                    posterUrl: manga.bannerUrl,
-                    mainImageUrl: manga.posterUrl,
-                    lastUpdate: manga.updateAt,
-                });
-                console.log("MangaInfo:", mangaInfo);
+  const service = new MangaDetailService();
+  const mangaCategoryService = new MangaCategoryService();
 
-                const categories = await mangaCategoryService.getCategoriesByManga(id);
-                setGenres(categories.map(c => ({ name: c.nameCategory, count: 0 })));
+  function timeAgo(timestamp) {
+    const diff = Date.now() - new Date(timestamp).getTime();
+    const minutes = Math.floor(diff / 60000);
+    const hours = Math.floor(minutes / 60);
+    const days = Math.floor(hours / 24);
 
-                // Chapters
-                if (manga.chapters) {
-                    setChapters(manga.chapters);
-                } else {
-                    setChapters(
-                        Array.from({ length: 30 }, (_, i) => ({
-                            id: i + 1,
-                            title: `Chapter ${i + 1}`,
-                            date: `${30 - i} ngày trước`,
-                        })).reverse()
-                    );
-                }
+    if (minutes < 60) return `${minutes} phút trước`;
+    if (hours < 24) return `${hours} giờ trước`;
+    return `${days} ngày trước`;
+  }
 
-                // Comments
-                setComments(manga.comments || []);
+  useEffect(() => {
+    const fetchData = async () => {
+      const data = await service.getMangaWithChapters(id);
+      console.log(data);
+      setMangaInfo({
+        title: data.name_manga,
+        authors: data.author_id || "Đoán xem ai là Tác giả",
+        posterUrl: data.banner_url,
+        mainImageUrl: data.poster_url,
+        lastUpdate: timeAgo(data.updated_at),
+      });
+      setChapters(
+        [...data.chapters].sort((a, b) => b.chapterNumber - a.chapterNumber)
+      );
+      setStatsData({
+        chaptersCount: data.chapters?.length || 30,
+        views: data.count_view || 0,
+      });
 
-                // Stats
-                setStatsData({
-                    chaptersCount: manga.chapters?.length || 30,
-                    views: manga.countView || 0,
-                });
-            } catch (error) {
-                console.error("Lỗi khi lấy thông tin manga:", error);
-            }
-        };
-
-        fetchManga();
-    }, [id]);
-
-    const handleAddComment = () => {
-        if (!newComment.trim()) return;
-        const newItem = {
-            id: comments.length + 1,
-            user: "Bạn đọc",
-            text: newComment,
-            date: "Vừa xong",
-        };
-        setComments([newItem, ...comments]);
-        setNewComment("");
+      const categories = await mangaCategoryService.getCategoriesByManga(id);
+      setGenres(categories);
     };
+    fetchData();
+  }, [id]);
 
-    if (!mangaInfo) return <div>Đang tải...</div>;
+  const handleAddComment = () => {
+    if (!newComment.trim()) return;
+    const newItem = {
+      id: comments.length + 1,
+      user: "Bạn đọc",
+      text: newComment,
+      date: "Vừa xong",
+    };
+    setComments([newItem, ...comments]);
+    setNewComment("");
+  };
 
-    return (
-        <>
-            <Helmet>
-                <title>{mangaInfo.title}</title>
-            </Helmet>
+  if (!mangaInfo) return <div>Đang tải...</div>;
 
-            <div className="quicksand-uniquifier">
-                <div className="h-400 bg-gray-300 relative inset-0">
-                    <div className="mx-40 bg-white absolute inset-0 rounded-xl my-20 overflow-hidden">
-                        <div className="flex flex-col">
-                            <MangaPoster posterUrl={mangaInfo.posterUrl} />
-                            <MangaInfo info={{ ...mangaInfo, genres }} />
-                            <MangaActions />
-                            <div className="flex justify-between mx-5 my-10 gap-10">
-                                <MangaChapters
-                                    chapters={chapters}
-                                    key={chapters.map(c => c.id).join("-")}
-                                />
-                                <div className="w-1/3">
-                                    <MangaStats stats={statsData} />
-                                    <MangaComments
-                                        comments={comments}
-                                        newComment={newComment}
-                                        setNewComment={setNewComment}
-                                        handleAddComment={handleAddComment}
-                                        key={comments.map(c => c.id).join("-")}
-                                    />
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+  return (
+    <>
+      <Helmet>
+        <title>{mangaInfo.title}</title>
+      </Helmet>
+
+      <div className="quicksand-uniquifier">
+        <div className="h-400 bg-gray-300 relative inset-0">
+          <div className="mx-40 bg-white absolute inset-0 rounded-xl my-20 overflow-hidden">
+            <div className="flex flex-col">
+              <MangaPoster posterUrl={mangaInfo.posterUrl} />
+              <MangaInfo info={mangaInfo} genres={genres} />
+              <MangaActions />
+              <div className="flex justify-between mx-5 my-10 gap-10">
+                <MangaChapters chapters={chapters} />
+                <div className="w-1/3">
+                  <MangaStats stats={statsData} />
+                  <MangaComments
+                    comments={comments}
+                    newComment={newComment}
+                    setNewComment={setNewComment}
+                    handleAddComment={handleAddComment}
+                    key={comments.map((c) => c.id).join("-")}
+                  />
                 </div>
+              </div>
             </div>
-        </>
-    );
+          </div>
+        </div>
+      </div>
+    </>
+  );
 }
 
 export default MangaDetailPage;

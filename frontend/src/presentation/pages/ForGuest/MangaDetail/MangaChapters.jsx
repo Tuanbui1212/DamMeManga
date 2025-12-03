@@ -7,11 +7,13 @@ function MangaChapters({ chapters }) {
       <div className="border border-gray-200 rounded-lg p-3 bg-gray-50 max-h-[400px] overflow-y-scroll">
         {chapters.map((ch) => (
           <a
-            key={ch.id}
+            key={ch.idChapter}
             href={`/chapter/${ch.id}`}
             className="flex justify-between items-center bg-white hover:bg-blue-50 p-3 mb-2 rounded-lg border border-gray-100 transition"
           >
-            <span className="font-semibold text-gray-700">{ch.title}</span>
+            <span className="font-semibold text-gray-700">
+              Chươnng {ch.chapterNumber} {ch.title}
+            </span>
             <span className="text-xs text-gray-500">{ch.date}</span>
           </a>
         ))}

@@ -1,4 +1,4 @@
-function MangaInfo({ info }) {
+function MangaInfo({ info, genres }) {
   return (
     <div className="absolute top-120 left-20 flex gap-10">
       <img
@@ -13,16 +13,13 @@ function MangaInfo({ info }) {
           Cập nhật từ: <span>{info.lastUpdate}</span>
         </div>
         <div className="mt-5 flex gap-4">
-          {info.genres.map((g) => (
+          {genres.map((g, index) => (
             <a
-              key={g.name}
+              key={index}
               href="#"
               className="cursor-pointer px-2 py-1 rounded-full text-gray-700 bg-gray-100 text-sm font-bold hover:bg-white transition"
             >
-              {g.name}
-              <span className="rounded-full text-[10px] bg-gray-300 px-1.5 py-0.5 ml-1">
-                {g.count}
-              </span>
+              {g.nameCategory}
             </a>
           ))}
         </div>

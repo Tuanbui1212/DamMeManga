@@ -1,4 +1,3 @@
-// ToastNotification.jsx
 export default function ToastNotification({ toast, onClose }) {
   if (!toast.show) return null;
 

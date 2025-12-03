@@ -137,6 +137,10 @@ public class MangaCategoryUseCase {
         }
     }
 
+    public long countMangaByCategoryName(String nameCategory) {
+        return mangaCategoryRepository.countMangaByCategoryName(nameCategory);
+    }
+
     // ---------------- Private helper ----------------
     private List<MangaCategory> buildCategoriesToSave(Manga manga, List<String> toAddIds) {
         return toAddIds.stream().map(idCat -> {
