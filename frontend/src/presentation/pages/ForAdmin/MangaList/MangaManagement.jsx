@@ -18,6 +18,7 @@ export default function MangaManagement() {
     useEffect(() => {
         const fetchMangas = async () => {
             const data = await service.getAllMangas();
+            console.log(data);
             const mapped = data.map((item) => ({
                 id: item.id,
                 title: item.name,

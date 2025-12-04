@@ -1,18 +1,20 @@
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
+import toast, { Toaster } from "react-hot-toast";
+
 import MangaPoster from "./MangaPoster.jsx";
 import MangaInfo from "./MangaInfo.jsx";
 import MangaActions from "./MangaActions.jsx";
 import MangaChapters from "./MangaChapters.jsx";
 import MangaStats from "./MangaStats.jsx";
 import MangaComments from "./MangaComments.jsx";
-import { Helmet } from "react-helmet-async";
 
 import MangaCategoryService from "../../../../usecases/MangaCategoryService";
 import MangaDetailService from "../../../../usecases/MangaDetailService.js";
 
 function MangaDetailPage() {
-  const { id } = useParams(); // lấy id manga từ route
+  const { id } = useParams();
   const [mangaInfo, setMangaInfo] = useState(null);
   const [chapters, setChapters] = useState([]);
   const [comments, setComments] = useState([]);
@@ -23,52 +25,49 @@ function MangaDetailPage() {
   const service = new MangaDetailService();
   const mangaCategoryService = new MangaCategoryService();
 
-  function timeAgo(timestamp) {
+  const timeAgo = (timestamp) => {
     const diff = Date.now() - new Date(timestamp).getTime();
     const minutes = Math.floor(diff / 60000);
     const hours = Math.floor(minutes / 60);
     const days = Math.floor(hours / 24);
-
     if (minutes < 60) return `${minutes} phút trước`;
     if (hours < 24) return `${hours} giờ trước`;
     return `${days} ngày trước`;
-  }
+  };
 
   useEffect(() => {
-    const fetchData = async () => {
-      const data = await service.getMangaWithChapters(id);
-      console.log(data);
-      setMangaInfo({
-        title: data.name_manga,
-        authors: data.author_id || "Đoán xem ai là Tác giả",
-        posterUrl: data.banner_url,
-        mainImageUrl: data.poster_url,
-        lastUpdate: timeAgo(data.updated_at),
-      });
-      setChapters(
-        [...data.chapters].sort((a, b) => b.chapterNumber - a.chapterNumber)
-      );
-      setStatsData({
-        chaptersCount: data.chapters?.length || 30,
-        views: data.count_view || 0,
-      });
+    (async () => {
+      try {
+        const data = await service.getMangaWithChapters(id);
+        setMangaInfo({
+          title: data.name_manga,
+          authors: data.author_id || "Đoán xem ai là Tác giả",
+          posterUrl: data.banner_url,
+          mainImageUrl: data.poster_url,
+          lastUpdate: timeAgo(data.updated_at),
+        });
 
-      const categories = await mangaCategoryService.getCategoriesByManga(id);
-      setGenres(categories);
-    };
-    fetchData();
+        setChapters([...data.chapters].sort((a, b) => b.chapterNumber - a.chapterNumber));
+        setStatsData({
+          chaptersCount: data.chapters?.length || 0,
+          views: data.count_view || 0,
+        });
+
+        const categories = await mangaCategoryService.getCategoriesByManga(id);
+        setGenres(categories);
+      } catch (err) {
+        toast.error("Lỗi tải dữ liệu manga!");
+        console.error(err);
+      }
+    })();
   }, [id]);
 
   const handleAddComment = () => {
     if (!newComment.trim()) return;
-    const newItem = {
-      id: comments.length + 1,
-      user: "Bạn đọc",
-      text: newComment,
-      date: "Vừa xong",
-    };
+    const newItem = { id: comments.length + 1, user: "Bạn đọc", text: newComment, date: "Vừa xong" };
     setComments([newItem, ...comments]);
     setNewComment("");
+    toast.success("Bình luận đã được thêm!");
   };
 
   if (!mangaInfo) return <div>Đang tải...</div>;
@@ -79,13 +78,15 @@ function MangaDetailPage() {
         <title>{mangaInfo.title}</title>
       </Helmet>
 
+      <Toaster position="top-right" />
+
       <div className="quicksand-uniquifier">
         <div className="h-400 bg-gray-300 relative inset-0">
           <div className="mx-40 bg-white absolute inset-0 rounded-xl my-20 overflow-hidden">
             <div className="flex flex-col">
               <MangaPoster posterUrl={mangaInfo.posterUrl} />
               <MangaInfo info={mangaInfo} genres={genres} />
-              <MangaActions />
+              <MangaActions mangaId={id} />
               <div className="flex justify-between mx-5 my-10 gap-10">
                 <MangaChapters chapters={chapters} />
                 <div className="w-1/3">

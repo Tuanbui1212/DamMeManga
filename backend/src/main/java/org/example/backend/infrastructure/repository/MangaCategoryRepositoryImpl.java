@@ -65,4 +65,10 @@ public class MangaCategoryRepositoryImpl implements MangaCategoryRepository {
     public long countMangaByCategoryId(String idCategory) {
         return jpaRepository.countByCategory_IdCategory(idCategory);
     }
+
+    @Override
+    public List<MangaCategory> findByMangaIdWithCategory(String idManga) {
+        return jpaRepository.findByMangaIdWithCategory(idManga);
+    }
+
 }

@@ -24,8 +24,8 @@ export default function LoginForm() {
         try {
             const user = await loginUsecase(account.trim(), password);
 
-            // 👉 Lưu user vào Context + localStorage
             login({
+                id: user.idUser,
                 account: user.account,
                 role: user.role,
                 token: user.token

@@ -4,8 +4,8 @@ export default class UserRepositoryImpl {
 
     async login(account, password) {
         const response = await axiosClient.post("/users/login", { account, password });
-        console.log("Login response:", response); // xem toàn bộ object response
-        console.log("Response data:", response.data); // xem body thực sự
+        console.log("Login response:", response); 
+        console.log("Response data:", response.data); 
         return response.data;
     }
 

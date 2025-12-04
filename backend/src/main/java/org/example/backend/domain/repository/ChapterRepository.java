@@ -5,10 +5,18 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ChapterRepository {
+
     Chapter save(Chapter chapter);
+
     List<Chapter> findAll();
+
     Optional<Chapter> findById(String id);
+
     Chapter update(Chapter chapter);
+
     void deleteById(String id);
+
     List<Chapter> getChaptersByMangaId(String mangaId);
+
+    long countChaptersByMangaId(String mangaId);
 }
