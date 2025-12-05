@@ -12,7 +12,7 @@ import MangaCategoryService from "../../../../usecases/MangaCategoryService";
 import MangaDetailService from "../../../../usecases/MangaDetailService.js";
 
 function MangaDetailPage() {
-  const { id } = useParams(); // lấy id manga từ route
+  const { id } = useParams();
   const [mangaInfo, setMangaInfo] = useState(null);
   const [chapters, setChapters] = useState([]);
   const [comments, setComments] = useState([]);
@@ -37,7 +37,7 @@ function MangaDetailPage() {
   useEffect(() => {
     const fetchData = async () => {
       const data = await service.getMangaWithChapters(id);
-      console.log(data);
+
       setMangaInfo({
         title: data.name_manga,
         authors: data.author_id || "Đoán xem ai là Tác giả",
@@ -87,7 +87,7 @@ function MangaDetailPage() {
               <MangaInfo info={mangaInfo} genres={genres} />
               <MangaActions />
               <div className="flex justify-between mx-5 my-10 gap-10">
-                <MangaChapters chapters={chapters} />
+                <MangaChapters idManga={id} chapters={chapters} />
                 <div className="w-1/3">
                   <MangaStats stats={statsData} />
                   <MangaComments

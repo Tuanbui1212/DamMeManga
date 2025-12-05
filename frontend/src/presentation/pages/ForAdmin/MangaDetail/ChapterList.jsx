@@ -1,4 +1,12 @@
-export default function ChapterList({ chapters, onCreateChapter, onViewChapter }) {
+export default function ChapterList({
+  chapters,
+  onCreateChapter,
+  onViewChapter,
+}) {
+  const sortedChapters = (chapters || []).sort(
+    (a, b) => b.chapterNumber - a.chapterNumber
+  );
+
   return (
     <div className="flex-1">
       <div className="flex items-center justify-between mb-5">
@@ -14,14 +22,15 @@ export default function ChapterList({ chapters, onCreateChapter, onViewChapter }
       </div>
 
       <div className="border border-gray-700 rounded-lg p-4 bg-gray-900/80 max-h-96 overflow-y-auto">
-        {chapters.map((ch) => (
+        {sortedChapters.map((ch) => (
           <button
-            key={ch.id}
-            onClick={() => onViewChapter(ch.id)}
+            key={ch.idChapter}
+            onClick={() => onViewChapter(ch.idChapter)}
             className="w-full flex justify-between items-center bg-gray-800/70 hover:bg-gray-700 p-4 mb-2 rounded-lg border border-gray-700 transition-all hover:shadow-md text-left"
           >
-            <span className="font-semibold text-gray-100">{ch.title}</span>
-            <span className="text-xs text-gray-400">{ch.date}</span>
+            <span className="font-semibold text-gray-100">
+              Chương {ch.chapterNumber}: {ch.title}
+            </span>
           </button>
         ))}
       </div>

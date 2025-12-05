@@ -25,4 +25,9 @@ public class MangaDetailRepositoryImpl implements MangaDetailRepository {
     public Optional<MangaDetail> findById(String id) {
         return jpaMangaDetailRepository.findById(id);
     }
+
+    @Override
+    public MangaDetail save(MangaDetail mangaDetail) {
+        return jpaMangaDetailRepository.save(mangaDetail);
+    }
 }

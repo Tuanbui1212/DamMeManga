@@ -23,4 +23,29 @@ export default class MangaDetailRepository {
       return [];
     }
   }
+
+  async getAllMangaWithChapters() {
+    try {
+      const res = await axios.get(`/user/mangas`);
+      return res.data.map(
+        (manga) =>
+          new MangaDetail(
+            manga.idManga,
+            manga.nameManga,
+            manga.author,
+            manga.description,
+            manga.bannerUrl,
+            manga.posterUrl,
+            manga.status,
+            manga.countView,
+            manga.createdAt,
+            manga.updatedAt,
+            manga.chapters || []
+          )
+      );
+    } catch (err) {
+      console.error("Lỗi khi lấy Manga va Chapter:", err);
+      return [];
+    }
+  }
 }

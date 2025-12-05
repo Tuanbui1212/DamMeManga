@@ -10,6 +10,7 @@ import CommentSection from "./CommentSection";
 import DeleteConfirmModal from "./DeleteConfirmModal";
 import MangaService from "../../../../usecases/MangaService";
 import MangaCategoryService from "../../../../usecases/MangaCategoryService";
+import MangaDetailRepository from "../../../../infrastructure/repositories/MangaDetailRepository";
 
 export default function MangaDetail() {
   const { id } = useParams();
@@ -18,11 +19,22 @@ export default function MangaDetail() {
   const [isLoading, setIsLoading] = useState(true);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
+  function timeAgo(timestamp) {
+    const diff = Date.now() - new Date(timestamp).getTime();
+    const minutes = Math.floor(diff / 60000);
+    const hours = Math.floor(minutes / 60);
+    const days = Math.floor(hours / 24);
+
+    if (minutes < 60) return `${minutes} phút trước`;
+    if (hours < 24) return `${hours} giờ trước`;
+    return `${days} ngày trước`;
+  }
+
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const mangaService = new MangaService();
-        const mangaData = await mangaService.getMangaById(id);
+        const mangaService = new MangaDetailRepository();
+        const mangaData = await mangaService.getMangaWithChapters(id);
 
         if (!mangaData) {
           setStory(null);
@@ -32,20 +44,22 @@ export default function MangaDetail() {
         // Lấy genres trực tiếp theo idManga
         const categoryService = new MangaCategoryService();
         const mangaCategories = await categoryService.getCategoriesByManga(id);
-        const genres = mangaCategories.map(mc => mc.nameCategory);
 
         const mapped = {
-          id: mangaData.id,
-          title: mangaData.name,
-          author: mangaData.authorName,
+          id: mangaData.id_manga,
+          title: mangaData.name_manga,
+          author: mangaData.author_id,
           description: mangaData.description,
-          chapters: mangaData.countView,
-          views: mangaData.countView * 100,
-          cover: mangaData.posterUrl,
-          poster: mangaData.bannerUrl,
-          genres: genres.length > 0 ? genres : ["Updating..."],
-          lastUpdate: "Updating...",
-          chaptersList: [],
+          chapters: mangaData.chapters.length,
+          views: mangaData.count_view,
+          cover: mangaData.poster_url,
+          poster: mangaData.banner_url,
+          genres:
+            mangaCategories.length > 0 ? mangaCategories : ["Updating..."],
+          lastUpdate: mangaData.updated_at
+            ? timeAgo(mangaData.updated_at)
+            : "Updating...",
+          chaptersList: mangaData.chapters,
           comments: [],
         };
 
@@ -57,7 +71,6 @@ export default function MangaDetail() {
         setIsLoading(false);
       }
     };
-
 
     fetchData();
   }, [id]);
@@ -82,7 +95,6 @@ export default function MangaDetail() {
     }
   };
 
-
   const goToEdit = () => navigate(`/edit-manga/${id}`);
   const goToCreateChapter = () => navigate(`/create-chapter/${id}`);
   const goToChapterDetail = (chapterId) =>
@@ -90,9 +102,7 @@ export default function MangaDetail() {
 
   if (isLoading)
     return (
-      <div className="text-center py-20 text-gray-400 text-xl">
-        Đang tải...
-      </div>
+      <div className="text-center py-20 text-gray-400 text-xl">Đang tải...</div>
     );
 
   if (!story)
