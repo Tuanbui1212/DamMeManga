@@ -47,7 +47,7 @@ public class ChapterController {
     @DeleteMapping("/chapters/{id}")
     public String deleteChapter(@PathVariable Long id) {
         chapterUseCase.deleteChapter(id);
-        return "Delete success";
+        return "Xóa Chapter thành công";
     }
 
     @GetMapping("/{idManga}/chapters")
