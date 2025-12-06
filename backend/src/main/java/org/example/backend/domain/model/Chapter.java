@@ -1,5 +1,7 @@
 package org.example.backend.domain.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 
 @Entity
@@ -7,12 +9,13 @@ import jakarta.persistence.*;
 public class Chapter {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_chapter", nullable = false, updatable = false)
-    private String idChapter;
+    private Long idChapter;
 
     @ManyToOne(fetch = FetchType.LAZY, targetEntity = MangaDetail.class)
     @JoinColumn(name = "manga_id")
+    @JsonIgnore
     private MangaDetail manga;
 
     @Column(name = "chapter_number")
@@ -29,11 +32,24 @@ public class Chapter {
         this.title = title;
     }
 
-    public String getIdChapter() {
+    @JsonProperty("id_manga")
+    public String getIdManga() {
+        return manga != null ? manga.getIdManga() : null;
+    }
+
+    @JsonProperty("id_manga")
+    public void setIdManga(String idManga) {
+        if (this.manga == null) {
+            this.manga = new MangaDetail();
+        }
+        this.manga.setIdManga(idManga);
+    }
+
+    public Long getIdChapter() {
         return idChapter;
     }
 
-    public void setIdChapter(String idChapter) {
+    public void setIdChapter(Long idChapter) {
         this.idChapter = idChapter;
     }
 

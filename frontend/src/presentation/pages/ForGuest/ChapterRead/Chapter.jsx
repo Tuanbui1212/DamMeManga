@@ -1,9 +1,13 @@
 import ChapterPages from "./ChapterPages";
 import ChapterNavigation from "./ChapterNavigation";
 import ChapterListPopup from "./ChapterListPopup";
-import CommentSidebar from "./CommentSidebar";        // Thêm cái này
-import { useState, useRef, useEffect } from "react";
+import CommentSidebar from "./CommentSidebar"; // Thêm cái này
+import { useState, useRef, useEffect, use } from "react";
 import { motion } from "framer-motion";
+import { data, useParams } from "react-router-dom";
+
+import ImgChapterService from "../../../../usecases/ImgChapterService";
+import ChapterService from "../../../../usecases/ChapterService";
 
 const pagesData = [
   "https://ik.imagekit.io/cuongphung241103/BTL_JAVA/OnePunchMan/Chap%201/1.jpeg?updatedAt=1762838219233",
@@ -27,13 +31,16 @@ const pagesData = [
   "https://ik.imagekit.io/cuongphung241103/BTL_JAVA/OnePunchMan/Chap%201/20.jpeg?updatedAt=1762838219540",
 ];
 
-const allChapters = Array.from({ length: 20 }, (_, i) => `Chap ${i + 1}`);
-const chapterNumber = 1;
+const imgChapterService = new ImgChapterService();
+const chapterService = new ChapterService();
 
 function ChapterReadPage() {
+  const { id, chapterId } = useParams();
+  const [dataImgChapter, setDataImgChapter] = useState([]);
+  const [allChapters, setAllChapter] = useState([]);
   const [showUI, setShowUI] = useState(true);
   const [showChapterList, setShowChapterList] = useState(false);
-  const [showComments, setShowComments] = useState(false);   // Đưa vào đúng chỗ đây nè!
+  const [showComments, setShowComments] = useState(false);
 
   const containerRef = useRef(null);
   const lastScrollY = useRef(0);
@@ -42,7 +49,25 @@ function ChapterReadPage() {
     containerRef.current?.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  // Ẩn/hiện thanh điều hướng khi cuộn
+  useEffect(() => {
+    const fetchImgChapter = async () => {
+      const data = await imgChapterService.getImgsByChapterId(chapterId);
+      console.log(data);
+      setDataImgChapter(data.length !== 0 ? data : pagesData);
+    };
+
+    fetchImgChapter();
+  }, []);
+
+  useEffect(() => {
+    const fetchAllChapter = async () => {
+      const dataAllChapter = await chapterService.getChaptersByMangaId(id);
+      setAllChapter(dataAllChapter);
+    };
+
+    fetchAllChapter();
+  }, []);
+
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
@@ -63,12 +88,18 @@ function ChapterReadPage() {
 
   return (
     <div className="quicksand-uniquifier relative h-screen w-screen overflow-hidden bg-gray-200">
-
       {/* Ảnh truyện */}
-      <ChapterPages pages={pagesData} containerRef={containerRef} showUI={showUI} />
+      <ChapterPages
+        pages={dataImgChapter}
+        containerRef={containerRef}
+        showUI={showUI}
+      />
 
       {/* Sidebar bình luận - hiện từ bên trái */}
-      <CommentSidebar isOpen={showComments} onClose={() => setShowComments(false)} />
+      <CommentSidebar
+        isOpen={showComments}
+        onClose={() => setShowComments(false)}
+      />
 
       {/* Thanh điều hướng dưới cùng */}
       <motion.div
@@ -78,20 +109,25 @@ function ChapterReadPage() {
         className="absolute bottom-0 w-full"
       >
         <ChapterNavigation
-          mangaId="one-punch-man"                 // bạn thay bằng id thật sau
-          chapterNumber={chapterNumber}
+          mangaId={id} // bạn thay bằng id thật sau
+          chapterNumber={
+            allChapters.find((ch) => ch.idChapter === Number(chapterId))
+              ?.chapterNumber
+          }
+          allChapters={allChapters}
           totalChapters={allChapters.length}
           scrollToTop={scrollToTop}
           setShowChapterList={setShowChapterList}
-          setShowComments={setShowComments}       // truyền xuống đây
+          setShowComments={setShowComments} // truyền xuống đây
         />
       </motion.div>
 
       {/* Popup danh sách chapter */}
       {showChapterList && (
         <ChapterListPopup
+          mangaId={id}
           allChapters={allChapters}
-          chapterNumber={chapterNumber}
+          chapterNumber={chapterId}
           setShowChapterList={setShowChapterList}
         />
       )}

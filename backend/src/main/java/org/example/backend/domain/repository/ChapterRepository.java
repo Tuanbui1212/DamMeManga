@@ -9,13 +9,9 @@ public interface ChapterRepository {
     Chapter save(Chapter chapter);
 
     List<Chapter> findAll();
-
-    Optional<Chapter> findById(String id);
-
+    Optional<Chapter> findById(Long id);
     Chapter update(Chapter chapter);
-
-    void deleteById(String id);
-
+    void deleteById(Long id);
     List<Chapter> getChaptersByMangaId(String mangaId);
 
     long countChaptersByMangaId(String mangaId);

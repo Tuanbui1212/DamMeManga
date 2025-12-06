@@ -1,15 +1,16 @@
 package org.example.backend.presentation.controller;
 
 import org.example.backend.domain.model.Chapter;
+import org.example.backend.infrastructure.dto.ChapterRequest;
 import org.example.backend.usecase.ChapterUseCase;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
+import java.util.Map;
 
 @RestController
-@RequestMapping("/api/user/mangas")
+@RequestMapping("/api/mangas")
 public class ChapterController {
 
     private final ChapterUseCase chapterUseCase;
@@ -18,35 +19,35 @@ public class ChapterController {
         this.chapterUseCase = chapterUseCase;
     }
 
-    // Tạo chapter mới
     @PostMapping("chapters")
-    public Chapter createChapter(@RequestBody Chapter chapter) {
-        return chapterUseCase.createChapter(chapter);
+    @ResponseStatus(HttpStatus.CREATED) // Tự động set code 201 Created
+    public Map<String, Object> createChapter(@RequestBody ChapterRequest chapter) {
+        Chapter newChapter = chapterUseCase.createChapter(chapter);
+        return Map.of(
+                "message", "Thêm chapter thành công!",
+                "data", newChapter
+        );
     }
 
-    // Lấy tất cả chapter
     @GetMapping("chapters")
     public List<Chapter> getAllChapters() {
         return chapterUseCase.getAllChapters();
     }
 
-    // Lấy chapter theo ID
     @GetMapping("/chapters/{id}")
-    public Optional<Chapter> getChapterById(@PathVariable String id) {
+    public Chapter getChapterById(@PathVariable Long id) {
         return chapterUseCase.getChapterById(id);
     }
 
-    // Cập nhật chapter
     @PutMapping("/chapters/{id}")
-    public Chapter updateChapter(@PathVariable String id, @RequestBody Chapter chapter) {
+    public Chapter updateChapter(@PathVariable Long id, @RequestBody ChapterRequest chapter) {
         return chapterUseCase.updateChapter(id, chapter);
     }
 
-    // Xóa chapter
     @DeleteMapping("/chapters/{id}")
-    String deleteChapter(@PathVariable String id) {
+    public String deleteChapter(@PathVariable Long id) {
         chapterUseCase.deleteChapter(id);
-        return "Delete success";
+        return "Xóa Chapter thành công";
     }
 
     @GetMapping("/{idManga}/chapters")
