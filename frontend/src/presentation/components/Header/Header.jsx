@@ -76,7 +76,7 @@ function Header() {
     localStorage.removeItem("token");
     localStorage.removeItem("account");
     localStorage.removeItem("role");
-    setAccount(""); 
+    setAccount(""); // reset state ngay lập tức
   };
 
   useEffect(() => {
@@ -324,7 +324,7 @@ function Header() {
                     className="flex items-center gap-3 px-4 py-2 hover:bg-red-50 dark:hover:bg-red-900/20 text-red-600 w-full text-sm transition"
                     onClick={() => {
                       setIsDropdownOpen(false);
-                      localStorage.removeItem("userId");
+                      // Xoá toàn bộ thông tin user
                       localStorage.removeItem("account");
                       localStorage.removeItem("token");
                       localStorage.removeItem("role");
