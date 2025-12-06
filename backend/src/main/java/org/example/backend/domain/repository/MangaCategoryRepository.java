@@ -26,6 +26,4 @@ public interface MangaCategoryRepository {
     long countMangaByCategoryName(String nameCategory);
 
     long countMangaByCategoryId(String idCategory);
-
-    List<MangaCategory> findByMangaIdWithCategory(String idManga);
 }

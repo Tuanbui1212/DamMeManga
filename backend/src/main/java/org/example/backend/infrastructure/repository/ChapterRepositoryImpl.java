@@ -2,8 +2,9 @@ package org.example.backend.infrastructure.repository;
 
 import org.example.backend.domain.model.Chapter;
 import org.example.backend.domain.repository.ChapterRepository;
-import org.example.backend.infrastructure.repository.jpa.JpaChapterRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -53,10 +54,4 @@ public class ChapterRepositoryImpl implements ChapterRepository {
     public List<Chapter> getChaptersByMangaId(String mangaId) {
         return jpaChapterRepository.getChaptersByMangaId(mangaId);
     }
-
-    @Override
-    public long countChaptersByMangaId(String mangaId) {
-        return jpaChapterRepository.countByMangaId(mangaId);
-    }
-
 }
