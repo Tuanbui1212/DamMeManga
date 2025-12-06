@@ -8,5 +8,4 @@ import java.util.Optional;
 public interface MangaDetailRepository {
     List<MangaDetail> findAll();
     Optional<MangaDetail> findById(String id);
-    MangaDetail save(MangaDetail mangaDetail);
 }

@@ -8,8 +8,4 @@ export default class MangaDetailService {
   async getMangaWithChapters(idManga) {
     return await this.mangaDetailRepository.getMangaWithChapters(idManga);
   }
-
-  async getAllMangaWithChapters() {
-    return await this.mangaDetailRepository.getAllMangaWithChapters();
-  }
 }

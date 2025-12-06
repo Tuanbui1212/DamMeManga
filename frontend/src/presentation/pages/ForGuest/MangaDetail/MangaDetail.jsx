@@ -36,23 +36,22 @@ function MangaDetailPage() {
   };
 
   useEffect(() => {
-    const fetchData = async () => {
-      const data = await service.getMangaWithChapters(id);
+    (async () => {
+      try {
+        const data = await service.getMangaWithChapters(id);
+        setMangaInfo({
+          title: data.name_manga,
+          authors: data.author_id || "Đoán xem ai là Tác giả",
+          posterUrl: data.banner_url,
+          mainImageUrl: data.poster_url,
+          lastUpdate: timeAgo(data.updated_at),
+        });
 
-      setMangaInfo({
-        title: data.name_manga,
-        authors: data.author_id || "Đoán xem ai là Tác giả",
-        posterUrl: data.banner_url,
-        mainImageUrl: data.poster_url,
-        lastUpdate: timeAgo(data.updated_at),
-      });
-      setChapters(
-        [...data.chapters].sort((a, b) => b.chapterNumber - a.chapterNumber)
-      );
-      setStatsData({
-        chaptersCount: data.chapters?.length || 30,
-        views: data.count_view || 0,
-      });
+        setChapters([...data.chapters].sort((a, b) => b.chapterNumber - a.chapterNumber));
+        setStatsData({
+          chaptersCount: data.chapters?.length || 0,
+          views: data.count_view || 0,
+        });
 
         const categories = await mangaCategoryService.getCategoriesByManga(id);
         setGenres(categories);
@@ -89,7 +88,7 @@ function MangaDetailPage() {
               <MangaInfo info={mangaInfo} genres={genres} />
               <MangaActions mangaId={id} />
               <div className="flex justify-between mx-5 my-10 gap-10">
-                <MangaChapters idManga={id} chapters={chapters} />
+                <MangaChapters chapters={chapters} />
                 <div className="w-1/3">
                   <MangaStats stats={statsData} />
                   <MangaComments

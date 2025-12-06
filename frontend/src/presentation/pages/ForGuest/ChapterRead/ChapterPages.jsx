@@ -9,12 +9,9 @@ export default function ChapterPages({ pages, containerRef, showUI }) {
       }}
     >
       {pages.map((url, index) => (
-        <div
-          key={index}
-          className="w-full flex items-center justify-center bg-gray-100"
-        >
+        <div key={index} className="w-full flex items-center justify-center bg-gray-100">
           <img
-            src={url.imgLink}
+            src={url}
             alt={`Trang ${index + 1}`}
             className="max-w-full h-auto object-contain rounded-lg shadow-md select-none"
             loading="lazy"

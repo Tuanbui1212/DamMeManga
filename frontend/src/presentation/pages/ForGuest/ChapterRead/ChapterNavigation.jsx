@@ -1,47 +1,28 @@
-import {
-  ChevronLeft,
-  ChevronRight,
-  ChevronUp,
-  ArrowLeft,
-  MessageCircle,
-} from "lucide-react";
+import { ChevronLeft, ChevronRight, ChevronUp, ArrowLeft, MessageCircle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 export default function ChapterNavigation({
   mangaId,
   chapterNumber,
-  allChapters,
   totalChapters,
   scrollToTop,
   setShowChapterList,
-  setShowComments, // nhận được rồi nè
+  setShowComments,        // nhận được rồi nè
 }) {
   const navigate = useNavigate();
 
-  const prevChapter =
-    chapterNumber > 1
-      ? allChapters.find((ch) => ch.chapterNumber === chapterNumber - 1)
-          ?.idChapter
-      : null;
-  //const nextChapter = chapterNumber < totalChapters ? chapterNumber + 1 : null;
-  const nextChapter =
-    chapterNumber < totalChapters
-      ? allChapters.find((ch) => ch.chapterNumber === chapterNumber + 1)
-          ?.idChapter
-      : null;
+  const prevChapter = chapterNumber > 1 ? chapterNumber - 1 : null;
+  const nextChapter = chapterNumber < totalChapters ? chapterNumber + 1 : null;
+
   return (
     <div className="fixed bottom-0 left-0 right-0 z-40 backdrop-blur-md bg-gray-900/80 text-white flex items-center justify-center gap-3 px-4 py-3">
-      <button
-        onClick={() => navigate(`/mangas/${mangaId}`)}
-        className="bg-gray-700 hover:bg-gray-600 active:bg-gray-500 px-3 py-2 rounded-lg text-sm font-medium transition flex items-center gap-1"
-      >
+
+      <button onClick={() => navigate(`/manga/${mangaId}`)} className="bg-gray-700 hover:bg-gray-600 active:bg-gray-500 px-3 py-2 rounded-lg text-sm font-medium transition flex items-center gap-1">
         <ArrowLeft size={18} /> Quay lại
       </button>
 
       <button
-        onClick={() =>
-          prevChapter && navigate(`/mangas/${mangaId}/chapter/${prevChapter}`)
-        }
+        onClick={() => prevChapter && navigate(`/manga/${mangaId}/chapter/${prevChapter}`)}
         disabled={!prevChapter}
         className="disabled:opacity-50"
       >
@@ -58,9 +39,7 @@ export default function ChapterNavigation({
       </button>
 
       <button
-        onClick={() =>
-          nextChapter && navigate(`/mangas/${mangaId}/chapter/${nextChapter}`)
-        }
+        onClick={() => nextChapter && navigate(`/manga/${mangaId}/chapter/${nextChapter}`)}
         disabled={!nextChapter}
         className="disabled:opacity-50"
       >
