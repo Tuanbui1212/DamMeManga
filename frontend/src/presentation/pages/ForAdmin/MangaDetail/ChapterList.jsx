@@ -10,6 +10,7 @@ export default function ChapterList({
   );
 
   const handleDelete = (e, chapterId) => {
+    e.preventDefault();
     e.stopPropagation();
     if (onDeleteChapter) {
       onDeleteChapter(chapterId);
@@ -42,7 +43,9 @@ export default function ChapterList({
             </span>
 
             <button
-              onClick={(e) => handleDelete(e, ch.idChapter)}
+              onClick={(e) => {
+                handleDelete(e, ch.idChapter);
+              }}
               className="ml-4 p-2 bg-red-700 hover:bg-red-800 rounded-md text-sm font-medium text-white transition-colors opacity-0 group-hover:opacity-100 focus:opacity-100"
               title="Xóa chương này"
             >
