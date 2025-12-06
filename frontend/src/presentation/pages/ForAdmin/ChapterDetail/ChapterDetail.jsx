@@ -11,8 +11,7 @@ import StatsBox from "./StatsBox";
 import ChapterService from "../../../../usecases/ChapterService";
 import ImgChapterService from "../../../../usecases/ImgChapterService";
 
-const IMGBB_API_KEY =
-  import.meta.env.VITE_IMGBB_API_KEY || "1fe8328c19b307b8297528ca80f9e887";
+const IMGBB_API_KEY = "0340594a6f5577fe462eb5783e474022";
 
 export default function ChapterDetail() {
   const { id, idChapter } = useParams();
