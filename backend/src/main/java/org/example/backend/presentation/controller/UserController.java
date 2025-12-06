@@ -35,13 +35,14 @@ public class UserController {
         }
     }
 
-    // --- Login ---
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody AuthRequest request) {
         try {
             User user = userService.login(request.getAccount(), request.getPassword());
             String token = jwtUtil.generateToken(user.getAccount(), user.getRole());
-            return ResponseEntity.ok(new AuthResponse(token, user.getRole(), user.getAccount()));
+
+            return ResponseEntity.ok(
+                    new AuthResponse(token, user.getRole(), user.getAccount(), user.getIdUser()));
         } catch (RuntimeException e) {
             return ResponseEntity.status(401).body(e.getMessage());
         }

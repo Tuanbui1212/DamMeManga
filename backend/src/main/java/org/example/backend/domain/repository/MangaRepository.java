@@ -1,25 +1,21 @@
 package org.example.backend.domain.repository;
 
 import org.example.backend.domain.model.Manga;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
-
+import org.example.backend.infrastructure.dto.MangaDTO;
 import java.util.List;
+import java.util.Optional;
 
-public interface MangaRepository extends JpaRepository<Manga, String> {
+public interface MangaRepository {
 
-    @Query("""
-            SELECT m
-            FROM MangaCategory mc
-            JOIN mc.manga m
-            JOIN mc.category c
-            WHERE c.nameCategory IN :categoryNames
-            GROUP BY m
-            HAVING COUNT(DISTINCT c.idCategory) = :categoryCount
-            """)
-    List<Manga> findMangaByAllCategoryNames(
-            @Param("categoryNames") List<String> categoryNames,
-            @Param("categoryCount") long categoryCount
-    );
+    Manga save(Manga manga);
+
+    Optional<Manga> findById(String id);
+
+    void deleteById(String id);
+
+    List<Manga> findAll();
+
+    List<MangaDTO> findAllDTO();
+
+    List<Manga> findMangaByAllCategoryNames(List<String> categoryNames, long categoryCount);
 }

@@ -14,11 +14,12 @@ export default function CreateChapter() {
   const navigate = useNavigate();
 
   const [chapterNumber, setChapterNumber] = useState("");
-  const [images, setImages] = useState([]); // { id, preview, file }
+  const [images, setImages] = useState([]);
   const [isSaving, setIsSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [chapterTitle, setChapterTitle] = useState("");
 
-  // Mock: tự động điền chapter tiếp theo
+
   useEffect(() => {
     setChapterNumber(31);
   }, []);
@@ -87,6 +88,8 @@ export default function CreateChapter() {
             <ChapterForm
               chapterNumber={chapterNumber}
               setChapterNumber={setChapterNumber}
+              chapterTitle={chapterTitle}
+              setChapterTitle={setChapterTitle}
               onImagesSelect={(files) => {
                 const newImgs = files.map(file => ({
                   id: Date.now() + Math.random(),
@@ -97,6 +100,7 @@ export default function CreateChapter() {
                 toast.success(`Đã thêm ${newImgs.length} ảnh!`);
               }}
             />
+
             <StatsBox totalPages={images.length} />
           </div>
 

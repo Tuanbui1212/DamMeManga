@@ -8,7 +8,6 @@ export default function MangaList({ mangaData, title, colorBackground }) {
   const scrollRef = useRef(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
-  //const [mangaData, setMangaData] = useState([]);
 
   const checkScroll = () => {
     if (!scrollRef.current) return;

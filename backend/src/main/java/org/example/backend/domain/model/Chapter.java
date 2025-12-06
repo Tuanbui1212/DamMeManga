@@ -20,7 +20,8 @@ public class Chapter {
 
     private String title;
 
-    public Chapter() {}
+    public Chapter() {
+    }
 
     public Chapter(MangaDetail manga, Integer chapterNumber, String title) {
         this.manga = manga;
@@ -28,15 +29,35 @@ public class Chapter {
         this.title = title;
     }
 
-    public String getIdChapter() { return idChapter; }
-    public void setIdChapter(String idChapter) { this.idChapter = idChapter; }
+    public String getIdChapter() {
+        return idChapter;
+    }
 
-    public MangaDetail getManga() { return manga; }
-    public void setManga(MangaDetail manga) { this.manga = manga; }
+    public void setIdChapter(String idChapter) {
+        this.idChapter = idChapter;
+    }
 
-    public Integer getChapterNumber() { return chapterNumber; }
-    public void setChapterNumber(Integer chapterNumber) { this.chapterNumber = chapterNumber; }
+    public MangaDetail getManga() {
+        return manga;
+    }
 
-    public String getTitle() { return title; }
-    public void setTitle(String title) { this.title = title; }
+    public void setManga(MangaDetail manga) {
+        this.manga = manga;
+    }
+
+    public Integer getChapterNumber() {
+        return chapterNumber;
+    }
+
+    public void setChapterNumber(Integer chapterNumber) {
+        this.chapterNumber = chapterNumber;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
 }
