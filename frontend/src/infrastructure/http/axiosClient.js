@@ -1,21 +1,20 @@
 import axios from "axios";
 
 const axiosClient = axios.create({
-    baseURL: "http://localhost:8080/api",
-    headers: {
-        "Content-Type": "application/json",
-    },
+  baseURL: import.meta.env.VITE_API_URL || "http://localhost:8080/api",
+  headers: {
+    "Content-Type": "application/json",
+  },
 });
 
-// Tự động thêm token vào header
 axiosClient.interceptors.request.use((config) => {
-    const user = JSON.parse(localStorage.getItem("user")); // lấy user object
-    const token = user?.token || localStorage.getItem("token"); // ưu tiên user.token
+  const user = JSON.parse(localStorage.getItem("user")); // lấy user object
+  const token = user?.token || localStorage.getItem("token"); // ưu tiên user.token
 
-    if (token) {
-        config.headers["Authorization"] = `Bearer ${token}`;
-    }
-    return config;
+  if (token) {
+    config.headers["Authorization"] = `Bearer ${token}`;
+  }
+  return config;
 });
 
 export default axiosClient;
