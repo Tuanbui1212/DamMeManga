@@ -7,21 +7,13 @@ import ChapterForm from "./ChapterForm";
 import ImageGrid from "./ImageGrid";
 import StatsBox from "./StatsBox";
 
-import ChapterService from "../../../../usecases/ChapterService";
-import ImgChapterService from "../../../../usecases/ImgChapterService";
-
-const chapterService = new ChapterService();
-const imgChapterService = new ImgChapterService();
-
-const IMGBB_API_KEY =
-  import.meta.env.VITE_IMGBB_API_KEY || "1fe8328c19b307b8297528ca80f9e887";
+const IMGBB_API_KEY = "0340594a6f5577fe462eb5783e474022";
 
 export default function CreateChapter() {
-  const { id } = useParams();
+  const { storyId } = useParams();
   const navigate = useNavigate();
 
   const [chapterNumber, setChapterNumber] = useState("");
-  const [title, setTitle] = useState("");
   const [images, setImages] = useState([]);
   const [isSaving, setIsSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
@@ -29,34 +21,18 @@ export default function CreateChapter() {
 
 
   useEffect(() => {
-    const fetchData = async () => {
-      const data = await chapterService.getChaptersByMangaId(id);
-
-      if (data && data.length > 0) {
-        const maxNumber = data.reduce((max, chapter) => {
-          return chapter.chapterNumber > max ? chapter.chapterNumber : max;
-        }, 0);
-
-        setChapterNumber(maxNumber + 1);
-      } else {
-        setChapterNumber(1);
-      }
-    };
-    fetchData();
-  }, [id, chapterService]);
+    setChapterNumber(31);
+  }, []);
 
   const uploadToImgBB = async (file) => {
     const form = new FormData();
     form.append("image", file);
 
     try {
-      const res = await fetch(
-        `https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`,
-        {
-          method: "POST",
-          body: form,
-        }
-      );
+      const res = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
+        method: "POST",
+        body: form,
+      });
       const data = await res.json();
       return data.success ? data.data.url : null;
     } catch (err) {
@@ -74,59 +50,25 @@ export default function CreateChapter() {
     setIsSaving(true);
     setUploading(true);
 
-    try {
-      const uploadedURLs = [];
-      for (const img of images) {
-        const url = await uploadToImgBB(img.file);
-        if (url) uploadedURLs.push(url);
-      }
-
-      setUploading(false);
-
-      if (uploadedURLs.length !== images.length) {
-        toast.error("Một số ảnh không thể upload! Vui lòng thử lại.");
-        return;
-      }
-
-      // --- TẠO CHAPTER ---
-      const response = await chapterService.createChapter({
-        idManga: id,
-        chapterNumber: chapterNumber,
-        title: title || `Không có tiêu đề`,
-      });
-
-      // Lấy ID từ response
-      const newChapterId = response?.data?.idChapter;
-
-      if (!newChapterId) {
-        throw new Error("API không trả về ID Chapter!");
-      }
-
-      console.log("Đã tạo Chapter ID:", newChapterId);
-
-      // --- LƯU ẢNH VÀO DB ---
-      const imgRequests = uploadedURLs.map((url, index) => ({
-        chapterId: newChapterId,
-        stt: index + 1,
-        imgLink: url,
-      }));
-
-      console.log(imgRequests);
-
-      await imgChapterService.createImgChapters(imgRequests);
-
-      toast.success("Thêm chapter thành công!");
-
-      setTimeout(() => {
-        navigate(`/manga-detail-management/${id}`);
-      }, 1000);
-    } catch (error) {
-      console.error("Lỗi quy trình lưu:", error);
-      toast.error("Có lỗi xảy ra! Vui lòng kiểm tra lại server.");
-    } finally {
-      setIsSaving(false);
-      setUploading(false);
+    const uploadedURLs = [];
+    for (const img of images) {
+      const url = await uploadToImgBB(img.file);
+      if (url) uploadedURLs.push(url);
     }
+
+    setUploading(false);
+
+    if (uploadedURLs.length !== images.length) {
+      toast.error("Một số ảnh không thể upload!");
+      setIsSaving(false);
+      return;
+    }
+
+    console.log("Chapter saved:", { storyId, chapterNumber, pages: uploadedURLs });
+    toast.success("Thêm chapter thành công!");
+    setIsSaving(false);
+
+    navigate(`/admin/manga-detail-management/${storyId}`);
   };
 
   return (
@@ -146,15 +88,15 @@ export default function CreateChapter() {
             <ChapterForm
               chapterNumber={chapterNumber}
               setChapterNumber={setChapterNumber}
-              title={title}
-              setTitle={setTitle}
+              chapterTitle={chapterTitle}
+              setChapterTitle={setChapterTitle}
               onImagesSelect={(files) => {
-                const newImgs = files.map((file) => ({
+                const newImgs = files.map(file => ({
                   id: Date.now() + Math.random(),
                   preview: URL.createObjectURL(file),
                   file,
                 }));
-                setImages((prev) => [...prev, ...newImgs]);
+                setImages(prev => [...prev, ...newImgs]);
                 toast.success(`Đã thêm ${newImgs.length} ảnh!`);
               }}
             />
@@ -167,7 +109,7 @@ export default function CreateChapter() {
             <ImageGrid
               images={images}
               onRemove={(id) => {
-                setImages((prev) => prev.filter((img) => img.id !== id));
+                setImages(prev => prev.filter(img => img.id !== id));
                 toast.success("Đã xóa ảnh!");
               }}
               onReorder={(newOrder) => setImages(newOrder)}

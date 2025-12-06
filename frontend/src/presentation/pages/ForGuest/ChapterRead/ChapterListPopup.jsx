@@ -1,12 +1,4 @@
-import { useNavigate } from "react-router-dom";
-
-export default function ChapterListPopup({
-  mangaId,
-  allChapters,
-  chapterNumber,
-  setShowChapterList,
-}) {
-  const navigate = useNavigate();
+export default function ChapterListPopup({ allChapters, chapterNumber, setShowChapterList }) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 px-4">
       <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md max-h-[80vh] overflow-hidden flex flex-col">
@@ -20,15 +12,15 @@ export default function ChapterListPopup({
                 key={index}
                 onClick={() => {
                   setShowChapterList(false);
-                  navigate(`/mangas/${mangaId}/chapter/${chap.idChapter}`);
+                  window.location.href = `#`;
                 }}
                 className={`py-2 px-3 rounded-lg text-sm font-medium transition ${
-                  Number(chapterNumber) === chap.idChapter
+                  index + 1 === chapterNumber
                     ? "bg-blue-600 text-white"
                     : "bg-gray-100 hover:bg-gray-200 text-gray-800"
                 }`}
               >
-                Chap {chap.chapterNumber}
+                {chap}
               </button>
             ))}
           </div>

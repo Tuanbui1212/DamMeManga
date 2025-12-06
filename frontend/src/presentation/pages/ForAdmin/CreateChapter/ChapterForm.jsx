@@ -4,8 +4,8 @@ import ImageUploader from "./common/ImageUploader";
 export default function ChapterForm({
   chapterNumber,
   setChapterNumber,
-  title,
-  setTitle,
+  chapterTitle,    
+  setChapterTitle,   
   onImagesSelect,
 }) {
   return (
@@ -24,16 +24,17 @@ export default function ChapterForm({
         />
       </div>
 
+      {/* Title chapter */}
       <div>
         <label className="block text-sm font-medium text-gray-300 mb-2">
-          Tiêu đề chapter
+          Tiêu đề chapter <span className="text-gray-500">(không bắt buộc)</span>
         </label>
         <input
           type="text"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          className="w-full px-5 py-3.5 bg-gray-900 border border-gray-700 rounded-lg focus:ring-2 focus:ring-green-500 focus:outline-none transition text-lg font-medium"
-          placeholder="Hãy nhập nội dung"
+          value={chapterTitle || ""}
+          onChange={(e) => setChapterTitle(e.target.value)}
+          className="w-full px-5 py-3.5 bg-gray-900 border border-gray-700 rounded-lg focus:ring-2 focus:ring-green-500 focus:outline-none transition text-lg"
+          placeholder="Tiêu đề chapter"
         />
       </div>
 

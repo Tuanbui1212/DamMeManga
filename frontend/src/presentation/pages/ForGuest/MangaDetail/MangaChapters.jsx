@@ -1,5 +1,4 @@
-function MangaChapters({ idManga, chapters }) {
-
+function MangaChapters({ chapters }) {
   return (
     <div className="w-2/3">
       <div className="text-xs font-bold text-gray-600 uppercase mb-3">
@@ -9,11 +8,11 @@ function MangaChapters({ idManga, chapters }) {
         {chapters.map((ch) => (
           <a
             key={ch.idChapter}
-            href={`/mangas/${idManga}/chapter/${ch.idChapter}`}
+            href={`/chapter/${ch.id}`}
             className="flex justify-between items-center bg-white hover:bg-blue-50 p-3 mb-2 rounded-lg border border-gray-100 transition"
           >
             <span className="font-semibold text-gray-700">
-              Chapter {ch.chapterNumber}: {ch.title}
+              Chươnng {ch.chapterNumber} {ch.title}
             </span>
             <span className="text-xs text-gray-500">{ch.date}</span>
           </a>

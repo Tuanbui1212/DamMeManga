@@ -9,18 +9,9 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Optional;
 
-interface JpaChapterRepository extends JpaRepository<Chapter, Long> {
-
-    @Query("""
-    SELECT c FROM Chapter c 
-    JOIN FETCH c.manga 
-    WHERE c.manga.idManga = ?1
-    """)
-    List<Chapter> getChaptersByMangaId(String mangaId);
-}
-
 @Repository
 public class ChapterRepositoryImpl implements ChapterRepository {
+
     @Autowired
     private JpaChapterRepository jpaChapterRepository;
 
@@ -35,7 +26,7 @@ public class ChapterRepositoryImpl implements ChapterRepository {
     }
 
     @Override
-    public Optional<Chapter> findById(Long id) {
+    public Optional<Chapter> findById(String id) {
         return jpaChapterRepository.findById(id);
     }
 
@@ -45,7 +36,7 @@ public class ChapterRepositoryImpl implements ChapterRepository {
     }
 
     @Override
-    public void deleteById(Long id) {
+    public void deleteById(String id) {
         jpaChapterRepository.deleteById(id);
     }
 

@@ -68,6 +68,7 @@ public class MangaDetail {
         return author != null ? author.getNameAuthor() : null;
     }
 
+
     @PreUpdate
     protected void onUpdate() {
         updatedAt = LocalDateTime.now();
