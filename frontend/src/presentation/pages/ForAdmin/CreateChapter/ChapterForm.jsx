@@ -1,4 +1,4 @@
-// src/components/create-chapter/ChapterForm.jsx (phiên bản đã hoàn thiện)
+// src/components/create-chapter/ChapterForm.jsx
 import ImageUploader from "./common/ImageUploader";
 
 export default function ChapterForm({
