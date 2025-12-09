@@ -16,7 +16,7 @@ public interface HistoryChapterRepository {
 
     void deleteById(Long idHistoryChapter);
 
-    Optional<HistoryChapter> findByHistoryAndChapter(String idHistory, Long  idChapter);
+    Optional<HistoryChapter> findByHistoryAndChapter(String idHistory, Long idChapter);
 
     List<HistoryChapterDTO> findByHistoryId(String idHistory);
 
