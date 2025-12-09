@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo, useRef } from "react";
+import { Link } from "react-router-dom";
 import toast, { Toaster } from "react-hot-toast";
 
 import MangaDetailService from "../../../../usecases/MangaDetailService";
@@ -8,11 +9,9 @@ export default function FollowingPage() {
   const [followingMangas, setFollowingMangas] = useState([]);
   const userId = localStorage.getItem("userId");
 
-  // Service chỉ tạo 1 lần
   const mangaService = useMemo(() => new MangaDetailService(), []);
   const followService = useMemo(() => new FollowService(), []);
 
-  // CHỐT CHẶN LỖI GỌI API NHIỀU LẦN
   const didFetchRef = useRef(false);
 
   const timeAgo = (timestamp) => {
@@ -28,8 +27,7 @@ export default function FollowingPage() {
 
   useEffect(() => {
     if (!userId) return;
-
-    if (didFetchRef.current) return; 
+    if (didFetchRef.current) return;
     didFetchRef.current = true;
 
     const fetchFollowing = async () => {
@@ -38,20 +36,24 @@ export default function FollowingPage() {
 
         const mangas = await Promise.all(
           follows.map(async (f) => {
-            const manga = await mangaService.getMangaWithChapters(f.mangaId);
+            const manga = await mangaService.getMangaWithChapters(
+              f.mangaId
+            );
 
             const lastChapterObj =
               manga.chapters?.[manga.chapters.length - 1] || null;
 
             return {
               followId: f.id,
-              id: manga.id,
+              id: manga.id_manga, // ✨ SỬA Ở ĐÂY
               title: manga.name_manga,
               cover: manga.poster_url,
-              lastChapter: lastChapterObj ? lastChapterObj.chapterNumber : "0",
+              lastChapter: lastChapterObj
+                ? lastChapterObj.chapterNumber
+                : "0",
               chapterLink: lastChapterObj
-                ? `/mangas/${manga.id}/chapters/${lastChapterObj.id}`
-                : "#",
+                ? `/mangas/${manga.id_manga}/chapters/${lastChapterObj.id}`
+                : "#", // ✨ SỬA Ở ĐÂY
               updatedAgo: timeAgo(manga.updated_at),
             };
           })
@@ -97,8 +99,8 @@ export default function FollowingPage() {
           {followingMangas.map((manga) => (
             <div key={manga.followId} className="flex flex-col">
               <div className="relative group">
-                <a
-                  href={`/mangas/${manga.id}`}
+                <Link
+                  to={`/mangas/${manga.id}`}
                   className="block rounded-lg shadow hover:shadow-lg transition overflow-hidden"
                 >
                   <img
@@ -107,7 +109,7 @@ export default function FollowingPage() {
                     className="w-full h-auto object-cover aspect-[3/4.5]"
                     loading="lazy"
                   />
-                </a>
+                </Link>
 
                 <button
                   onClick={() =>
@@ -126,21 +128,22 @@ export default function FollowingPage() {
               </div>
 
               <div className="mt-2">
-                <a href={`/mangas/${manga.id}`}>
+                <Link to={`/mangas/${manga.id}`}>
                   <h3 className="font-bold text-sm text-gray-800 line-clamp-2 hover:text-blue-600">
                     {manga.title}
                   </h3>
-                </a>
+                </Link>
+
                 <h4 className="text-xs text-gray-700 uppercase tracking-wide mt-1">
-                  <a
-                    href={manga.chapterLink}
+                  <Link
+                    to={manga.chapterLink}
                     className="hover:text-blue-600"
                   >
                     <span className="font-semibold">
                       C. {manga.lastChapter}
                     </span>{" "}
                     - <span>{manga.updatedAgo}</span>
-                  </a>
+                  </Link>
                 </h4>
               </div>
             </div>

@@ -76,7 +76,7 @@ public class MangaUseCase {
         }
         if (updates.containsKey("authorId")) {
             String authorId = (String) updates.get("authorId");
-            Author newAuthor = authorRepository.findById(authorId)
+            Author newAuthor = authorRepository.getAuthorById(authorId)
                     .orElseThrow(() -> new RuntimeException("Author không tồn tại"));
             old.setAuthor(newAuthor);
         }

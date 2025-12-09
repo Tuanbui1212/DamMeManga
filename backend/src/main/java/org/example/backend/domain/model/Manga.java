@@ -41,7 +41,6 @@ public class Manga {
     private LocalDateTime updateAt;
 
     public Manga() {
-        // id + timestamp tự sinh khi tạo object
         this.idManga = UUID.randomUUID().toString();
         this.createAt = LocalDateTime.now();
         this.updateAt = LocalDateTime.now();

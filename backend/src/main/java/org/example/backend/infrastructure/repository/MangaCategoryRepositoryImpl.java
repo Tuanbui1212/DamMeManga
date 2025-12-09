@@ -2,20 +2,36 @@ package org.example.backend.infrastructure.repository;
 
 import org.example.backend.domain.model.MangaCategory;
 import org.example.backend.domain.repository.MangaCategoryRepository;
-import org.example.backend.infrastructure.repository.jpa.MangaCategoryJpaRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
 
+interface JpaMangaCategoryRepository extends JpaRepository<MangaCategory, String> {
+
+    long countByCategory_NameCategory(String nameCategory);
+
+    long countByCategory_IdCategory(String idCategory);
+
+    @Query("""
+        SELECT mc FROM MangaCategory mc
+        JOIN FETCH mc.manga
+        JOIN FETCH mc.category
+        WHERE mc.manga.idManga = :idManga
+        """)
+    List<MangaCategory> findByMangaIdWithCategory(@Param("idManga") String idManga);
+}
+
+
 @Repository
 public class MangaCategoryRepositoryImpl implements MangaCategoryRepository {
 
-    private final MangaCategoryJpaRepository jpaRepository;
-
-    public MangaCategoryRepositoryImpl(MangaCategoryJpaRepository jpaRepository) {
-        this.jpaRepository = jpaRepository;
-    }
+    @Autowired
+    private JpaMangaCategoryRepository jpaRepository;
 
     @Override
     public List<MangaCategory> getAll() {
@@ -49,6 +65,7 @@ public class MangaCategoryRepositoryImpl implements MangaCategoryRepository {
 
     @Override
     public void syncCategoriesForManga(String idManga, List<String> categoryIds) {
+        // Bạn chưa implement → để nguyên
     }
 
     @Override
@@ -70,5 +87,4 @@ public class MangaCategoryRepositoryImpl implements MangaCategoryRepository {
     public List<MangaCategory> findByMangaIdWithCategory(String idManga) {
         return jpaRepository.findByMangaIdWithCategory(idManga);
     }
-
 }

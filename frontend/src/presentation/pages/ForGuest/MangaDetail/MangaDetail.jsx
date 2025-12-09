@@ -37,31 +37,39 @@ function MangaDetailPage() {
 
   useEffect(() => {
     const fetchData = async () => {
-      const data = await service.getMangaWithChapters(id);
+      try {
+        const data = await service.getMangaWithChapters(id);
 
-      setMangaInfo({
-        title: data.name_manga,
-        authors: data.author_id || "Đoán xem ai là Tác giả",
-        posterUrl: data.banner_url,
-        mainImageUrl: data.poster_url,
-        lastUpdate: timeAgo(data.updated_at),
-      });
-      setChapters(
-        [...data.chapters].sort((a, b) => b.chapterNumber - a.chapterNumber)
-      );
-      setStatsData({
-        chaptersCount: data.chapters?.length || 30,
-        views: data.count_view || 0,
-      });
+        setMangaInfo({
+          title: data.name_manga,
+          authors: data.author_id || "Đoán xem ai là Tác giả",
+          posterUrl: data.banner_url,
+          mainImageUrl: data.poster_url,
+          description: data.description || "Không có mô tả.", 
+          lastUpdate: timeAgo(data.updated_at),
+        });
+
+        setChapters(
+          [...data.chapters].sort((a, b) => b.chapterNumber - a.chapterNumber)
+        );
+
+        setStatsData({
+          chaptersCount: data.chapters?.length || 30,
+          views: data.count_view || 0,
+        });
 
         const categories = await mangaCategoryService.getCategoriesByManga(id);
         setGenres(categories);
+
       } catch (err) {
         toast.error("Lỗi tải dữ liệu manga!");
         console.error(err);
       }
-    })();
+    };
+
+    fetchData();
   }, [id]);
+
 
   const handleAddComment = () => {
     if (!newComment.trim()) return;
@@ -71,7 +79,7 @@ function MangaDetailPage() {
     toast.success("Bình luận đã được thêm!");
   };
 
-  if (!mangaInfo) return <div>Đang tải...</div>;
+  if (!mangaInfo) return <div className="h-screen">Đang tải...</div>;
 
   return (
     <>
@@ -82,7 +90,7 @@ function MangaDetailPage() {
       <Toaster position="top-right" />
 
       <div className="quicksand-uniquifier">
-        <div className="h-400 bg-gray-300 relative inset-0">
+        <div className="h-500 bg-gray-300 relative inset-0">
           <div className="mx-40 bg-white absolute inset-0 rounded-xl my-20 overflow-hidden">
             <div className="flex flex-col">
               <MangaPoster posterUrl={mangaInfo.posterUrl} />
