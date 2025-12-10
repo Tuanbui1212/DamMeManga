@@ -3,19 +3,21 @@ package org.example.backend.infrastructure.repository;
 import org.example.backend.domain.model.Comment;
 import org.example.backend.domain.repository.CommentRepository;
 import org.springframework.stereotype.Repository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 import java.util.Optional;
 
+interface JpaCommentRepository extends JpaRepository<Comment,Long> {
+    List<Comment> findByIdChapter(Long idChapter);
+}
+
 @Repository
 public class CommentRepositoryImpl implements CommentRepository {
 
-    private final JpaCommentRepository jpaCommentRepository;
-
-    public CommentRepositoryImpl(JpaCommentRepository jpaCommentRepository) {
-        this.jpaCommentRepository = jpaCommentRepository;
-    }
+    @Autowired
+    private JpaCommentRepository jpaCommentRepository;
 
     @Override
     public Comment save(Comment comment) {
@@ -43,12 +45,7 @@ public class CommentRepositoryImpl implements CommentRepository {
     }
 
     @Override
-    public List<Comment> findByChapterId(Long id_chapter) {
-        return jpaCommentRepository.findByIdChapter(id_chapter);
-    }
-
-    // Inner interface JpaRepository
-    interface JpaCommentRepository extends JpaRepository<Comment, Long> {
-        List<Comment> findByIdChapter(Long id_chapter);
+    public List<Comment> findByChapterId(Long idChapter) {
+        return jpaCommentRepository.findByIdChapter(idChapter);
     }
 }

@@ -8,32 +8,32 @@ import "swiper/css";
 import "swiper/css/pagination";
 import "swiper/css/navigation";
 
-export default function SlideShow() {
+export default function SlideShow({bannerData}) {
 
     ////////////////////////////////////////////////// TẠM THỜI TEST //////////////////////////////////////////////////////
-    const bannerData = [
-        {
-            id: 1,
-            image:
-                "https://ik.imagekit.io/cuongphung241103/BTL_JAVA/PosterManga/OnePunchManPoster.jpg?updatedAt=1762702479396",
-            title: "One Punch Man",
-            description: "Saitama – anh hùng mạnh nhất chỉ cần một đấm để kết liễu mọi kẻ thù!",
-        },
-        {
-            id: 2,
-            image:
-                "https://ik.imagekit.io/cuongphung241103/BTL_JAVA/PosterManga/Chainsawman.jpg?updatedAt=1763273184710",
-            title: "Chainsaw Man",
-            description: "Denji – chàng trai bán thân cho quỷ để trở thành người cưa máy sống!",
-        },
-        {
-            id: 3,
-            image:
-                "https://ik.imagekit.io/cuongphung241103/BTL_JAVA/PosterManga/Chainsawman.jpg?updatedAt=1763273184710",
-            title: "Chainsaw Man",
-            description: "Denji – chàng trai bán thân cho quỷ để trở thành người cưa máy sống!",
-        },
-    ];
+    // const bannerData = [
+    //     {
+    //         id: 1,
+    //         image:
+    //             "https://ik.imagekit.io/cuongphung241103/BTL_JAVA/PosterManga/OnePunchManPoster.jpg?updatedAt=1762702479396",
+    //         title: "One Punch Man",
+    //         description: "Saitama – anh hùng mạnh nhất chỉ cần một đấm để kết liễu mọi kẻ thù!",
+    //     },
+    //     {
+    //         id: 2,
+    //         image:
+    //             "https://ik.imagekit.io/cuongphung241103/BTL_JAVA/PosterManga/Chainsawman.jpg?updatedAt=1763273184710",
+    //         title: "Chainsaw Man",
+    //         description: "Denji – chàng trai bán thân cho quỷ để trở thành người cưa máy sống!",
+    //     },
+    //     {
+    //         id: 3,
+    //         image:
+    //             "https://ik.imagekit.io/cuongphung241103/BTL_JAVA/PosterManga/Chainsawman.jpg?updatedAt=1763273184710",
+    //         title: "Chainsaw Man",
+    //         description: "Denji – chàng trai bán thân cho quỷ để trở thành người cưa máy sống!",
+    //     },
+    // ];
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     return (

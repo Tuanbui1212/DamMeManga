@@ -1,8 +1,27 @@
 import { X, Send } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import CommentService from "../../../../usecases/CommetService";
+import { useParams } from "react-router-dom";
 
 export default function CommentSidebar({ isOpen, onClose }) {
+  const { chapterId } = useParams();
   const [comment, setComment] = useState("");
+  const [commentsData, setCommentsData] = useState([]);
+
+  const commentService = new CommentService();
+
+  useEffect(() => {
+    const fetchComments = async () => {
+      try {
+        const dateComments = await commentService.getCommentsByChapter(chapterId);
+        console.log("Fetched comments:", dateComments);
+        setCommentsData(dateComments);
+      } catch (error) {
+        console.error("Error fetching comments:", error);
+      }
+    };
+    fetchComments();
+  }, [chapterId]);
 
   // Dữ liệu giả lập bình luận (sau này thay bằng API)
   const comments = [
@@ -24,9 +43,8 @@ export default function CommentSidebar({ isOpen, onClose }) {
 
       {/* Sidebar */}
       <div
-        className={`fixed top-0 left-0 h-full w-80 bg-white shadow-2xl z-50 transform transition-transform duration-300 ease-in-out ${
-          isOpen ? "translate-x-0" : "-translate-x-full"
-        }`}
+        className={`fixed top-0 left-0 h-full w-80 bg-white shadow-2xl z-50 transform transition-transform duration-300 ease-in-out ${isOpen ? "translate-x-0" : "-translate-x-full"
+          }`}
       >
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b">
@@ -41,18 +59,18 @@ export default function CommentSidebar({ isOpen, onClose }) {
 
         {/* Danh sách bình luận */}
         <div className="flex-1 overflow-y-auto p-4 space-y-4">
-          {comments.map((cmt) => (
-            <div key={cmt.id} className="flex gap-3">
+          {commentsData.map((cmt) => (
+            <div key={cmt.idComment} className="flex gap-3">
               <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex-shrink-0 flex items-center justify-center text-white font-bold text-sm">
-                {cmt.user[0]}
+                {cmt.user[0] || "A"}
               </div>
               <div className="flex-1">
                 <div className="flex items-center gap-2">
-                  <span className="font-semibold text-sm">{cmt.user}</span>
+                  <span className="font-semibold text-sm">{cmt.user || "Anonymous"}</span>
                   {cmt.isKing && <span className="text-xs bg-yellow-500 text-white px-2 py-0.5 rounded-full">KING</span>}
                 </div>
-                <p className="text-gray-800 text-sm mt-1">{cmt.content}</p>
-                <span className="text-xs text-gray-500 mt-1 block">{cmt.time}</span>
+                <p className="text-gray-800 text-sm mt-1">{cmt.title}</p>
+                <span className="text-xs text-gray-500 mt-1 block">{cmt.createAt}</span>
               </div>
             </div>
           ))}

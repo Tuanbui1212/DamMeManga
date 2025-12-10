@@ -38,8 +38,9 @@ public class CommentController {
     }
 
     @DeleteMapping("/{id}")
-    public void deleteComment(@PathVariable Long id) {
+    public String deleteComment(@PathVariable Long id) {
         commentUseCase.deleteComment(id);
+        return "Comment with ID " + id + " has been deleted.";
     }
 
     @GetMapping("/chapter/{chapterId}")

@@ -6,9 +6,9 @@ import java.util.Optional;
 
 public interface CommentRepository {
     Comment save(Comment comment);
-    Optional<Comment> findById(Long id);
+    Optional<Comment> findById(Long idComment);
     List<Comment> findAll();
     Comment update(Comment comment);
-    void delete(Long id);
-    List<Comment> findByChapterId(Long id_chapter);
+    void delete(Long idComment);
+    List<Comment> findByChapterId(Long idChapter);
 }
