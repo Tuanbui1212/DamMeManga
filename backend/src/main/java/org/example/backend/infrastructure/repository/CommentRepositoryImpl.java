@@ -2,6 +2,7 @@ package org.example.backend.infrastructure.repository;
 
 import org.example.backend.domain.model.Comment;
 import org.example.backend.domain.repository.CommentRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;

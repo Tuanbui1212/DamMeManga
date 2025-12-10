@@ -1,6 +1,7 @@
 package org.example.backend.presentation.controller;
 
 import org.example.backend.domain.model.Comment;
+import org.example.backend.infrastructure.dto.CommentResponse;
 import org.example.backend.usecase.CommentUseCase;
 import org.springframework.web.bind.annotation.*;
 
@@ -44,7 +45,7 @@ public class CommentController {
     }
 
     @GetMapping("/chapter/{chapterId}")
-    public List<Comment> getCommentsByChapter(@PathVariable Long chapterId) {
+    public List<CommentResponse> getCommentsByChapter(@PathVariable Long chapterId) {
         return commentUseCase.getCommentsByChapter(chapterId);
     }
 }

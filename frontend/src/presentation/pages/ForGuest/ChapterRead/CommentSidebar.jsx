@@ -1,35 +1,63 @@
 import { X, Send } from "lucide-react";
 import { useEffect, useState } from "react";
-import CommentService from "../../../../usecases/CommetService";
 import { useParams } from "react-router-dom";
+
+import CommentService from "../../../../usecases/CommetService";
 
 export default function CommentSidebar({ isOpen, onClose }) {
   const { chapterId } = useParams();
+  const user = JSON.parse(localStorage.getItem("user"));
+
   const [comment, setComment] = useState("");
   const [commentsData, setCommentsData] = useState([]);
 
   const commentService = new CommentService();
 
+  function timeAgo(dateString) {
+    const now = new Date();
+    const date = new Date(dateString);
+    const diff = (now - date) / 1000; // tính bằng giây
+
+    if (diff < 60) return "vừa xong";
+    if (diff < 3600) return Math.floor(diff / 60) + " phút trước";
+    if (diff < 86400) return Math.floor(diff / 3600) + " giờ trước";
+    if (diff < 2592000) return Math.floor(diff / 86400) + " ngày trước";
+    if (diff < 31536000) return Math.floor(diff / 2592000) + " tháng trước";
+    return Math.floor(diff / 31536000) + " năm trước";
+  }
+
+  const fetchComments = async () => {
+    try {
+      const dataComments = await commentService.getCommentsByChapter(chapterId);
+      console.log("Fetched comments:", dataComments);
+      const sortData = [...dataComments].sort(
+        (a, b) => new Date(b.createAt) - new Date(a.createAt)
+      );
+
+      setCommentsData(sortData);
+    } catch (error) {
+      console.error("Error fetching comments:", error);
+    }
+  };
+
   useEffect(() => {
-    const fetchComments = async () => {
-      try {
-        const dateComments = await commentService.getCommentsByChapter(chapterId);
-        console.log("Fetched comments:", dateComments);
-        setCommentsData(dateComments);
-      } catch (error) {
-        console.error("Error fetching comments:", error);
-      }
-    };
     fetchComments();
   }, [chapterId]);
 
-  // Dữ liệu giả lập bình luận (sau này thay bằng API)
-  const comments = [
-    { id: 1, user: "SaitamaFan123", content: "Chap này đỉnh quá trời ơi!", time: "5 phút trước" },
-    { id: 2, user: "GenosCyborg", content: "Sensei lại one punch nữa rồi", time: "10 phút trước" },
-    { id: 3, user: "TatsumakiBestGirl", content: "Sao Garou chưa xuất hiện vậy trời", time: "15 phút trước" },
-    { id: 4, user: "KingEngine", content: "KING ENGINE VROOM VROOM", time: "1 giờ trước", isKing: true },
-  ];
+  const handleComment = async () => {
+    try {
+      const formData = {
+        idUser: user.idUser,
+        idChapter: chapterId,
+        title: comment,
+      };
+      await commentService.createComment(formData);
+      fetchComments();
+      setComment("");
+    } catch (error) {
+      console.error("Error creating comment:", error);
+    }
+  };
 
   return (
     <>
@@ -43,8 +71,9 @@ export default function CommentSidebar({ isOpen, onClose }) {
 
       {/* Sidebar */}
       <div
-        className={`fixed top-0 left-0 h-full w-80 bg-white shadow-2xl z-50 transform transition-transform duration-300 ease-in-out ${isOpen ? "translate-x-0" : "-translate-x-full"
-          }`}
+        className={`fixed top-0 left-0 h-full w-80 bg-white shadow-2xl z-50 transform transition-transform duration-300 ease-in-out ${
+          isOpen ? "translate-x-0" : "-translate-x-full"
+        }`}
       >
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b">
@@ -62,15 +91,21 @@ export default function CommentSidebar({ isOpen, onClose }) {
           {commentsData.map((cmt) => (
             <div key={cmt.idComment} className="flex gap-3">
               <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex-shrink-0 flex items-center justify-center text-white font-bold text-sm">
-                {cmt.user[0] || "A"}
+                {cmt.nameUser[0]}
               </div>
               <div className="flex-1">
                 <div className="flex items-center gap-2">
-                  <span className="font-semibold text-sm">{cmt.user || "Anonymous"}</span>
-                  {cmt.isKing && <span className="text-xs bg-yellow-500 text-white px-2 py-0.5 rounded-full">KING</span>}
+                  <span className="font-semibold text-sm">{cmt.nameUser}</span>
+                  {cmt.isKing && (
+                    <span className="text-xs bg-yellow-500 text-white px-2 py-0.5 rounded-full">
+                      KING
+                    </span>
+                  )}
                 </div>
                 <p className="text-gray-800 text-sm mt-1">{cmt.title}</p>
-                <span className="text-xs text-gray-500 mt-1 block">{cmt.createAt}</span>
+                <span className="text-xs text-gray-500 mt-1 block">
+                  {timeAgo(cmt.createAt)}
+                </span>
               </div>
             </div>
           ))}
@@ -85,10 +120,10 @@ export default function CommentSidebar({ isOpen, onClose }) {
               onChange={(e) => setComment(e.target.value)}
               placeholder="Viết bình luận..."
               className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              onKeyDown={(e) => e.key === "Enter" && setComment("")}
+              onKeyDown={(e) => e.key === "Enter" && handleComment()}
             />
             <button
-              onClick={() => comment && setComment("")}
+              onClick={() => handleComment()}
               className="bg-blue-600 hover:bg-blue-700 text-white p-2 rounded-lg transition"
             >
               <Send size={20} />
