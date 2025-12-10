@@ -11,7 +11,7 @@ export default function ChapterPages({ pages, containerRef, showUI }) {
       {pages.map((url, index) => (
         <div
           key={index}
-          className="w-full flex items-center justify-center bg-gray-100"
+          className="w-full flex items-center justify-center bg-gray-900"
         >
           <img
             src={url.imgLink}
