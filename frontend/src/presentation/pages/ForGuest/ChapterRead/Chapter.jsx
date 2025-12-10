@@ -46,6 +46,7 @@ function ChapterReadPage() {
   const lastScrollY = useRef(0);
 
   const scrollToTop = () => {
+    console.log("chay ham load");
     containerRef.current?.scrollTo({ top: 0, behavior: "smooth" });
   };
 
@@ -55,9 +56,9 @@ function ChapterReadPage() {
       console.log(data);
       setDataImgChapter(data.length !== 0 ? data : pagesData);
     };
-
+    scrollToTop();
     fetchImgChapter();
-  }, []);
+  }, [chapterId]);
 
   useEffect(() => {
     const fetchAllChapter = async () => {
@@ -109,7 +110,7 @@ function ChapterReadPage() {
         className="absolute bottom-0 w-full"
       >
         <ChapterNavigation
-          mangaId={id} // bạn thay bằng id thật sau
+          mangaId={id}
           chapterNumber={
             allChapters.find((ch) => ch.idChapter === Number(chapterId))
               ?.chapterNumber

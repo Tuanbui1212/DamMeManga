@@ -23,9 +23,11 @@ export default function ChapterNavigation({
       ? allChapters.find((ch) => ch.chapterNumber === chapterNumber - 1)
           ?.idChapter
       : null;
-  //const nextChapter = chapterNumber < totalChapters ? chapterNumber + 1 : null;
+  const maxChapterNumber = [...allChapters].sort(
+    (a, b) => b.chapterNumber - a.chapterNumber
+  )[0]?.chapterNumber;
   const nextChapter =
-    chapterNumber < totalChapters
+    chapterNumber < maxChapterNumber
       ? allChapters.find((ch) => ch.chapterNumber === chapterNumber + 1)
           ?.idChapter
       : null;

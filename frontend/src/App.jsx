@@ -3,7 +3,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import DefaultLayout from "./presentation/Layouts/DefaultLayout";
 import { publicRoutes, privateRoutes } from "./presentation/routes";
 import AdminRoute from "./presentation/routes/AdminRoute";
-import './lib/chart'
+import "./lib/chart";
 
 export default function App() {
   return (
