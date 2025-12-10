@@ -72,11 +72,12 @@ function ChapterReadPage() {
       } catch (err) {
         console.error("Lỗi khi load ảnh chapter:", err);
       } finally {
-        setIsLoadingChapter(false); // tắt overlay
+        setIsLoadingChapter(false);
       }
     };
     fetchImgChapter();
   }, [chapterId]);
+
 
   useEffect(() => {
     const fetchAllChapter = async () => {
@@ -105,6 +106,13 @@ function ChapterReadPage() {
     setIsLoadingChapter(true);
     navigate(`/mangas/${id}/chapter/${chapterIdToNavigate}`);
   };
+
+  useEffect(() => {
+    if (!isLoadingChapter && containerRef.current) {
+      containerRef.current.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  }, [isLoadingChapter, chapterId]);
+
 
   return (
     <div className="quicksand-uniquifier relative h-screen w-screen overflow-hidden bg-gray-200">

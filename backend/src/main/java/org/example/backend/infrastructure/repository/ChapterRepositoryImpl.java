@@ -2,6 +2,7 @@ package org.example.backend.infrastructure.repository;
 
 import org.example.backend.domain.model.Chapter;
 import org.example.backend.domain.repository.ChapterRepository;
+import org.example.backend.infrastructure.dto.ChapterDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -13,11 +14,18 @@ import java.util.Optional;
 interface JpaChapterRepository extends JpaRepository<Chapter, Long> {
 
     @Query("""
-    SELECT c FROM Chapter c 
-    JOIN FETCH c.manga 
-    WHERE c.manga.idManga = ?1
-    """)
-    List<Chapter> getChaptersByMangaId(String mangaId);
+                SELECT new org.example.backend.infrastructure.dto.ChapterDTO(
+                    c.idChapter,
+                    c.chapterNumber,
+                    c.title
+                )
+                FROM Chapter c
+                WHERE c.manga.idManga = ?1
+                ORDER BY c.chapterNumber DESC
+            """)
+
+    List<ChapterDTO> getChaptersByMangaId(String mangaId);
+
 }
 
 @Repository
@@ -51,7 +59,8 @@ public class ChapterRepositoryImpl implements ChapterRepository {
     }
 
     @Override
-    public List<Chapter> getChaptersByMangaId(String mangaId) {
+    public List<ChapterDTO> getChaptersByMangaId(String mangaId) {
         return jpaChapterRepository.getChaptersByMangaId(mangaId);
     }
+
 }

@@ -1,6 +1,7 @@
 package org.example.backend.presentation.controller;
 
 import org.example.backend.domain.model.Chapter;
+import org.example.backend.infrastructure.dto.ChapterDTO;
 import org.example.backend.infrastructure.dto.ChapterRequest;
 import org.example.backend.usecase.ChapterUseCase;
 import org.springframework.http.HttpStatus;
@@ -51,7 +52,7 @@ public class ChapterController {
     }
 
     @GetMapping("/{idManga}/chapters")
-    public List<Chapter> getChaptersByMangaId(@PathVariable String idManga) {
+    public List<ChapterDTO> getChaptersByMangaId(@PathVariable String idManga) {
         return chapterUseCase.getChaptersByMangaId(idManga);
     }
 }

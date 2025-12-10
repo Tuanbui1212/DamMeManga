@@ -1,6 +1,8 @@
 package org.example.backend.domain.repository;
 
 import org.example.backend.domain.model.Chapter;
+import org.example.backend.infrastructure.dto.ChapterDTO;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -15,5 +17,6 @@ public interface ChapterRepository {
 
     void deleteById(Long id);
 
-    List<Chapter> getChaptersByMangaId(String mangaId);
+    List<ChapterDTO> getChaptersByMangaId(String mangaId);
+
 }

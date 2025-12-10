@@ -4,6 +4,7 @@ import org.example.backend.domain.model.Chapter;
 import org.example.backend.domain.model.MangaDetail;
 import org.example.backend.domain.repository.ChapterRepository;
 import org.example.backend.domain.repository.MangaDetailRepository;
+import org.example.backend.infrastructure.dto.ChapterDTO;
 import org.example.backend.infrastructure.dto.ChapterRequest;
 import org.springframework.stereotype.Service;
 
@@ -64,7 +65,7 @@ public class ChapterUseCase {
         chapterRepository.deleteById(id);
     }
 
-    public List<Chapter> getChaptersByMangaId(String mangaId) {
+    public List<ChapterDTO> getChaptersByMangaId(String mangaId) {
         return chapterRepository.getChaptersByMangaId(mangaId);
     }
 }
