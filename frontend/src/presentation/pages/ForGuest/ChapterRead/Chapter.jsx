@@ -58,6 +58,7 @@ function ChapterReadPage() {
       }
     };
     initChapterRead();
+    scrollToTop();
   }, [id, chapterId]);
 
   useEffect(() => {
