@@ -23,7 +23,8 @@ public class Chapter {
 
     private String title;
 
-    public Chapter() {}
+    public Chapter() {
+    }
 
     public Chapter(MangaDetail manga, Integer chapterNumber, String title) {
         this.manga = manga;

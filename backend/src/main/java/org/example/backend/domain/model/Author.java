@@ -14,13 +14,10 @@ public class Author {
 
     private String nameAuthor;
 
-    // Constructor không tham số
     public Author() {
-        // Tự tạo UUID khi new entity
         this.idAuthor = UUID.randomUUID().toString();
     }
 
-    // Constructor có tham số nameAuthor
     public Author(String nameAuthor) {
         this.idAuthor = UUID.randomUUID().toString();
         this.nameAuthor = nameAuthor;
