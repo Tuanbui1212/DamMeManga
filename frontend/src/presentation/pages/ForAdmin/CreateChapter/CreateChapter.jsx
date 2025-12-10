@@ -25,8 +25,6 @@ export default function CreateChapter() {
   const [images, setImages] = useState([]);
   const [isSaving, setIsSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
-  const [chapterTitle, setChapterTitle] = useState("");
-
 
   useEffect(() => {
     const fetchData = async () => {
@@ -158,7 +156,6 @@ export default function CreateChapter() {
                 toast.success(`Đã thêm ${newImgs.length} ảnh!`);
               }}
             />
-
             <StatsBox totalPages={images.length} />
           </div>
 

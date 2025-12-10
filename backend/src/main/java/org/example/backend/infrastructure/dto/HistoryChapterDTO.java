@@ -5,10 +5,10 @@ import java.time.LocalDateTime;
 public class HistoryChapterDTO {
     private Long idHistoryChapter;
     private String idHistory;
-    private Long  idChapter;
+    private Long idChapter;
     private LocalDateTime readAt;
 
-    public HistoryChapterDTO(Long idHistoryChapter, String idHistory, Long  idChapter, LocalDateTime readAt) {
+    public HistoryChapterDTO(Long idHistoryChapter, String idHistory, Long idChapter, LocalDateTime readAt) {
         this.idHistoryChapter = idHistoryChapter;
         this.idHistory = idHistory;
         this.idChapter = idChapter;
@@ -32,11 +32,11 @@ public class HistoryChapterDTO {
         this.idHistory = idHistory;
     }
 
-    public Long  getIdChapter() {
+    public Long getIdChapter() {
         return idChapter;
     }
 
-    public void setIdChapter(Long  idChapter) {
+    public void setIdChapter(Long idChapter) {
         this.idChapter = idChapter;
     }
 
