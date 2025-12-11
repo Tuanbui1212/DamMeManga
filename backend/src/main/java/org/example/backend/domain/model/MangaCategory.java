@@ -27,7 +27,6 @@ public class MangaCategory {
         this.category = category;
     }
 
-    // GETTER & SETTER
     public String getId() {
         return id;
     }

@@ -20,7 +20,9 @@ export default function MangaHeader({ onBack, onEdit, onDelete }) {
         </button>
 
         <button
-          onClick={onDelete}
+          onClick={() => {
+            onDelete();
+          }}
           className="flex items-center gap-2.5 px-5 py-2.5 bg-red-600 hover:bg-red-700 rounded-lg text-sm font-semibold text-white shadow-lg transition-all duration-200 hover:shadow-xl border border-red-500/30"
         >
           <Trash2 size={17} />

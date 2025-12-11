@@ -1,40 +1,46 @@
-package org.example.backend.usecase.impl;
+package org.example.backend.usecase;
 
 import org.example.backend.domain.model.User;
 import org.example.backend.domain.repository.UserRepository;
-import org.example.backend.usecase.UserService;
-import org.springframework.stereotype.Service;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
-public class UserServiceImpl implements UserService {
+public class UserUseCase {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public UserUseCase(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
-    @Override
+    // Đăng ký user
     public User registerUser(String account, String password) {
-        if (userRepository.existsByAccount(account)) {
+
+        // KIỂM TRA TRÙNG ACCOUNT = findByAccount()
+        if (userRepository.findByAccount(account) != null) {
             throw new RuntimeException("Account đã tồn tại");
         }
+
         User user = new User();
         user.setAccount(account);
         user.setPassword(passwordEncoder.encode(password));
-        return userRepository.save(user);
+        user.setRole("guest");
+
+        return userRepository.registerUser(account, passwordEncoder.encode(password));
     }
 
-    @Override
+    // Login
     public User login(String account, String password) {
-        User user = userRepository.findByAccount(account)
-                .orElseThrow(() -> new RuntimeException("Tài khoản không tồn tại"));
+        User user = userRepository.findByAccount(account);
+
+        if (user == null) {
+            throw new RuntimeException("Tài khoản không tồn tại");
+        }
 
         if (!passwordEncoder.matches(password, user.getPassword())) {
             throw new RuntimeException("Mật khẩu không đúng");
@@ -43,45 +49,39 @@ public class UserServiceImpl implements UserService {
         return user;
     }
 
-    @Override
+    // Tạo admin
     public User createAdmin(String account, String password) {
-        if (userRepository.existsByAccount(account)) {
+
+        if (userRepository.findByAccount(account) != null) {
             throw new RuntimeException("Account đã tồn tại");
         }
-        User admin = new User(account, passwordEncoder.encode(password), "admin");
-        return userRepository.save(admin);
+
+        return userRepository.createAdmin(account, passwordEncoder.encode(password));
     }
 
-    @Override
+    // Lấy toàn bộ user
     public List<User> getAllUsers() {
-        return userRepository.findAll();
+        return userRepository.getAllUsers();
     }
 
-    @Override
+    // Tìm theo account
     public User findByAccount(String account) {
-        return userRepository.findByAccount(account)
-                .orElse(null);
+        return userRepository.findByAccount(account);
     }
 
-    @Override
+    // Đổi mật khẩu
     public boolean changePassword(String account, String oldPassword, String newPassword) {
 
-        Optional<User> optionalUser = userRepository.findByAccount(account);
+        User user = userRepository.findByAccount(account);
 
-        if (optionalUser.isEmpty()) {
+        if (user == null) {
             throw new RuntimeException("Không tìm thấy tài khoản");
         }
-
-        User user = optionalUser.get();
 
         if (!passwordEncoder.matches(oldPassword, user.getPassword())) {
             throw new RuntimeException("Mật khẩu cũ không đúng");
         }
 
-        user.setPassword(passwordEncoder.encode(newPassword));
-        userRepository.save(user);
-
-        return true;
+        return userRepository.changePassword(account, oldPassword, passwordEncoder.encode(newPassword));
     }
-
 }

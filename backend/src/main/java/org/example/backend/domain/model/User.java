@@ -19,12 +19,11 @@ public class User {
     private String password;
 
     @Column(name = "role", length = 10, nullable = false)
-    private String role; // "guest" hoặc "admin"
+    private String role;
 
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 
-    // --- Constructor mặc định: tạo user bình thường (guest) ---
     public User() {
         this.idUser = UUID.randomUUID().toString();
         this.createdAt = LocalDateTime.now();
@@ -39,7 +38,6 @@ public class User {
         this.role = role; 
     }
 
-    // --- Getter & Setter ---
     public String getIdUser() {
         return idUser;
     }

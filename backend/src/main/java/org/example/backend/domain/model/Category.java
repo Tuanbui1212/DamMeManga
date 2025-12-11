@@ -18,7 +18,6 @@ public class Category {
     private String description;
 
     public Category() {
-        // Tự tạo UUID khi new entity
         this.idCategory = UUID.randomUUID().toString();
     }
 

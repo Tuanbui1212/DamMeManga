@@ -7,7 +7,7 @@ function MangaActions() {
   return (
     <div className="flex gap-4 mx-20 mb-5">
       <Link
-        to={`/manga/${id}/chapter/1`}
+        to={`/mangas/${id}/chapter/1`}
         className="mt-10 bg-gray-400 hover:bg-gray-600 transition px-5 py-2 rounded-xl text-white font-bold"
       >
         ĐỌC TỪ ĐẦU

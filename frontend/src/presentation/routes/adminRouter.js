@@ -20,6 +20,6 @@ export const adminRoutes = [
   { path: "/manga-detail-management/:id", component: MangaDetail , layout : OnlySidebarLayout },
   { path: "/edit-manga/:id", component: EditManga , layout : OnlySidebarLayout },
   { path: "/create-chapter/:id", component: CreateChapter , layout : OnlySidebarLayout },
-  { path: "/manga-detail-management/:id/chapter-detail/:id", component: ChapterDetail , layout : OnlySidebarLayout },
+  { path: "/manga-detail-management/:id/chapter-detail/:idChapter", component: ChapterDetail , layout : OnlySidebarLayout },
   { path: "/create-manga", component: CreateManga , layout : OnlySidebarLayout },
 ];
