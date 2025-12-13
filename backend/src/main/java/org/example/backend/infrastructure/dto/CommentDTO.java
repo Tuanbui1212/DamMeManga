@@ -2,27 +2,27 @@ package org.example.backend.infrastructure.dto;
 
 import java.time.LocalDateTime;
 
-public class CommentResponse {
+public class CommentDTO {
     private Long idComment;
+    private String idUser;
     private String nameUser;
     private Long idChapter;
     private String title;
     private LocalDateTime createAt;
+    private boolean isDeleted;
 
-    // Constructor mặc định (cần thiết để tránh lỗi khi làm việc với JSON)
-    public CommentResponse() {
+    public CommentDTO() {
     }
 
-    // Constructor đầy đủ tham số
-    public CommentResponse(Long idComment, String nameUser, Long idChapter, String title, LocalDateTime createAt) {
+    public CommentDTO(Long idComment, String idUser, String nameUser, Long idChapter, String title, LocalDateTime createAt,  boolean isDeleted) {
         this.idComment = idComment;
+        this.idUser = idUser;
         this.nameUser = nameUser;
         this.idChapter = idChapter;
         this.title = title;
         this.createAt = createAt;
+        this.isDeleted = isDeleted;
     }
-
-    // --- Các Getters và Setters đầy đủ ---
 
     public Long getIdComment() {
         return idComment;
@@ -30,6 +30,14 @@ public class CommentResponse {
 
     public void setIdComment(Long idComment) {
         this.idComment = idComment;
+    }
+
+    public String getIdUser() {
+        return idUser;
+    }
+
+    public void setIdUser(String idUser) {
+        this.idUser = idUser;
     }
 
     public String getNameUser() {
@@ -62,5 +70,12 @@ public class CommentResponse {
 
     public void setCreateAt(LocalDateTime createAt) {
         this.createAt = createAt;
+    }
+
+    public boolean isDeleted() {
+        return isDeleted;
+    }
+    public void setDeleted(boolean deleted) {
+        this.isDeleted = deleted;
     }
 }

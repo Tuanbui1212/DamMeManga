@@ -2,7 +2,6 @@ package org.example.backend.infrastructure.repository;
 
 import org.example.backend.domain.model.Comment;
 import org.example.backend.domain.repository.CommentRepository;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -12,6 +11,7 @@ import java.util.Optional;
 
 interface JpaCommentRepository extends JpaRepository<Comment,Long> {
     List<Comment> findByIdChapter(Long idChapter);
+    //List<Comment> findByIdChapterAndIsDeletedFalse(Long idChapter);
 }
 
 @Repository
@@ -42,7 +42,7 @@ public class CommentRepositoryImpl implements CommentRepository {
 
     @Override
     public void delete(Long id) {
-        jpaCommentRepository.deleteById(id);
+       jpaCommentRepository.deleteById(id);
     }
 
     @Override

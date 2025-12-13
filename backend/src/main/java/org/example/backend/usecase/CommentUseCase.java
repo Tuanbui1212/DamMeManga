@@ -4,7 +4,8 @@ import org.example.backend.domain.model.Comment;
 import org.example.backend.domain.model.User;
 import org.example.backend.domain.repository.CommentRepository;
 import org.example.backend.domain.repository.UserRepository;
-import org.example.backend.infrastructure.dto.CommentResponse; // Import đúng DTO bạn vừa tạo
+import org.example.backend.infrastructure.dto.CommentDTO; // Import đúng DTO bạn vừa tạo
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,14 +17,35 @@ public class CommentUseCase {
 
     private final CommentRepository commentRepository;
     private final UserRepository userRepository;
+    private final SimpMessagingTemplate messagingTemplate;
 
-    public CommentUseCase(CommentRepository commentRepository, UserRepository userRepository) {
+    public CommentUseCase(CommentRepository commentRepository, UserRepository userRepository,  SimpMessagingTemplate messagingTemplate) {
         this.commentRepository = commentRepository;
         this.userRepository = userRepository;
+        this.messagingTemplate = messagingTemplate;
     }
 
-    public Comment createComment(Comment comment) {
-        return commentRepository.save(comment);
+    public CommentDTO createComment(Comment comment) {
+        Comment savedComment = commentRepository.save(comment);
+
+        String nameUser = "Unknown";
+        Optional<User> userOpt = userRepository.findById(savedComment.getIdUser());
+        if (userOpt.isPresent()) {
+            nameUser = userOpt.get().getAccount();
+        }
+
+        CommentDTO dto = new CommentDTO(
+                savedComment.getIdComment(),
+                savedComment.getIdUser(),
+                nameUser,
+                savedComment.getIdChapter(),
+                savedComment.getTitle(),
+                savedComment.getCreateAt(),
+                savedComment.isDeleted()
+        );
+
+        messagingTemplate.convertAndSend("/topic/chapter/" + savedComment.getIdChapter(), dto);
+        return dto;
     }
 
     public Optional<Comment> getCommentById(Long id) {
@@ -45,10 +67,22 @@ public class CommentUseCase {
     }
 
     public void deleteComment(Long id) {
-        commentRepository.delete(id);
+        Optional<Comment> commentOpt = commentRepository.findById(id);
+        if (commentOpt.isPresent()) {
+            Comment comment = commentOpt.get();
+            comment.setDeleted(true);
+            commentRepository.update(comment);
+
+            CommentDTO deleteSignal = new CommentDTO();
+            deleteSignal.setIdComment(comment.getIdComment());
+            deleteSignal.setIdChapter(comment.getIdChapter());
+            deleteSignal.setDeleted(true);
+
+            messagingTemplate.convertAndSend("/topic/chapter/" + comment.getIdChapter(), deleteSignal);
+        }
     }
 
-    public List<CommentResponse> getCommentsByChapter(Long chapterId) {
+    public List<CommentDTO> getCommentsByChapter(Long chapterId) {
         List<Comment> comments = commentRepository.findByChapterId(chapterId);
 
         return comments.stream().map(comment -> {
@@ -58,12 +92,14 @@ public class CommentUseCase {
                 nameOfUser = userOpt.get().getAccount();
             }
 
-            return new CommentResponse(
+            return new CommentDTO(
                     comment.getIdComment(),
+                    comment.getIdUser(),
                     nameOfUser,
                     comment.getIdChapter(),
                     comment.getTitle(),
-                    comment.getCreateAt()
+                    comment.getCreateAt(),
+                    comment.isDeleted()
             );
         }).collect(Collectors.toList());
     }
