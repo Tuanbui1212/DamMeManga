@@ -72,12 +72,6 @@ function Header() {
     });
   }, [searchQuery, mangaData]);
 
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("account");
-    localStorage.removeItem("role");
-    setAccount(""); // reset state ngay lập tức
-  };
 
   useEffect(() => {
     const handleScroll = () => {
@@ -325,10 +319,7 @@ function Header() {
                     onClick={() => {
                       setIsDropdownOpen(false);
                       // Xoá toàn bộ thông tin user
-                      localStorage.removeItem("account");
-                      localStorage.removeItem("token");
-                      localStorage.removeItem("role");
-                      localStorage.removeItem("user");
+                      localStorage.clear();
                       setAccount(""); // reset state ngay lập tức
                     }}
                   >

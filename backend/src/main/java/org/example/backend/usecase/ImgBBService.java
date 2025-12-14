@@ -14,7 +14,7 @@ import java.util.Map;
 @Service
 public class ImgBBService {
 
-    private static final String API_KEY = "1fe8328c19b307b8297528ca80f9e887";
+    private static final String API_KEY = "e684a1d76bb1dbb3ef744b3922ea6d3d";
     private static final String UPLOAD_URL = "https://api.imgbb.com/1/upload";
 
     public String upload(MultipartFile file) throws IOException {

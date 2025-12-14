@@ -40,26 +40,51 @@ function ChapterReadPage() {
 
   useEffect(() => {
     const initChapterRead = async () => {
-      try {
-        const user = JSON.parse(localStorage.getItem("user"));
-        const userId = user?.id;
+      console.log("📖 [ChapterRead] BẮT ĐẦU initChapterRead");
 
-        if (userId) {
-          const history = await historyService.recordHistory(userId, id);
-          const historyId = history.idHistory;
-          await historyChapterService.recordHistoryChapter(historyId, chapterId);
+      try {
+        const userId = localStorage.getItem("userId");
+        console.log("👤 userId từ localStorage:", userId);
+
+        if (!userId) {
+          console.warn("⚠️ Không có userId → KHÔNG tạo history");
+          return;
         }
 
+        console.log("🕒 Gọi recordHistory(userId, mangaId)...");
+        const history = await historyService.recordHistory(userId, id);
+        console.log("✅ recordHistory:", history);
+
+        const historyId = history?.idHistory;
+        if (!historyId) {
+          console.error("❌ Không nhận được historyId");
+          return;
+        }
+
+        console.log("🕒 Gọi recordHistoryChapter(historyId, chapterId)...");
+        const historyChapter =
+          await historyChapterService.recordHistoryChapter(
+            historyId,
+            chapterId
+          );
+
+        console.log("✅ recordHistoryChapter:", historyChapter);
+
+        // tăng view
         const manga = await mangaService.getMangaById(id);
         const newCountView = (manga.countView || 0) + 1;
         await mangaService.patchManga(id, { countView: newCountView });
+
+        console.log("📈 countView updated:", newCountView);
       } catch (err) {
-        console.error(err);
+        console.error("🔥 LỖI initChapterRead:", err);
       }
     };
+
     initChapterRead();
-    scrollToTop();
   }, [id, chapterId]);
+
+
 
   useEffect(() => {
     const fetchImgChapter = async () => {
