@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { Loader2, Search as SearchIcon } from "lucide-react";
 import MangaService from "../../../../usecases/MangaService";
@@ -12,6 +12,7 @@ const ITEMS_PER_PAGE = 15;
 const Search = () => {
   const { query: queryParam } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const mangaService = useMemo(() => new MangaService(), []);
   const categoryService = useMemo(() => new CategoryService(), []);
@@ -141,6 +142,15 @@ const Search = () => {
       navigate("/search");
     }
   };
+
+  useEffect(() => {
+    window.scrollTo({ top: 500, behavior: "smooth" });
+    if (location.state && location.state.initialCategory) {
+      const categoryName = location.state.initialCategory;
+      setSelectedCategories([categoryName]);
+      window.history.replaceState({}, document.title);
+    }
+  }, [location.state]);
 
   return (
     <>

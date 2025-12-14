@@ -12,20 +12,25 @@ function Home() {
   const [mangasTop, setMangasTop] = useState([]);
   const [mangasNew, setMangasNew] = useState([]);
   const [mangasMonster, setMangasMonster] = useState([]);
+  const [mangasAdventure, setMangasAdventure] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const data = await mangaService.getAllMangas();
-        const dataMonster = await mangaService.getMangasByCategories(["Monster"]);
-
-        console.log("All mangas:", data);
-        console.log("Monster mangas:", dataMonster);
+        const [data, dataMonster, dataAdventure] = await Promise.all([
+          mangaService.getAllMangas(),
+          mangaService.getMangasByCategories(["Monster"]),
+          mangaService.getMangasByCategories(["Adventure"]),
+        ]);
 
         const sortedDataMonster = [...dataMonster]
           .sort((a, b) => new Date(b.updateAt) - new Date(a.updateAt))
           .slice(0, 30);
         setMangasMonster(sortedDataMonster);
+        const sortedDataAdventure = [...dataAdventure]
+          .sort((a, b) => new Date(b.updateAt) - new Date(a.updateAt))
+          .slice(0, 30);
+        setMangasAdventure(sortedDataAdventure);
 
         const sortedTop = [...data]
           .sort((a, b) => b.countView - a.countView)
@@ -36,8 +41,6 @@ function Home() {
           .sort((a, b) => new Date(b.updateAt) - new Date(a.updateAt))
           .slice(0, 30);
         setMangasNew(sortedNew);
-
-
       } catch (err) {
         console.error("Lỗi khi lấy manga:", err);
         setMangasTop([]);
@@ -54,29 +57,30 @@ function Home() {
         <title>Trang chủ | DMManga</title>
       </Helmet>
       <Slide
-        bannerData={
-          mangasTop
-            .map(m => ({ value: m, sort: Math.random() }))
-            .sort((a, b) => a.sort - b.sort)
-            .map(({ value }) => value)
-            .slice(0, 3)
-        }
+        bannerData={mangasTop
+          .map((m) => ({ value: m, sort: Math.random() }))
+          .sort((a, b) => a.sort - b.sort)
+          .map(({ value }) => value)
+          .slice(0, 10)}
       />
       <MangaList
         mangaData={mangasNew}
         title="Truyện mới"
         colorBackground="bg-gray-50"
+        category="all"
       />
       <TopManga mangas={mangasTop} />
       <MangaList
         mangaData={mangasMonster}
         title="Monster"
         colorBackground="bg-[#e1dac0]"
+        category="Monster"
       />
       <MangaList
-        mangaData={mangasTop}
-        title="Oneshot"
+        mangaData={mangasAdventure}
+        title="Adventure"
         colorBackground="bg-[#b3c6d5]"
+        category="Adventure"
       />
     </>
   );

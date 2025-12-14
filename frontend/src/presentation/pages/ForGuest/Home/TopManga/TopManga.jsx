@@ -133,7 +133,7 @@ export default function TopManga({ mangas }) {
         {/* Xem thêm */}
         <div className="w-full flex mt-8">
           <Link
-            to="/danh-sach-truyen"
+            to="/search"
             className="ml-auto font-semibold text-textPrimary hover:text-blue-300"
           >
             Xem danh sách truyện →

@@ -3,7 +3,12 @@ import { useNavigate } from "react-router-dom";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import MangaService from "../../../../../usecases/MangaService"; // đường dẫn theo project của bạn
 
-export default function MangaList({ mangaData, title, colorBackground }) {
+export default function MangaList({
+  mangaData,
+  title,
+  colorBackground,
+  category,
+}) {
   const navigate = useNavigate();
   const scrollRef = useRef(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
@@ -116,7 +121,9 @@ export default function MangaList({ mangaData, title, colorBackground }) {
 
         <div className="mt-16 text-end">
           <button
-            onClick={() => navigate("/")}
+            onClick={() =>
+              navigate("/search", { state: { initialCategory: category } })
+            }
             className="ml-auto font-semibold text-textPrimary hover:text-blue-300"
           >
             Xem danh sách truyện

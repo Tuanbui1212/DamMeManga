@@ -10,6 +10,7 @@ import { Helmet } from "react-helmet-async";
 
 import MangaCategoryService from "../../../../usecases/MangaCategoryService";
 import MangaDetailService from "../../../../usecases/MangaDetailService.js";
+import toast from "react-hot-toast";
 
 function MangaDetailPage() {
   const { id } = useParams();
@@ -35,6 +36,7 @@ function MangaDetailPage() {
   }
 
   useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
     const fetchData = async () => {
       try {
         const data = await service.getMangaWithChapters(id);
@@ -44,7 +46,7 @@ function MangaDetailPage() {
           authors: data.author_id || "Đoán xem ai là Tác giả",
           posterUrl: data.banner_url,
           mainImageUrl: data.poster_url,
-          description: data.description || "Không có mô tả.", 
+          description: data.description || "Không có mô tả.",
           lastUpdate: timeAgo(data.updated_at),
         });
 
@@ -59,7 +61,6 @@ function MangaDetailPage() {
 
         const categories = await mangaCategoryService.getCategoriesByManga(id);
         setGenres(categories);
-
       } catch (err) {
         toast.error("Lỗi tải dữ liệu manga!");
         console.error(err);
@@ -68,7 +69,6 @@ function MangaDetailPage() {
 
     fetchData();
   }, [id]);
-
 
   const handleAddComment = () => {
     if (!newComment.trim()) return;
