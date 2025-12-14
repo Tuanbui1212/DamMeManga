@@ -11,12 +11,21 @@ const mangaService = new MangaService();
 function Home() {
   const [mangasTop, setMangasTop] = useState([]);
   const [mangasNew, setMangasNew] = useState([]);
-  const [mangasOld, setMangasOld] = useState([]);
+  const [mangasMonster, setMangasMonster] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const data = await mangaService.getAllMangas();
+        const dataMonster = await mangaService.getMangasByCategories(["Monster"]);
+
+        console.log("All mangas:", data);
+        console.log("Monster mangas:", dataMonster);
+
+        const sortedDataMonster = [...dataMonster]
+          .sort((a, b) => new Date(b.updateAt) - new Date(a.updateAt))
+          .slice(0, 30);
+        setMangasMonster(sortedDataMonster);
 
         const sortedTop = [...data]
           .sort((a, b) => b.countView - a.countView)
@@ -28,15 +37,11 @@ function Home() {
           .slice(0, 30);
         setMangasNew(sortedNew);
 
-        const sortedOld = [...data]
-          .sort((a, b) => new Date(a.updateAt) - new Date(b.updateAt))
-          .slice(0, 30);
-        setMangasOld(sortedOld);
+
       } catch (err) {
         console.error("Lỗi khi lấy manga:", err);
         setMangasTop([]);
         setMangasNew([]);
-        setMangasOld([]);
       }
     };
 
@@ -48,7 +53,15 @@ function Home() {
       <Helmet>
         <title>Trang chủ | DMManga</title>
       </Helmet>
-      <Slide />
+      <Slide
+        bannerData={
+          mangasTop
+            .map(m => ({ value: m, sort: Math.random() }))
+            .sort((a, b) => a.sort - b.sort)
+            .map(({ value }) => value)
+            .slice(0, 3)
+        }
+      />
       <MangaList
         mangaData={mangasNew}
         title="Truyện mới"
@@ -56,8 +69,8 @@ function Home() {
       />
       <TopManga mangas={mangasTop} />
       <MangaList
-        mangaData={mangasOld}
-        title="Truyện do người Việt sáng tác"
+        mangaData={mangasMonster}
+        title="Monster"
         colorBackground="bg-[#e1dac0]"
       />
       <MangaList

@@ -9,7 +9,7 @@ import { useNavigate } from "react-router-dom";
 
 export default function ChapterNavigation({
   mangaId,
-  chapterId, // id từ URL (string)
+  chapterId,
   allChapters,
   scrollToTop,
   setShowChapterList,
