@@ -11,17 +11,15 @@ public class ImgChapter {
     @Column(name = "id_img_chapter", nullable = false, updatable = false)
     private Long idImgChapter;
 
-    // Thay thế mối quan hệ @ManyToOne bằng một trường ID thuần túy theo yêu cầu
     @Column(name = "chapter_id", nullable = false)
-    private Long chapterId; // Khóa ngoại (ID) của Chapter cha
+    private Long chapterId;
 
     @Column(name = "stt")
-    private Integer stt; // Số thứ tự hình ảnh trong chapter
+    private Integer stt; 
 
     @Column(name = "img_link", columnDefinition = "TEXT")
-    private String imgLink; // Đường dẫn ảnh
+    private String imgLink;
 
-    // Constructors
     public ImgChapter() {}
 
     public ImgChapter(Long chapterId, Integer stt, String imgLink) {
@@ -29,8 +27,6 @@ public class ImgChapter {
         this.stt = stt;
         this.imgLink = imgLink;
     }
-
-    // Getters and Setters
 
     public Long getIdImgChapter() {
         return idImgChapter;

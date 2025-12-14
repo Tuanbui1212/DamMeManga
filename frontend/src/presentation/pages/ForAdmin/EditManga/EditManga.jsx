@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import toast, { Toaster } from "react-hot-toast";
-
+import { Loader2 } from "lucide-react";
 import EditMangaHeader from "./EditMangaHeader";
 import ImageUploader from "./ImageUploader";
 import AuthorDropdown from "./AuthorDropdown";
@@ -165,34 +165,35 @@ export default function EditManga() {
   };
 
   const handleDelete = async () => {
-  if (!window.confirm("Bạn có chắc muốn xóa truyện này?")) return;
+    if (!window.confirm("Bạn có chắc muốn xóa truyện này?")) return;
 
-  setIsSaving(true); // Dùng cùng trạng thái saving để disable UI nếu muốn
-  try {
-    const mangaCategoryService = new MangaCategoryService();
-    const mangaService = new MangaService();
+    setIsSaving(true); // Dùng cùng trạng thái saving để disable UI nếu muốn
+    try {
+      const mangaCategoryService = new MangaCategoryService();
+      const mangaService = new MangaService();
 
-    // 1️⃣ Xóa hết thể loại
-    await mangaCategoryService.updateCategoriesToManga(id, []);
+      // 1️⃣ Xóa hết thể loại
+      await mangaCategoryService.updateCategoriesToManga(id, []);
 
-    // 2️⃣ Xóa manga
-    await mangaService.deleteManga(id);
+      // 2️⃣ Xóa manga
+      await mangaService.deleteManga(id);
 
-    toast.success("Xóa truyện thành công!");
-    navigate("/manga-management"); // điều hướng về danh sách manga
-  } catch (err) {
-    console.error("Xóa truyện lỗi:", err);
-    toast.error("Xóa truyện thất bại!");
-  } finally {
-    setIsSaving(false);
-  }
-};
+      toast.success("Xóa truyện thành công!");
+      navigate("/manga-management"); // điều hướng về danh sách manga
+    } catch (err) {
+      console.error("Xóa truyện lỗi:", err);
+      toast.error("Xóa truyện thất bại!");
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
 
 
   if (isLoading)
     return (
-      <div className="min-h-screen bg-gray-900 flex items-center justify-center text-gray-400 text-xl">
-        Đang tải...
+      <div className="fixed inset-0 bg-black/50 bg-opacity-60 flex items-center justify-center z-50">
+        <Loader2 className="animate-spin text-white" size={48} />
       </div>
     );
 

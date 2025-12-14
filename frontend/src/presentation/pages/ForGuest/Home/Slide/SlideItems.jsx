@@ -8,7 +8,7 @@ export default function SlideItem({ banner }) {
       {/* Ảnh nền + zoom */}
       <div
         className="absolute inset-0 bg-cover bg-center scale-[1.08] transition-transform duration-[10000ms] group-hover:scale-100"
-        style={{ backgroundImage: `url(${banner.image})` }}
+        style={{ backgroundImage: `url(${banner.bannerUrl})` }}
       />
 
       {/* Overlay gradient */}
@@ -25,7 +25,7 @@ export default function SlideItem({ banner }) {
       {/* Nội dung */}
       <div className="absolute bottom-0 left-8 p-6 md:p-10 lg:p-16 max-w-3xl text-white z-10">
         <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold mb-3 drop-shadow-2xl tracking-tight">
-          {banner.title}
+          {banner.name}
         </h1>
         <p className="text-lg md:text-xl lg:text-2xl font-medium mb-6 drop-shadow-lg max-w-2xl text-gray-100 leading-relaxed">
           {banner.description}

@@ -1,7 +1,7 @@
 package org.example.backend.infrastructure.config.security;
 
 import org.example.backend.domain.model.User;
-import org.example.backend.usecase.UserService;
+import org.example.backend.usecase.UserUseCase;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
@@ -20,11 +20,11 @@ import org.springframework.lang.NonNull;
 @Component
 public class JwtFilter extends OncePerRequestFilter {
 
-    private final UserService userService;
+    private final UserUseCase userUseCase;
     private final JwtUtil jwtUtil;
 
-    public JwtFilter(UserService userService, JwtUtil jwtUtil) {
-        this.userService = userService;
+    public JwtFilter(UserUseCase userUseCase, JwtUtil jwtUtil) {
+        this.userUseCase = userUseCase;
         this.jwtUtil = jwtUtil;
     }
 
@@ -59,7 +59,7 @@ public class JwtFilter extends OncePerRequestFilter {
         }
 
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            User user = userService.findByAccount(username);
+            User user = userUseCase.findByAccount(username);
             System.out.println("User from DB: " + user);
 
             if (user != null && jwtUtil.validateToken(token, user.getAccount())) {

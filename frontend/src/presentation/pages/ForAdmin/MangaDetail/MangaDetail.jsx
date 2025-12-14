@@ -12,6 +12,7 @@ import MangaService from "../../../../usecases/MangaService";
 import MangaCategoryService from "../../../../usecases/MangaCategoryService";
 import MangaDetailRepository from "../../../../infrastructure/repositories/MangaDetailRepository";
 import ChapterService from "../../../../usecases/ChapterService";
+import { Loader2 } from "lucide-react";
 
 export default function MangaDetail() {
   const { id } = useParams();
@@ -115,7 +116,9 @@ export default function MangaDetail() {
 
   if (isLoading)
     return (
-      <div className="text-center py-20 text-gray-400 text-xl">Đang tải...</div>
+      <div className="fixed inset-0 bg-black/50 bg-opacity-60 flex items-center justify-center z-50">
+        <Loader2 className="animate-spin text-white" size={48} />
+      </div>
     );
 
   if (!story)

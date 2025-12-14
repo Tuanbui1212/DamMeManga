@@ -12,7 +12,7 @@ import ChapterService from "../../../../usecases/ChapterService";
 import ImgChapterService from "../../../../usecases/ImgChapterService";
 
 const IMGBB_API_KEY =
-  import.meta.env.VITE_IMGBB_API_KEY || "1fe8328c19b307b8297528ca80f9e887";
+  import.meta.env.VITE_IMGBB_API_KEY;
 
 export default function ChapterDetail() {
   const { id, idChapter } = useParams();

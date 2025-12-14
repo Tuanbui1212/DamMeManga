@@ -1,9 +1,7 @@
 package org.example.backend.domain.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -43,7 +41,6 @@ public class Manga {
     private LocalDateTime updateAt;
 
     public Manga() {
-        // id + timestamp tự sinh khi tạo object
         this.idManga = UUID.randomUUID().toString();
         this.createAt = LocalDateTime.now();
         this.updateAt = LocalDateTime.now();
