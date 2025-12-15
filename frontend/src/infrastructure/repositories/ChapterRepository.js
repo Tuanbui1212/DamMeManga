@@ -25,6 +25,27 @@ export default class ChapterRepository {
     };
   }
 
+  async getAllChapters() {
+    const response = await axiosClient.get(`${BASE_URL}/chapters`);
+    return response.data.map((item) => this._toChapter(item));
+  }
+
+  async getChapterById(id) {
+    const response = await axiosClient.get(`${BASE_URL}/chapters/${id}`);
+    return this._toChapter(response.data);
+  }
+
+  async updateChapter(id, chapterData) {
+    const response = await axiosClient.put(
+      `${BASE_URL}/chapters/${id}`,
+      chapterData
+    );
+    return {
+      message: response.data.message,
+      data: this._toChapter(response.data.data),
+    };
+  }
+
   async deleteChapter(id) {
     const response = await axiosClient.delete(`${BASE_URL}/chapters/${id}`);
     return {

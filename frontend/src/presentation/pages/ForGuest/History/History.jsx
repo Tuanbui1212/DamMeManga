@@ -33,9 +33,13 @@ export default function App() {
     const loadHistory = async () => {
         try {
             console.log("BẮT ĐẦU loadHistory() tối ưu - Nhóm theo ngày và manga");
-            const storedUser = localStorage.getItem("user");
-            if (!storedUser) return;
-            const userId = JSON.parse(storedUser).id;
+            const userId = localStorage.getItem("userId");
+            console.log("🆔 userId từ localStorage:", userId);
+
+            if (!userId) {
+                console.error("❌ Không tìm thấy userId trong localStorage");
+                return;
+            }
 
             const histories = await historyService.getHistoriesByUserId(userId);
             console.log("Histories:", histories);
@@ -112,7 +116,7 @@ export default function App() {
                         chapterNumber: chapterInfo.chapterNumber,
                         chapterTitle: chapterInfo.title || "(Không có tiêu đề)",
                     };
-                }).filter(Boolean) 
+                }).filter(Boolean)
             );
 
             if (chapterEntries.length === 0) {
