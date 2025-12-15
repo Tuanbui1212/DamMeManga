@@ -34,61 +34,70 @@ export default function CommentSidebar({ isOpen, onClose }) {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
-  useEffect(() => {
-    if (!chapterId) return;
+useEffect(() => {
+  if (!chapterId) return;
 
-    const fetchComments = async () => {
-      try {
-        const data = await commentService.getCommentsByChapter(chapterId);
-        setCommentsData(data);
-        setTimeout(scrollToBottom, 200);
-      } catch (error) {
-        console.error("Lỗi tải comment:", error);
-      }
-    };
-    fetchComments();
+  const fetchComments = async () => {
+    try {
+      console.time("⏱️ fetchComments");
 
-    const socket = new SockJS("http://localhost:8080/ws");
-    const stompClient = Stomp.over(socket);
-    stompClient.debug = null;
+      const data = await commentService.getCommentsByChapter(chapterId);
 
-    stompClient.connect({}, () => {
-      stompClient.subscribe(`/topic/chapter/${chapterId}`, (message) => {
-        const incomingData = JSON.parse(message.body);
+      console.timeEnd("⏱️ fetchComments");
 
-        setCommentsData((prevComments) => {
-          const isDeleted = incomingData.deleted === true;
+      setCommentsData(data);
+      setTimeout(scrollToBottom, 200);
 
-          if (isDeleted) {
-            return prevComments.map((cmt) =>
-              cmt.idComment === incomingData.idComment
-                ? { ...cmt, deleted: true }
-                : cmt
-            );
-          }
+      console.table(data);
+    } catch (error) {
+      console.error("❌ Lỗi tải comment:", error);
+    }
+  };
 
-          const exists = prevComments.some(
-            (c) => c.idComment === incomingData.idComment
+  fetchComments();
+
+  const socket = new SockJS("http://localhost:8080/ws");
+  const stompClient = Stomp.over(socket);
+  stompClient.debug = null;
+
+  stompClient.connect({}, () => {
+    stompClient.subscribe(`/topic/chapter/${chapterId}`, (message) => {
+      const incomingData = JSON.parse(message.body);
+
+      setCommentsData((prevComments) => {
+        const isDeleted = incomingData.deleted === true;
+
+        if (isDeleted) {
+          return prevComments.map((cmt) =>
+            cmt.idComment === incomingData.idComment
+              ? { ...cmt, deleted: true }
+              : cmt
           );
-          if (exists) return prevComments;
-
-          return [...prevComments, incomingData];
-        });
-
-        if (!incomingData.deleted) {
-          setTimeout(scrollToBottom, 100);
         }
+
+        const exists = prevComments.some(
+          (c) => c.idComment === incomingData.idComment
+        );
+        if (exists) return prevComments;
+
+        return [...prevComments, incomingData];
       });
-    });
 
-    stompClientRef.current = stompClient;
-
-    return () => {
-      if (stompClientRef.current) {
-        stompClientRef.current.disconnect();
+      if (!incomingData.deleted) {
+        setTimeout(scrollToBottom, 100);
       }
-    };
-  }, [chapterId]);
+    });
+  });
+
+  stompClientRef.current = stompClient;
+
+  return () => {
+    if (stompClientRef.current) {
+      stompClientRef.current.disconnect();
+    }
+  };
+}, [chapterId]);
+
 
   useEffect(() => {
     scrollToBottom();

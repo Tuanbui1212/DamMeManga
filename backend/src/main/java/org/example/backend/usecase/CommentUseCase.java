@@ -82,25 +82,34 @@ public class CommentUseCase {
         }
     }
 
-    public List<CommentDTO> getCommentsByChapter(Long chapterId) {
-        List<Comment> comments = commentRepository.findByChapterId(chapterId);
+public List<CommentDTO> getCommentsByChapter(Long chapterId) {
+    List<Comment> comments = commentRepository.findByChapterId(chapterId);
 
-        return comments.stream().map(comment -> {
+    return comments.stream().map(comment -> {
+
+        String nameUser = "Guest";
+
+        if (comment.getIdUser() != null && !comment.getIdUser().isBlank()) {
+            userRepository.findById(comment.getIdUser())
+                    .ifPresent(user -> {
+                        // overwrite name
+                    });
             Optional<User> userOpt = userRepository.findById(comment.getIdUser());
-            String nameOfUser = "Unknown User";
             if (userOpt.isPresent()) {
-                nameOfUser = userOpt.get().getAccount();
+                nameUser = userOpt.get().getAccount();
             }
+        }
 
-            return new CommentDTO(
-                    comment.getIdComment(),
-                    comment.getIdUser(),
-                    nameOfUser,
-                    comment.getIdChapter(),
-                    comment.getTitle(),
-                    comment.getCreateAt(),
-                    comment.isDeleted()
-            );
-        }).collect(Collectors.toList());
-    }
+        return new CommentDTO(
+                comment.getIdComment(),
+                comment.getIdUser(),     // String
+                nameUser,
+                comment.getIdChapter(),
+                comment.getTitle(),
+                comment.getCreateAt(),
+                comment.isDeleted()
+        );
+    }).collect(Collectors.toList());
+}
+
 }
