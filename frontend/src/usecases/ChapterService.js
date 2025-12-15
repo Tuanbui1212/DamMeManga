@@ -9,6 +9,18 @@ export default class ChapterService {
     return await this.chapterRepository.createChapter(chapter);
   }
 
+  async getAllChapters() {
+    return await this.chapterRepository.getAllChapters();
+  }
+
+  async getChapterById(id) {
+    return await this.chapterRepository.getChapterById(id);
+  }
+
+  async updateChapter(id, chapter) {
+    return await this.chapterRepository.updateChapter(id, chapter);
+  }
+
   async deleteChapter(id) {
     return await this.chapterRepository.deleteChapter(id);
   }

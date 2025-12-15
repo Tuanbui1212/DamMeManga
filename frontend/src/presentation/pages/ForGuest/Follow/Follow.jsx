@@ -45,7 +45,7 @@ export default function FollowingPage() {
 
             return {
               followId: f.id,
-              id: manga.id_manga, // ✨ SỬA Ở ĐÂY
+              id: manga.id_manga,
               title: manga.name_manga,
               cover: manga.poster_url,
               lastChapter: lastChapterObj
@@ -53,7 +53,7 @@ export default function FollowingPage() {
                 : "0",
               chapterLink: lastChapterObj
                 ? `/mangas/${manga.id_manga}/chapters/${lastChapterObj.id}`
-                : "#", // ✨ SỬA Ở ĐÂY
+                : "#",
               updatedAgo: timeAgo(manga.updated_at),
             };
           })

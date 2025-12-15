@@ -255,7 +255,7 @@ const Search = () => {
                       <MangaCard
                         key={mangaId}
                         manga={manga}
-                        onClick={(id) => navigate(`/manga/${id}`)}
+                        onClick={(id) => navigate(`/mangas/${id}`)}
                       />
                     );
                   })
