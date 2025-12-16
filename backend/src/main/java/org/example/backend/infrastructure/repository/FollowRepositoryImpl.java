@@ -2,40 +2,68 @@ package org.example.backend.infrastructure.repository;
 
 import org.example.backend.domain.model.Follow;
 import org.example.backend.domain.repository.FollowRepository;
+import org.example.backend.infrastructure.dto.FollowDTO;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
-import jakarta.transaction.Transactional;
+
 import java.util.List;
 import java.util.Optional;
 
+interface FollowRepositoryJpa extends JpaRepository<Follow, String> {
+
+    @Query("""
+                SELECT new org.example.backend.infrastructure.dto.FollowDTO(
+                    f.id,
+                    m.idManga,
+                    m.nameManga,
+                    m.posterUrl,
+                    COUNT(c.idChapter),
+                    m.updateAt
+                )
+                FROM Follow f
+                JOIN Manga m ON m.idManga = f.mangaId
+                LEFT JOIN Chapter c ON c.manga.idManga = m.idManga
+                WHERE f.userId = :userId
+                GROUP BY
+                    f.id,
+                    m.idManga,
+                    m.nameManga,
+                    m.posterUrl,
+                    m.updateAt
+                ORDER BY m.updateAt DESC
+            """)
+    List<FollowDTO> findFollowingDTOByUserId(@Param("userId") String userId);
+
+}
+
 @Repository
-@Transactional
 public class FollowRepositoryImpl implements FollowRepository {
 
-    @PersistenceContext
-    private EntityManager em;
+    private final FollowRepositoryJpa followJpaRepository;
+
+    public FollowRepositoryImpl(FollowRepositoryJpa followJpaRepository) {
+        this.followJpaRepository = followJpaRepository;
+    }
 
     @Override
     public Follow save(Follow follow) {
-        em.persist(follow);
-        return follow;
+        return followJpaRepository.save(follow);
     }
 
     @Override
     public Optional<Follow> findById(String id) {
-        return Optional.ofNullable(em.find(Follow.class, id));
-    }
-
-    @Override
-    public List<Follow> findByUserId(String userId) {
-        return em.createQuery("SELECT f FROM Follow f WHERE f.userId = :userId", Follow.class)
-                 .setParameter("userId", userId)
-                 .getResultList();
+        return followJpaRepository.findById(id);
     }
 
     @Override
     public void deleteById(String id) {
-        findById(id).ifPresent(em::remove);
+        followJpaRepository.deleteById(id);
+    }
+
+    @Override
+    public List<FollowDTO> findFollowingDTOByUserId(String userId) {
+        return followJpaRepository.findFollowingDTOByUserId(userId);
     }
 }

@@ -1,6 +1,8 @@
 package org.example.backend.domain.repository;
 
 import org.example.backend.domain.model.Follow;
+import org.example.backend.infrastructure.dto.FollowDTO;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -10,7 +12,7 @@ public interface FollowRepository {
 
     Optional<Follow> findById(String id);
 
-    List<Follow> findByUserId(String userId);
-
     void deleteById(String id);
+
+    List<FollowDTO> findFollowingDTOByUserId(String userId);
 }

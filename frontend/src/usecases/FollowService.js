@@ -10,10 +10,6 @@ export default class FollowService {
         return await this.followRepository.getFollowsByUser(userId);
     }
 
-    async getFollowById(id) {
-        return await this.followRepository.getFollowById(id);
-    }
-
     async createFollow(userId, mangaId) {
         return await this.followRepository.createFollow(userId, mangaId);
     }

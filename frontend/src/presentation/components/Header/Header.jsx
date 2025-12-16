@@ -72,13 +72,6 @@ function Header() {
     });
   }, [searchQuery, mangaData]);
 
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("account");
-    localStorage.removeItem("role");
-    setAccount(""); // reset state ngay lập tức
-  };
-
   useEffect(() => {
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
@@ -319,24 +312,35 @@ function Header() {
                 )}
 
                 <div className="border-t border-gray-100 dark:border-gray-700 mt-1">
-                  <Link
-                    to="/login"
-                    className="flex items-center gap-3 px-4 py-2 hover:bg-red-50 dark:hover:bg-red-900/20 text-red-600 w-full text-sm transition"
-                    onClick={() => {
-                      setIsDropdownOpen(false);
-                      // Xoá toàn bộ thông tin user
-                      localStorage.removeItem("account");
-                      localStorage.removeItem("token");
-                      localStorage.removeItem("role");
-                      localStorage.removeItem("user");
-                      localStorage.removeItem("userId");
-                      setAccount(""); // reset state ngay lập tức
-                    }}
-                  >
-                    <LogOut className="w-4 h-4" />
-                    Đăng xuất
-                  </Link>
+                  {account && account !== "Guest" ? (
+                    <Link
+                      to="/login"
+                      className="flex items-center gap-3 px-4 py-2 hover:bg-red-50 dark:hover:bg-red-900/20 text-red-600 w-full text-sm transition"
+                      onClick={() => {
+                        setIsDropdownOpen(false);
+                        localStorage.removeItem("account");
+                        localStorage.removeItem("token");
+                        localStorage.removeItem("role");
+                        localStorage.removeItem("user");
+                        localStorage.removeItem("userId");
+                        setAccount("");
+                      }}
+                    >
+                      <LogOut className="w-4 h-4" />
+                      Đăng xuất
+                    </Link>
+                  ) : (
+                    <Link
+                      to="/login"
+                      className="flex items-center gap-3 px-4 py-2 hover:bg-blue-50 dark:hover:bg-blue-900/20 text-blue-600 w-full text-sm transition"
+                      onClick={() => setIsDropdownOpen(false)}
+                    >
+                      <User className="w-4 h-4" />
+                      Đăng nhập
+                    </Link>
+                  )}
                 </div>
+
               </motion.div>
             )}
           </AnimatePresence>

@@ -13,10 +13,10 @@ import java.util.Optional;
 interface JpaChapterRepository extends JpaRepository<Chapter, Long> {
 
     @Query("""
-    SELECT c FROM Chapter c 
-    JOIN FETCH c.manga 
-    WHERE c.manga.idManga = ?1
-    """)
+            SELECT c FROM Chapter c
+            JOIN FETCH c.manga
+            WHERE c.manga.idManga = ?1
+            """)
     List<Chapter> getChaptersByMangaId(String mangaId);
 }
 

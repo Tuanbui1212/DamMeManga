@@ -1,18 +1,14 @@
-import { useState, useEffect, useMemo, useRef } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Link } from "react-router-dom";
 import toast, { Toaster } from "react-hot-toast";
 
-import MangaDetailService from "../../../../usecases/MangaDetailService";
 import FollowService from "../../../../usecases/FollowService";
 
 export default function FollowingPage() {
   const [followingMangas, setFollowingMangas] = useState([]);
   const userId = localStorage.getItem("userId");
 
-  const mangaService = useMemo(() => new MangaDetailService(), []);
   const followService = useMemo(() => new FollowService(), []);
-
-  const didFetchRef = useRef(false);
 
   const timeAgo = (timestamp) => {
     if (!timestamp) return "Chưa cập nhật";
@@ -27,37 +23,22 @@ export default function FollowingPage() {
 
   useEffect(() => {
     if (!userId) return;
-    if (didFetchRef.current) return;
-    didFetchRef.current = true;
 
     const fetchFollowing = async () => {
       try {
         const follows = await followService.getFollowsByUser(userId);
 
-        const mangas = await Promise.all(
-          follows.map(async (f) => {
-            const manga = await mangaService.getMangaWithChapters(
-              f.mangaId
-            );
-
-            const lastChapterObj =
-              manga.chapters?.[manga.chapters.length - 1] || null;
-
-            return {
-              followId: f.id,
-              id: manga.id_manga,
-              title: manga.name_manga,
-              cover: manga.poster_url,
-              lastChapter: lastChapterObj
-                ? lastChapterObj.chapterNumber
-                : "0",
-              chapterLink: lastChapterObj
-                ? `/mangas/${manga.id_manga}/chapters/${lastChapterObj.id}`
-                : "#",
-              updatedAgo: timeAgo(manga.updated_at),
-            };
-          })
-        );
+        const mangas = follows.map((f) => ({
+          followId: f.followId,
+          id: f.mangaId,
+          title: f.mangaName,
+          cover: f.posterUrl,
+          lastChapter: f.lastChapter ?? "0",
+          chapterLink: f.lastChapter
+            ? `/mangas/${f.mangaId}/chapters/latest`
+            : "#",
+          updatedAgo: timeAgo(f.updatedAt),
+        }));
 
         setFollowingMangas(mangas);
       } catch (err) {
@@ -80,12 +61,13 @@ export default function FollowingPage() {
     }
   };
 
-  if (!userId)
+  if (!userId) {
     return (
       <div className="text-center mt-10">
         Vui lòng đăng nhập để xem danh sách theo dõi.
       </div>
     );
+  }
 
   return (
     <div className="mt-15 min-h-screen bg-gray-50 py-8 lg:py-16">
