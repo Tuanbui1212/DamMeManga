@@ -30,6 +30,7 @@ interface JpaMangaRepository extends JpaRepository<Manga, String> {
         FROM MangaCategory mc
         JOIN mc.manga m
         JOIN mc.category c
+        JOIN FETCH m.author
         WHERE c.nameCategory IN :categoryNames
         GROUP BY m
         HAVING COUNT(DISTINCT c.idCategory) = :categoryCount

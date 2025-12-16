@@ -9,6 +9,7 @@ export async function loginUsecase(account, password) {
     localStorage.setItem("token", user.token);
     localStorage.setItem("account", user.account);
     localStorage.setItem("role", user.role);
+    localStorage.setItem("userId", user.idUser);
 
     return user;
 }
