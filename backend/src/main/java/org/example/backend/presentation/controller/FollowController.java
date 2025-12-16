@@ -2,6 +2,7 @@ package org.example.backend.presentation.controller;
 
 import org.example.backend.usecase.FollowUseCase;
 import org.example.backend.domain.model.Follow;
+import org.example.backend.infrastructure.dto.FollowDTO;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
@@ -21,8 +22,8 @@ public class FollowController {
     }
 
     @GetMapping("/user/{userId}")
-    public List<Follow> getFollowsByUser(@PathVariable String userId) {
-        return followUseCase.getFollowsByUser(userId);
+    public List<FollowDTO> getFollowingMangas(@PathVariable String userId) {
+        return followUseCase.getFollowingMangas(userId);
     }
 
     @DeleteMapping("/{id}")

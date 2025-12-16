@@ -2,6 +2,7 @@ package org.example.backend.usecase;
 
 import org.example.backend.domain.model.Follow;
 import org.example.backend.domain.repository.FollowRepository;
+import org.example.backend.infrastructure.dto.FollowDTO;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
@@ -17,20 +18,24 @@ public class FollowUseCase {
     }
 
     public Follow follow(String userId, String mangaId) {
-        String id = UUID.randomUUID().toString();
-        Follow follow = new Follow(id, userId, mangaId);
+        Follow follow = new Follow(
+                UUID.randomUUID().toString(),
+                userId,
+                mangaId
+        );
         return followRepository.save(follow);
     }
 
-    public List<Follow> getFollowsByUser(String userId) {
-        return followRepository.findByUserId(userId);
+    public List<FollowDTO> getFollowingMangas(String userId) {
+        return followRepository.findFollowingDTOByUserId(userId);
+    }
+
+    public void unfollow(String followId) {
+        followRepository.deleteById(followId);
     }
 
     public Optional<Follow> getFollowById(String id) {
         return followRepository.findById(id);
     }
-
-    public void unfollow(String id) {
-        followRepository.deleteById(id);
-    }
 }
+

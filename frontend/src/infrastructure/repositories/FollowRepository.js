@@ -4,12 +4,7 @@ export default class FollowRepositoryImpl {
 
     async getFollowsByUser(userId) {
         const response = await axiosClient.get(`/follows/user/${userId}`);
-        return response.data;
-    }
-
-    async getFollowById(id) {
-        const response = await axiosClient.get(`/follows/${id}`);
-        return response.data;
+        return response.data; 
     }
 
     async createFollow(userId, mangaId) {

@@ -1,37 +1,55 @@
 package org.example.backend.infrastructure.dto;
 
+import java.time.LocalDateTime;
+
 public class FollowDTO {
-    private String id;
-    private String userId;
+
+    private String followId;
     private String mangaId;
+    private String mangaName;
+    private String posterUrl;
+    private Long lastChapter;
+    private LocalDateTime updatedAt;
 
-    public FollowDTO(String id, String userId, String mangaId) {
-        this.id = id;
-        this.userId = userId;
+    public FollowDTO(
+            String followId,
+            String mangaId,
+            String mangaName,
+            String posterUrl,
+            Long lastChapter,
+            LocalDateTime updatedAt
+    ) {
+        this.followId = followId;
         this.mangaId = mangaId;
+        this.mangaName = mangaName;
+        this.posterUrl = posterUrl;
+        this.lastChapter = lastChapter;
+        this.updatedAt = updatedAt;
     }
 
-    public String getId() {
-        return id;
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
     }
 
-    public String getUserId() {
-        return userId;
+    public String getFollowId() {
+        return followId;
     }
 
     public String getMangaId() {
         return mangaId;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public String getMangaName() {
+        return mangaName;
     }
 
-    public void setUserId(String userId) {
-        this.userId = userId;
+    public String getPosterUrl() {
+        return posterUrl;
     }
 
-    public void setMangaId(String mangaId) {
-        this.mangaId = mangaId;
+    public Long getLastChapter() {
+        return lastChapter;
     }
+
+    
 }
