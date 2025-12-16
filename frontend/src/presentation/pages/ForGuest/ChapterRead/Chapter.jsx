@@ -63,11 +63,10 @@ function ChapterReadPage() {
         }
 
         console.log("🕒 Gọi recordHistoryChapter(historyId, chapterId)...");
-        const historyChapter =
-          await historyChapterService.recordHistoryChapter(
-            historyId,
-            chapterId
-          );
+        const historyChapter = await historyChapterService.recordHistoryChapter(
+          historyId,
+          chapterId
+        );
 
         console.log("✅ recordHistoryChapter:", historyChapter);
 
@@ -85,14 +84,14 @@ function ChapterReadPage() {
     initChapterRead();
   }, [id, chapterId]);
 
-
-
   useEffect(() => {
     const fetchImgChapter = async () => {
       setIsLoadingChapter(true);
       try {
         const data = await imgChapterService.getImgsByChapterId(chapterId);
-        const sortedData = (data.length ? data : []).sort((a, b) => a.stt - b.stt);
+        const sortedData = (data.length ? data : []).sort(
+          (a, b) => a.stt - b.stt
+        );
 
         setDataImgChapter(sortedData);
         console.log(`Images for chapter ${chapterId}:`, sortedData);
@@ -108,7 +107,9 @@ function ChapterReadPage() {
   useEffect(() => {
     const fetchAllChapter = async () => {
       const dataAllChapter = await chapterService.getChaptersByMangaId(id);
-      dataAllChapter.sort((a, b) => Number(a.chapterNumber) - Number(b.chapterNumber));
+      dataAllChapter.sort(
+        (a, b) => Number(a.chapterNumber) - Number(b.chapterNumber)
+      );
       setAllChapter(dataAllChapter);
     };
     fetchAllChapter();
@@ -135,8 +136,15 @@ function ChapterReadPage() {
 
   return (
     <div className="quicksand-uniquifier relative h-screen w-screen overflow-hidden bg-gray-200">
-      <ChapterPages pages={dataImgChapter} containerRef={containerRef} showUI={showUI} />
-      <CommentSidebar isOpen={showComments} onClose={() => setShowComments(false)} />
+      <ChapterPages
+        pages={dataImgChapter}
+        containerRef={containerRef}
+        showUI={showUI}
+      />
+      <CommentSidebar
+        isOpen={showComments}
+        onClose={() => setShowComments(false)}
+      />
 
       <motion.div
         initial={{ y: 0 }}

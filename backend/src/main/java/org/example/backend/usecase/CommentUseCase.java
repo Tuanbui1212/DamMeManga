@@ -19,7 +19,7 @@ public class CommentUseCase {
     private final UserRepository userRepository;
     private final SimpMessagingTemplate messagingTemplate;
 
-    public CommentUseCase(CommentRepository commentRepository, UserRepository userRepository,  SimpMessagingTemplate messagingTemplate) {
+    public CommentUseCase(CommentRepository commentRepository, UserRepository userRepository, SimpMessagingTemplate messagingTemplate) {
         this.commentRepository = commentRepository;
         this.userRepository = userRepository;
         this.messagingTemplate = messagingTemplate;
@@ -58,7 +58,7 @@ public class CommentUseCase {
 
     public Comment updateComment(Long id, String title) {
         Optional<Comment> commentOpt = commentRepository.findById(id);
-        if(commentOpt.isPresent()) {
+        if (commentOpt.isPresent()) {
             Comment comment = commentOpt.get();
             comment.setTitle(title);
             return commentRepository.update(comment);
@@ -83,24 +83,6 @@ public class CommentUseCase {
     }
 
     public List<CommentDTO> getCommentsByChapter(Long chapterId) {
-        List<Comment> comments = commentRepository.findByChapterId(chapterId);
-
-        return comments.stream().map(comment -> {
-            Optional<User> userOpt = userRepository.findById(comment.getIdUser());
-            String nameOfUser = "Unknown User";
-            if (userOpt.isPresent()) {
-                nameOfUser = userOpt.get().getAccount();
-            }
-
-            return new CommentDTO(
-                    comment.getIdComment(),
-                    comment.getIdUser(),
-                    nameOfUser,
-                    comment.getIdChapter(),
-                    comment.getTitle(),
-                    comment.getCreateAt(),
-                    comment.isDeleted()
-            );
-        }).collect(Collectors.toList());
+        return commentRepository.findByChapterId(chapterId);
     }
 }
