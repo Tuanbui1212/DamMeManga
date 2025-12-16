@@ -16,7 +16,7 @@ public interface UserRepository {
 
     User findByAccount(String account);
 
-    boolean changePassword(String account, String oldPassword, String newPassword);
+    boolean changePassword(String account, String newHashedPassword);
 
     boolean existsByAccount(String account);
 

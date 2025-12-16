@@ -89,23 +89,14 @@ public class UserRepositoryImpl implements UserRepository {
         return jpa.findById(id);
     }
 
-    @Override
-    public boolean changePassword(String account, String oldPassword, String newPassword) {
-        Optional<User> optionalUser = jpa.findByAccount(account);
+        @Override
+    public boolean changePassword(String account, String newHashedPassword) {
+        User user = jpa.findByAccount(account)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy tài khoản"));
 
-        if (optionalUser.isEmpty()) {
-            throw new RuntimeException("Không tìm thấy tài khoản");
-        }
-
-        User user = optionalUser.get();
-
-        if (!user.getPassword().equals(oldPassword)) {
-            throw new RuntimeException("Mật khẩu cũ không đúng");
-        }
-
-        user.setPassword(newPassword);
+        user.setPassword(newHashedPassword); // password đã encode ở UseCase
         jpa.save(user);
-
         return true;
     }
+
 }

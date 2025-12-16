@@ -19,16 +19,9 @@ export default class UserRepositoryImpl {
         return response.data;
     }
 
-    async changePassword(oldPassword, newPassword, token) {
-        const response = await axiosClient.post(
-            "/users/change-password",
-            { oldPassword, newPassword },
-            {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            }
-        );
+    async changePassword(oldPassword, newPassword) {
+        const response = await axiosClient.post("/users/change-password", { oldPassword, newPassword });
         return response.data;
     }
+
 }

@@ -19,6 +19,8 @@ export default function MangaManagement() {
     const fetchMangas = async () => {
       const data = await service.getAllMangaWithChapters();
 
+       console.log("📦 Raw data từ API:", data);
+
       const sorted = [...data].sort(
         (a, b) => new Date(b.updated_at) - new Date(a.updated_at)
       );
@@ -27,10 +29,11 @@ export default function MangaManagement() {
         id: item.id_manga,
         title: item.name_manga,
         author: item.author_id,
-        description: item.description,
         chapters: item.chapters.length,
         views: item.count_view,
         cover: item.poster_url,
+        updatedAt: item.updated_at,
+        createdAt: item.created_at,
       }));
       setMangas(mapped);
     };
