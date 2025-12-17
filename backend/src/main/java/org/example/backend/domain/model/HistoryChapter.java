@@ -31,7 +31,6 @@ public class HistoryChapter {
         this.readAt = readAt;
     }
 
-    // Getters và Setters
     public Long getIdHistoryChapter() {
         return idHistoryChapter;
     }

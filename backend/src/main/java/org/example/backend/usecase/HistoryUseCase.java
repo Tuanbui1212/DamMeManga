@@ -27,33 +27,22 @@ public class HistoryUseCase {
     @Autowired
     private MangaRepository mangaRepository;
 
-
-    /**
-     * Ghi lại lịch sử đọc
-     * Nếu tồn tại → update lastRead
-     * Nếu chưa → tạo mới
-     */
     public History recordHistory(String userId, String mangaId) {
 
-        // Tìm user
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        // Tìm manga
         Manga manga = mangaRepository.findById(mangaId)
                 .orElseThrow(() -> new RuntimeException("Manga not found"));
 
-        // Kiểm tra tồn tại history
         Optional<History> optional = historyRepository.findByUserAndManga(userId, mangaId);
 
         History history;
 
         if (optional.isPresent()) {
-            // Update lastRead
             history = optional.get();
             history.setLastRead(LocalDateTime.now());
         } else {
-            // Tạo mới
             history = new History(
                     UUID.randomUUID().toString(),
                     user,

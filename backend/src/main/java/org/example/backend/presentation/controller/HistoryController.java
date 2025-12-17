@@ -19,7 +19,6 @@ public class HistoryController {
         this.useCase = useCase;
     }
 
-    // Ghi lại lịch sử đọc
     @PostMapping("/read")
     public HistoryDTO recordReading(
             @RequestParam String userId,
@@ -35,25 +34,21 @@ public class HistoryController {
         );
     }
 
-    // Lấy tất cả lịch sử (trả về entity nhưng có thể đổi thành DTO nếu cần)
     @GetMapping
     public List<History> getAllHistories() {
         return useCase.getAllHistories();
     }
 
-    // Lấy lịch sử theo ID
     @GetMapping("/{id}")
     public Optional<History> getHistoryById(@PathVariable String id) {
         return useCase.getHistoryById(id);
     }
 
-    // Lấy lịch sử theo user (trả về HistoryDTO)
     @GetMapping("/user/{idUser}")
     public List<HistoryDTO> getHistoryByUser(@PathVariable String idUser) {
         return useCase.getHistoryByUser(idUser);
     }
 
-    // Xóa lịch sử
     @DeleteMapping("/{id}")
     public void deleteHistory(@PathVariable String id) {
         useCase.deleteHistory(id);

@@ -16,4 +16,9 @@ export default class FollowRepositoryImpl {
         const response = await axiosClient.delete(`/follows/${id}`);
         return response.data;
     }
+
+    async getTopMangaFollowed() {
+        const response = await axiosClient.get(`/follows/top-mangas`);
+        return response.data;
+    }
 }

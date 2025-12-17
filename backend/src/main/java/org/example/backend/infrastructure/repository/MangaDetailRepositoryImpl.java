@@ -4,12 +4,21 @@ import org.example.backend.domain.model.MangaDetail;
 import org.example.backend.domain.repository.MangaDetailRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
 
-interface JpaMangaDetailRepository extends JpaRepository<MangaDetail,String> {}
+interface JpaMangaDetailRepository extends JpaRepository<MangaDetail, String> {
+    @Query("""
+            SELECT DISTINCT m
+            FROM MangaDetail m
+            LEFT JOIN FETCH m.author
+            LEFT JOIN FETCH m.chapters
+            """)
+    List<MangaDetail> findAllWithAuthorAndChapters();
+}
 
 @Repository
 public class MangaDetailRepositoryImpl implements MangaDetailRepository {
@@ -18,7 +27,7 @@ public class MangaDetailRepositoryImpl implements MangaDetailRepository {
 
     @Override
     public List<MangaDetail> findAll() {
-        return jpaMangaDetailRepository.findAll();
+        return jpaMangaDetailRepository.findAllWithAuthorAndChapters();
     }
 
     @Override

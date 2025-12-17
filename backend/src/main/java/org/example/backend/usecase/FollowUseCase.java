@@ -17,6 +17,10 @@ public class FollowUseCase {
         this.followRepository = followRepository;
     }
 
+    public List<Follow> getAllFollows() {
+        return followRepository.findAll();
+    }
+
     public Follow follow(String userId, String mangaId) {
         Follow follow = new Follow(
                 UUID.randomUUID().toString(),
@@ -36,6 +40,10 @@ public class FollowUseCase {
 
     public Optional<Follow> getFollowById(String id) {
         return followRepository.findById(id);
+    }
+
+    public List<org.example.backend.infrastructure.dto.TopMangaFollowDTO> getTopMangaFollowed() {
+        return followRepository.findTopMangaFollowed();
     }
 }
 

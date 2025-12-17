@@ -24,4 +24,6 @@ public interface UserRepository {
 
     Optional<User> findById(String id);
 
+    long countUsers();
+
 }

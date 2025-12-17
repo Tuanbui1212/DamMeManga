@@ -37,4 +37,8 @@ public class AuthorUseCase {
     public void deleteAuthor(String id) {
         authorRepository.deleteAuthor(id);
     }
+
+    public long countAuthors() {
+        return authorRepository.countAuthors();
+    }
 }

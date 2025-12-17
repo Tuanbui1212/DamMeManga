@@ -17,4 +17,6 @@ public interface CategoryRepository {
     Category updateCategory(String id, Category category);
 
     void deleteCategory(String id);
+
+    long countCategories();
 }

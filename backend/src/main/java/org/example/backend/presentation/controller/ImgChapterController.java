@@ -21,7 +21,6 @@ public class ImgChapterController {
         this.imgChapterUseCase = imgChapterUseCase;
     }
 
-    // POST /api/chapters/images/
     @PostMapping("/images")
     @ResponseStatus(HttpStatus.CREATED)
     public Map<String, Object> createImgChapters(@RequestBody List<ImgChapterRequest> requests) {
@@ -32,31 +31,26 @@ public class ImgChapterController {
         );
     }
 
-    // GET /api/chapters/images/{id}
     @GetMapping("/images/{id}")
     public ImgChapter getImgChapterById(@PathVariable Long id) {
         return imgChapterUseCase.getImgChapterById(id);
     }
 
-    // GET /api/chapters/{chapterId}/images
     @GetMapping("/{chapterId}/images")
     public List<ImgChapter> getImgsByChapterId(@PathVariable Long chapterId) {
         return imgChapterUseCase.getImgsByChapterId(chapterId);
     }
 
-    // GET /api/chapters/images
     @GetMapping("/images")
     public List<ImgChapter> getAllImgChapters() {
         return imgChapterUseCase.getAllImgChapters();
     }
 
-    // PUT /api/chapters/images/{id}
     @PutMapping("/images/{id}")
     public ImgChapter updateImgChapter(@PathVariable Long id, @RequestBody ImgChapterRequest request) {
         return imgChapterUseCase.updateImgChapter(id, request);
     }
 
-    // DELETE /api/chapters/images/{id}
     @DeleteMapping("/images/{id}")
     @ResponseStatus(HttpStatus.OK)
     public Map<String, Object> deleteImgChapter(@PathVariable Long id) {

@@ -4,13 +4,12 @@ import org.example.backend.domain.model.Comment;
 import org.example.backend.domain.model.User;
 import org.example.backend.domain.repository.CommentRepository;
 import org.example.backend.domain.repository.UserRepository;
-import org.example.backend.infrastructure.dto.CommentDTO; // Import đúng DTO bạn vừa tạo
+import org.example.backend.infrastructure.dto.CommentDTO;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public class CommentUseCase {

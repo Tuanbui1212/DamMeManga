@@ -17,4 +17,8 @@ export default class FollowService {
     async deleteFollow(id) {
         return await this.followRepository.deleteFollow(id);
     }
+
+    async getTopMangaFollowed() {
+        return await this.followRepository.getTopMangaFollowed();
+    }
 }

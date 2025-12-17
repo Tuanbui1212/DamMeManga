@@ -3,6 +3,7 @@ package org.example.backend.infrastructure.repository;
 import org.example.backend.domain.model.User;
 import org.example.backend.domain.repository.UserRepository;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
@@ -13,6 +14,9 @@ interface UserJpaRepository extends JpaRepository<User, String> {
     Optional<User> findByAccount(String account);
 
     boolean existsByAccount(String account);
+
+    @Query("SELECT COUNT(u) FROM User u")
+    long countUsers();
 }
 
 @Repository
@@ -89,14 +93,19 @@ public class UserRepositoryImpl implements UserRepository {
         return jpa.findById(id);
     }
 
-        @Override
+    @Override
     public boolean changePassword(String account, String newHashedPassword) {
         User user = jpa.findByAccount(account)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy tài khoản"));
 
-        user.setPassword(newHashedPassword); // password đã encode ở UseCase
+        user.setPassword(newHashedPassword);
         jpa.save(user);
         return true;
+    }
+
+    @Override
+    public long countUsers() {
+        return jpa.countUsers();
     }
 
 }

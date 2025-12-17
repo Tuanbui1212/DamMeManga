@@ -40,4 +40,12 @@ export default class MangaService {
   async getMangasByCategories(categories) {
     return await this.mangaRepository.getMangasByCategories(categories); // list MangaDTO
   }
+
+  async getTotalMangas() {
+    return await this.mangaRepository.getTotalMangas();
+  }
+
+  async getTotalViews() {
+    return await this.mangaRepository.getTotalViews();
+  }
 }

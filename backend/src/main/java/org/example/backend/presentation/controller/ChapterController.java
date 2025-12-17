@@ -20,7 +20,7 @@ public class ChapterController {
     }
 
     @PostMapping("chapters")
-    @ResponseStatus(HttpStatus.CREATED) // Tự động set code 201 Created
+    @ResponseStatus(HttpStatus.CREATED)
     public Map<String, Object> createChapter(@RequestBody ChapterRequest chapter) {
         Chapter newChapter = chapterUseCase.createChapter(chapter);
         return Map.of(

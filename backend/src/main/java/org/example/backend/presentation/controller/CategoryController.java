@@ -48,4 +48,9 @@ public class CategoryController {
         categoryUseCase.deleteCategory(id);
         return ResponseEntity.ok().build();
     }
+
+    @GetMapping("/count")
+    public long countCategories() {
+        return categoryUseCase.countCategories();
+    }
 }

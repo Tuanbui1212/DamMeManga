@@ -16,4 +16,6 @@ public interface AuthorRepository {
     Author updateAuthor(String id, Author author);
 
     void deleteAuthor(String id);
+
+    long countAuthors();
 }

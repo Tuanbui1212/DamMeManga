@@ -1,7 +1,5 @@
 package org.example.backend.infrastructure.dto;
 
-import org.antlr.v4.runtime.misc.NotNull;
-
 public class ChapterRequest {
     private String idManga;
     private Integer chapterNumber;

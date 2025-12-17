@@ -13,15 +13,10 @@ import java.util.List;
 import java.util.Optional;
 
 
-// =======================
-// JPA Interface Internal
-// =======================
 interface JpaHistoryRepository extends JpaRepository<History, String> {
 
-    // Tìm history theo user + manga (đúng chuẩn entity ManyToOne)
     Optional<History> findByUser_IdUserAndManga_IdManga(String userId, String mangaId);
 
-    // Lấy DTO cho API trả về danh sách history
     @Query("""
         SELECT new org.example.backend.infrastructure.dto.HistoryDTO(
             h.idHistory,
@@ -35,7 +30,6 @@ interface JpaHistoryRepository extends JpaRepository<History, String> {
     """)
     List<HistoryDTO> findDTOByIdUser(@Param("userId") String userId);
 
-    // Lấy history bao gồm Manga và Author => tránh N+1
     @Query("""
         SELECT h FROM History h
         JOIN FETCH h.manga m
@@ -45,14 +39,9 @@ interface JpaHistoryRepository extends JpaRepository<History, String> {
     """)
     List<History> findByUserWithManga(@Param("userId") String userId);
 
-    // Lấy toàn bộ history theo user ORDER BY last read
     List<History> findByUser_IdUserOrderByLastReadDesc(String userId);
 }
 
-
-// =======================
-// Repository Implementation
-// =======================
 @Repository
 public class HistoryRepositoryImpl implements HistoryRepository {
 

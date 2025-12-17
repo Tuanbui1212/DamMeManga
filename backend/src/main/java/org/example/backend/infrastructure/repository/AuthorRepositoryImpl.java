@@ -2,7 +2,6 @@ package org.example.backend.infrastructure.repository;
 
 import org.example.backend.domain.model.Author;
 import org.example.backend.domain.repository.AuthorRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import jakarta.persistence.EntityManager;
@@ -50,5 +49,11 @@ public class AuthorRepositoryImpl implements AuthorRepository {
         if (author != null) {
             entityManager.remove(author);
         }
+    }
+
+    public long countAuthors() {
+        String query = "SELECT COUNT(a) FROM Author a";
+        return entityManager.createQuery(query, Long.class)
+                .getSingleResult();
     }
 }

@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 @Service
 public class HistoryChapterUseCase {
@@ -17,7 +16,6 @@ public class HistoryChapterUseCase {
     @Autowired
     private HistoryChapterRepository historyChapterRepository;
 
-    // Create or Update read_at nếu tồn tại
     public HistoryChapter recordHistoryChapter(String idHistory, Long idChapter) {
         Optional<HistoryChapter> optional = historyChapterRepository.findByHistoryAndChapter(idHistory, idChapter);
         HistoryChapter historyChapter;

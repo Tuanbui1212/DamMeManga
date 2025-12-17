@@ -21,26 +21,21 @@ public class ImgBBService {
 
         RestTemplate restTemplate = new RestTemplate();
 
-        // 1) Convert to Base64
         String base64 = Base64.getEncoder().encodeToString(file.getBytes());
 
-        // 2) Build body
         MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
         body.add("key", API_KEY);
         body.add("image", base64);
 
-        // 3) Headers
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.MULTIPART_FORM_DATA);
 
         HttpEntity<MultiValueMap<String, Object>> requestEntity =
                 new HttpEntity<>(body, headers);
 
-        // 4) Send request
         ResponseEntity<Map> response =
                 restTemplate.postForEntity(UPLOAD_URL, requestEntity, Map.class);
 
-        // 5) Extract URL
         Map data = (Map) response.getBody().get("data");
         return data.get("url").toString();
     }

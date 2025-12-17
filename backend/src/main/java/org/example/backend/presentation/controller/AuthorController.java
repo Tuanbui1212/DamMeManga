@@ -43,4 +43,9 @@ public class AuthorController {
         authorUseCase.deleteAuthor(id);
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping("/count")
+    public long countAuthors() {
+        return authorUseCase.countAuthors();
+    }
 }

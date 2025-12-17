@@ -18,10 +18,8 @@ public class UserUseCase {
         this.passwordEncoder = passwordEncoder;
     }
 
-    // Đăng ký user
     public User registerUser(String account, String password) {
 
-        // KIỂM TRA TRÙNG ACCOUNT = findByAccount()
         if (userRepository.findByAccount(account) != null) {
             throw new RuntimeException("Account đã tồn tại");
         }
@@ -34,7 +32,6 @@ public class UserUseCase {
         return userRepository.registerUser(account, passwordEncoder.encode(password));
     }
 
-    // Login
     public User login(String account, String password) {
         User user = userRepository.findByAccount(account);
 
@@ -49,7 +46,6 @@ public class UserUseCase {
         return user;
     }
 
-    // Tạo admin
     public User createAdmin(String account, String password) {
 
         if (userRepository.findByAccount(account) != null) {
@@ -59,30 +55,29 @@ public class UserUseCase {
         return userRepository.createAdmin(account, passwordEncoder.encode(password));
     }
 
-    // Lấy toàn bộ user
     public List<User> getAllUsers() {
         return userRepository.getAllUsers();
     }
 
-    // Tìm theo account
     public User findByAccount(String account) {
         return userRepository.findByAccount(account);
     }
 
-    // Đổi mật khẩu
-     public boolean changePassword(String account, String oldPassword, String newPassword) {
+    public boolean changePassword(String account, String oldPassword, String newPassword) {
         User user = userRepository.findByAccount(account);
         if (user == null) {
             throw new RuntimeException("Không tìm thấy tài khoản");
         }
 
-        // Kiểm tra mật khẩu cũ
         if (!passwordEncoder.matches(oldPassword, user.getPassword())) {
             throw new RuntimeException("Mật khẩu cũ không đúng");
         }
 
-        // Encode password mới và lưu
         String newHashedPassword = passwordEncoder.encode(newPassword);
         return userRepository.changePassword(account, newHashedPassword);
+    }
+
+    public long countUsers() {
+        return userRepository.countUsers();
     }
 }

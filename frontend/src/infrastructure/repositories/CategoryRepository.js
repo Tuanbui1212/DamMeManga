@@ -28,4 +28,9 @@ export default class CategoryRepositoryImpl {
         const response = await axiosClient.delete(`/category/${id}`);
         return response.data;
     }
+
+    async getTotalCategories() {
+        const response = await axiosClient.get("/category/count");
+        return response.data; 
+    }
 }

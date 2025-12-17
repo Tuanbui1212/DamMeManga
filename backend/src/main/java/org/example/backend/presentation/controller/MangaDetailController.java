@@ -21,8 +21,6 @@ public class MangaDetailController {
         return mangaDetailUseCase.findAllManga();
     }
 
-
-    // API trả Manga kèm danh sách Chapter
     @GetMapping("/{idManga}")
     public MangaDetail getMangaWithChapters(@PathVariable String idManga) {
         return mangaDetailUseCase.getMangaWithChapters(idManga);

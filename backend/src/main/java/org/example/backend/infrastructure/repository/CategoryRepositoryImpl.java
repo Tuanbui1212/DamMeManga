@@ -17,6 +17,9 @@ interface CategoryJpaRepository extends JpaRepository<Category, String> {
             "FROM Category c LEFT JOIN MangaCategory mc ON mc.category.idCategory = c.idCategory " +
             "GROUP BY c.idCategory, c.nameCategory, c.description")
     List<CategoryDTO> findAllWithMangaCount();
+
+    @Query("SELECT COUNT(c) FROM Category c")
+    long countCategories();
 }
 
 @Repository
@@ -63,5 +66,10 @@ public class CategoryRepositoryImpl implements CategoryRepository {
             throw new RuntimeException("Category không tồn tại");
         }
         jpa.deleteById(id);
+    }
+
+    @Override
+    public long countCategories() {
+        return jpa.countCategories();
     }
 }

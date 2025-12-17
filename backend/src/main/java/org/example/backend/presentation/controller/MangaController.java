@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
+import org.springframework.web.bind.annotation.GetMapping;
+
 
 @RestController
 @RequestMapping("/api/mangas")
@@ -54,4 +56,15 @@ public class MangaController {
     public MangaDTO getById(@PathVariable String id) {
         return mangaUseCase.getById(id);
     }
+
+    @GetMapping("count")
+    public long getTotalMangas() {
+        return mangaUseCase.getTotalMangas();
+    }
+
+    @GetMapping("totalviews")
+    public long getTotalViews() {
+        return mangaUseCase.getTotalViews();
+    }
+    
 }

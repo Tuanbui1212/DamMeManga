@@ -21,7 +21,6 @@ public class ImgChapterUseCase {
         this.chapterRepository = chapterRepository;
     }
 
-    // --- CREATE LIST (Bulk Insert - Tối ưu hiệu năng và kiểm tra tính đồng nhất) ---
     public List<ImgChapter> createImgChapters(List<ImgChapterRequest> requests) {
         if (requests.isEmpty()) {
             return new ArrayList<>();
@@ -53,7 +52,6 @@ public class ImgChapterUseCase {
         return imgChapterRepository.saveAll(entities);
     }
 
-    // --- READ ---
     public ImgChapter getImgChapterById(Long id) {
         return imgChapterRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Image chapter not found with id: " + id));
@@ -67,12 +65,10 @@ public class ImgChapterUseCase {
         return imgChapterRepository.findByChapterId(chapterId);
     }
 
-    // --- UPDATE ---
     public ImgChapter updateImgChapter(Long id, ImgChapterRequest request) {
         ImgChapter existing = imgChapterRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Image chapter not found with id: " + id));
 
-        // Kiểm tra tính toàn vẹn cho Chapter ID mới khi update
         if (request.getChapterId() != null) {
             chapterRepository.findById(request.getChapterId())
                     .orElseThrow(() -> new RuntimeException("Chapter Not Found"));
@@ -85,7 +81,6 @@ public class ImgChapterUseCase {
         return imgChapterRepository.update(existing);
     }
 
-    // --- DELETE ---
     public void deleteImgChapter(Long id) {
         if (imgChapterRepository.findById(id).isEmpty()) {
             throw new RuntimeException("Image chapter not found with id: " + id);

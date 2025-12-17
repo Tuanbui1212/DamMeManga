@@ -24,7 +24,6 @@ public class UserController {
         this.jwtUtil = jwtUtil;
     }
 
-    // --- Register guest ---
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody AuthRequest request) {
         try {
@@ -48,12 +47,10 @@ public class UserController {
         }
     }
 
-    // --- Create admin (admin-only) ---
     @PostMapping("/admin")
     public ResponseEntity<?> createAdmin(@RequestHeader("Authorization") String authHeader,
             @RequestBody AuthRequest request) {
         try {
-            // Check token
             String token = authHeader.substring(7);
             String role = jwtUtil.extractRole(token);
             if (!"admin".equals(role)) {
@@ -67,7 +64,6 @@ public class UserController {
         }
     }
 
-    // --- Get all users (admin-only) ---
     @GetMapping("/all")
     public ResponseEntity<?> getAllUsers(@RequestHeader("Authorization") String authHeader) {
         String token = authHeader.substring(7);
@@ -94,5 +90,10 @@ public class UserController {
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
+    }
+
+    @GetMapping("/count")
+    public long getTotalUsers() {
+        return userUseCase.countUsers();
     }
 }

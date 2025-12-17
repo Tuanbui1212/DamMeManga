@@ -18,4 +18,8 @@ public interface MangaRepository {
     List<MangaDTO> findAllDTO();
 
     List<Manga> findMangaByAllCategoryNames(List<String> categoryNames, long categoryCount);
+
+    long countMangas();
+
+    long countTotalViews();
 }

@@ -31,4 +31,8 @@ export default class AuthorService {
   async deleteAuthor(id) {
     return await this.authorRepository.deleteAuthor(id);
   }
+
+  async getTotalAuthors() {
+    return await this.authorRepository.getTotalAuthors();
+  }
 }

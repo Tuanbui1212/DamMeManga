@@ -47,12 +47,8 @@ public class JwtFilter extends OncePerRequestFilter {
             try {
                 username = jwtUtil.extractUsername(token);
 
-                // 🔹 Log debug
-                System.out.println("==== JWT DEBUG ====");
-                System.out.println("AuthHeader: " + authHeader);
                 System.out.println("Username from token: " + username);
                 System.out.println("Role from token: " + jwtUtil.extractRole(token));
-                System.out.println("===================");
             } catch (Exception e) {
                 System.out.println("Token không hợp lệ: " + e.getMessage());
             }

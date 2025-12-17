@@ -13,14 +13,12 @@ public class MangaDTO {
     private String status;
     private int countView;
 
-    private LocalDateTime createAt; // thời gian tạo
-    private LocalDateTime updateAt; // thời gian cập nhật
+    private LocalDateTime createAt; 
+    private LocalDateTime updateAt;
 
-    // Constructor không tham số
     public MangaDTO() {
     }
 
-    // Constructor đầy đủ
     public MangaDTO(String id, String name, String authorName, String description,
                     String bannerUrl, String posterUrl, String status, int countView,
                     LocalDateTime createAt, LocalDateTime updateAt) {
@@ -36,7 +34,6 @@ public class MangaDTO {
         this.updateAt = updateAt;
     }
 
-    // Getter & Setter
     public String getId() {
         return id;
     }

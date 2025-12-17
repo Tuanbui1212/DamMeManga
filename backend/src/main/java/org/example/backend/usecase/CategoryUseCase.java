@@ -36,4 +36,8 @@ public class CategoryUseCase {
     public void deleteCategory(String id) {
         categoryRepository.deleteCategory(id);
     }
+
+    public long countCategories() {
+        return categoryRepository.countCategories();
+    }
 }

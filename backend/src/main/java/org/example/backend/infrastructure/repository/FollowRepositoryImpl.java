@@ -3,6 +3,7 @@ package org.example.backend.infrastructure.repository;
 import org.example.backend.domain.model.Follow;
 import org.example.backend.domain.repository.FollowRepository;
 import org.example.backend.infrastructure.dto.FollowDTO;
+import org.example.backend.infrastructure.dto.TopMangaFollowDTO;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -36,6 +37,19 @@ interface FollowRepositoryJpa extends JpaRepository<Follow, String> {
             """)
     List<FollowDTO> findFollowingDTOByUserId(@Param("userId") String userId);
 
+    @Query("""
+                SELECT new org.example.backend.infrastructure.dto.TopMangaFollowDTO(
+                    f.mangaId,
+                    COUNT(f.id),
+                    m.nameManga
+                )
+                FROM Follow f
+                JOIN Manga m ON m.idManga = f.mangaId
+                GROUP BY f.mangaId, m.nameManga
+                ORDER BY COUNT(f.id) DESC
+            """)
+    List<TopMangaFollowDTO> findTopMangaFollowed();
+
 }
 
 @Repository
@@ -45,6 +59,11 @@ public class FollowRepositoryImpl implements FollowRepository {
 
     public FollowRepositoryImpl(FollowRepositoryJpa followJpaRepository) {
         this.followJpaRepository = followJpaRepository;
+    }
+
+    @Override
+    public List<Follow> findAll() {
+        return followJpaRepository.findAll();
     }
 
     @Override
@@ -65,5 +84,10 @@ public class FollowRepositoryImpl implements FollowRepository {
     @Override
     public List<FollowDTO> findFollowingDTOByUserId(String userId) {
         return followJpaRepository.findFollowingDTOByUserId(userId);
+    }
+
+    @Override
+    public List<TopMangaFollowDTO> findTopMangaFollowed() {
+        return followJpaRepository.findTopMangaFollowed();
     }
 }

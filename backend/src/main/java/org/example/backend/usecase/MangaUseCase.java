@@ -27,7 +27,6 @@ public class MangaUseCase {
     }
 
     public List<MangaDTO> getAll() {
-        // Lấy luôn DTO từ query, tránh N+1 query
         return mangaRepository.findAllDTO();
     }
 
@@ -89,7 +88,6 @@ public class MangaUseCase {
         mangaRepository.deleteById(id);
     }
 
-    // Mapping Entity → DTO dùng khi lấy theo Id / update / patch
     private MangaDTO mapToDTO(Manga m) {
         return new MangaDTO(
                 m.getIdManga(),
@@ -109,9 +107,16 @@ public class MangaUseCase {
 
         List<Manga> mangas = mangaRepository.findMangaByAllCategoryNames(categoryNames, categoryCount);
 
-        // Map entity → DTO
         return mangas.stream()
                 .map(this::mapToDTO)
                 .toList();
+    }
+
+    public long getTotalMangas() {
+        return mangaRepository.countMangas();
+    }
+
+    public long getTotalViews() {
+        return mangaRepository.countTotalViews();
     }
 }
