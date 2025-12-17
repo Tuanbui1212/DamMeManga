@@ -69,6 +69,7 @@ function Home() {
         colorBackground="bg-gray-50"
         category="all"
       />
+
       <TopManga mangas={mangasTop} />
       <MangaList
         mangaData={mangasMonster}

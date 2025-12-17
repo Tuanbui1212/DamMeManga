@@ -34,103 +34,82 @@ function ChapterReadPage() {
   const containerRef = useRef(null);
   const lastScrollY = useRef(0);
 
+  // Hàm scroll lên đầu
   const scrollToTop = () => {
-    console.log("chay ham load");
     containerRef.current?.scrollTo({ top: 0, behavior: "smooth" });
   };
 
+  // Khi chuyển chapter mới → scroll lên đầu và load ảnh
   useEffect(() => {
-    const initChapterRead = async () => {
-      console.log("📖 [ChapterRead] BẮT ĐẦU initChapterRead");
+    const fetchChapterData = async () => {
+      setIsLoadingChapter(true);
+      scrollToTop();
 
       try {
+        // Lấy ảnh chapter
+        const data = await imgChapterService.getImgsByChapterId(chapterId);
+        const sortedData = (data.length ? data : []).sort((a, b) => a.stt - b.stt);
+        setDataImgChapter(sortedData);
+
+        // Lấy history user
         const userId = localStorage.getItem("userId");
-        console.log("👤 userId từ localStorage:", userId);
-
-        if (!userId) {
-          console.warn("⚠️ Không có userId → KHÔNG tạo history");
-          return;
+        if (userId) {
+          const history = await historyService.recordHistory(userId, id);
+          const historyId = history?.idHistory;
+          if (historyId) {
+            await historyChapterService.recordHistoryChapter(historyId, chapterId);
+          }
         }
 
-        console.log("🕒 Gọi recordHistory(userId, mangaId)...");
-        const history = await historyService.recordHistory(userId, id);
-        console.log("✅ recordHistory:", history);
-
-        const historyId = history?.idHistory;
-        if (!historyId) {
-          console.error("❌ Không nhận được historyId");
-          return;
-        }
-
-        console.log("🕒 Gọi recordHistoryChapter(historyId, chapterId)...");
-        const historyChapter = await historyChapterService.recordHistoryChapter(
-          historyId,
-          chapterId
-        );
-
-        console.log("✅ recordHistoryChapter:", historyChapter);
-
-        // tăng view
+        // Tăng countView
         const manga = await mangaService.getMangaById(id);
         const newCountView = (manga.countView || 0) + 1;
         await mangaService.patchManga(id, { countView: newCountView });
-
-        console.log("📈 countView updated:", newCountView);
       } catch (err) {
-        console.error("🔥 LỖI initChapterRead:", err);
-      }
-    };
-
-    initChapterRead();
-  }, [id, chapterId]);
-
-  useEffect(() => {
-    const fetchImgChapter = async () => {
-      setIsLoadingChapter(true);
-      try {
-        const data = await imgChapterService.getImgsByChapterId(chapterId);
-        const sortedData = (data.length ? data : []).sort(
-          (a, b) => a.stt - b.stt
-        );
-
-        setDataImgChapter(sortedData);
-        console.log(`Images for chapter ${chapterId}:`, sortedData);
-      } catch (err) {
-        console.error("Lỗi khi load ảnh chapter:", err);
+        console.error("🔥 Lỗi fetchChapterData:", err);
       } finally {
         setIsLoadingChapter(false);
       }
     };
-    fetchImgChapter();
-  }, [chapterId]);
 
+    fetchChapterData();
+  }, [id, chapterId]);
+
+  // Lấy tất cả chapter (dùng để navigation)
   useEffect(() => {
     const fetchAllChapter = async () => {
-      const dataAllChapter = await chapterService.getChaptersByMangaId(id);
-      dataAllChapter.sort(
-        (a, b) => Number(a.chapterNumber) - Number(b.chapterNumber)
-      );
-      setAllChapter(dataAllChapter);
+      try {
+        const dataAllChapter = await chapterService.getChaptersByMangaId(id);
+        dataAllChapter.sort(
+          (a, b) => Number(a.chapterNumber) - Number(b.chapterNumber)
+        );
+        setAllChapter(dataAllChapter);
+      } catch (err) {
+        console.error("🔥 Lỗi fetchAllChapter:", err);
+      }
     };
     fetchAllChapter();
   }, [id]);
 
+  // Ẩn/hiện UI khi scroll
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
+
     const handleScroll = () => {
       const currentY = container.scrollTop;
       if (currentY > lastScrollY.current + 10) setShowUI(false);
       else if (currentY < lastScrollY.current - 10) setShowUI(true);
       lastScrollY.current = currentY;
     };
+
     container.addEventListener("scroll", handleScroll);
     return () => container.removeEventListener("scroll", handleScroll);
   }, []);
 
+  // Chuyển chapter
   const handleNavigateChapter = (chapterIdToNavigate) => {
     if (!chapterIdToNavigate) return;
-    setIsLoadingChapter(true);
     navigate(`/mangas/${id}/chapter/${chapterIdToNavigate}`);
   };
 
@@ -141,6 +120,7 @@ function ChapterReadPage() {
         containerRef={containerRef}
         showUI={showUI}
       />
+
       <CommentSidebar
         isOpen={showComments}
         onClose={() => setShowComments(false)}
@@ -162,7 +142,7 @@ function ChapterReadPage() {
           scrollToTop={scrollToTop}
           setShowChapterList={setShowChapterList}
           setShowComments={setShowComments}
-          onNavigateChapter={handleNavigateChapter} // thêm prop mới
+          onNavigateChapter={handleNavigateChapter}
         />
       </motion.div>
 
@@ -175,9 +155,9 @@ function ChapterReadPage() {
         />
       )}
 
-      {/* Overlay khi load chapter */}
+      {/* Overlay loading khi fetch chapter */}
       {isLoadingChapter && (
-        <div className="absolute inset-0 bg-black/50 bg-opacity-60 flex items-center justify-center z-50">
+        <div className="absolute inset-0 bg-black/50 flex items-center justify-center z-50">
           <Loader2 className="animate-spin text-white" size={48} />
         </div>
       )}
