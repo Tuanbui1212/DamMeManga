@@ -57,4 +57,15 @@ export default class ChapterRepository {
     const response = await axiosClient.get(`${BASE_URL}/${idManga}/chapters`);
     return response.data.map((item) => this._toChapter(item));
   }
+
+  async getFirstChapterByMangaId(idManga) {
+    const response = await axiosClient.get(
+      `${BASE_URL}/first-chapter/${idManga}`
+    );
+
+    const first = response.data?.[0]; 
+
+    return this._toChapter(first);
+  }
+
 }

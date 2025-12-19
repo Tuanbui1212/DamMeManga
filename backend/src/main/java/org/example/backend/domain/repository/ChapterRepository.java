@@ -16,4 +16,6 @@ public interface ChapterRepository {
     void deleteById(Long id);
 
     List<Chapter> getChaptersByMangaId(String mangaId);
+
+    Optional<Chapter> findFirstChapterByMangaId(String mangaId);
 }

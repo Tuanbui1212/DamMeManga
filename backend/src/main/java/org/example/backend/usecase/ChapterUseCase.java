@@ -67,4 +67,8 @@ public class ChapterUseCase {
     public List<Chapter> getChaptersByMangaId(String mangaId) {
         return chapterRepository.getChaptersByMangaId(mangaId);
     }
+
+    public List<Chapter> findFirstChapterByMangaId(String mangaId) {
+        return chapterRepository.findFirstChapterByMangaId(mangaId).stream().toList();
+    }
 }

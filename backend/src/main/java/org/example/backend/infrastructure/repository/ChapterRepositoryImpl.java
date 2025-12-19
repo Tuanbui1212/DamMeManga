@@ -18,6 +18,9 @@ interface JpaChapterRepository extends JpaRepository<Chapter, Long> {
             WHERE c.manga.idManga = ?1
             """)
     List<Chapter> getChaptersByMangaId(String mangaId);
+
+   Optional<Chapter> findFirstByManga_IdMangaOrderByChapterNumberAsc(String mangaId);
+
 }
 
 @Repository
@@ -53,5 +56,10 @@ public class ChapterRepositoryImpl implements ChapterRepository {
     @Override
     public List<Chapter> getChaptersByMangaId(String mangaId) {
         return jpaChapterRepository.getChaptersByMangaId(mangaId);
+    }
+
+    @Override
+    public Optional<Chapter> findFirstChapterByMangaId(String mangaId) {
+        return jpaChapterRepository.findFirstByManga_IdMangaOrderByChapterNumberAsc(mangaId);
     }
 }

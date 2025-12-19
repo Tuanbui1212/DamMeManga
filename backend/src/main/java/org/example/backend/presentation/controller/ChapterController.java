@@ -8,6 +8,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
 
 @RestController
 @RequestMapping("/api/mangas")
@@ -54,4 +57,10 @@ public class ChapterController {
     public List<Chapter> getChaptersByMangaId(@PathVariable String idManga) {
         return chapterUseCase.getChaptersByMangaId(idManga);
     }
+
+    @GetMapping("/first-chapter/{idManga}")
+    public List<Chapter> findFirstChapterByMangaId(@PathVariable String idManga) {
+        return chapterUseCase.findFirstChapterByMangaId(idManga);
+    }
+    
 }

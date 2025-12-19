@@ -11,14 +11,8 @@ public class FollowDTO {
     private Long lastChapter;
     private LocalDateTime updatedAt;
 
-    public FollowDTO(
-            String followId,
-            String mangaId,
-            String mangaName,
-            String posterUrl,
-            Long lastChapter,
-            LocalDateTime updatedAt
-    ) {
+    public FollowDTO(String followId, String mangaId, String mangaName, String posterUrl, Long lastChapter,
+            LocalDateTime updatedAt) {
         this.followId = followId;
         this.mangaId = mangaId;
         this.mangaName = mangaName;
@@ -51,5 +45,4 @@ public class FollowDTO {
         return lastChapter;
     }
 
-    
 }

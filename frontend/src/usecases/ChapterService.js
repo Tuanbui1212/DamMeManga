@@ -28,4 +28,9 @@ export default class ChapterService {
   async getChaptersByMangaId(idManga) {
     return await this.chapterRepository.getChaptersByMangaId(idManga);
   }
+  
+  async getFirstChapterByMangaId(idManga) {
+    return await this.chapterRepository.getFirstChapterByMangaId(idManga);
+  }
+
 }
