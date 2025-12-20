@@ -3,6 +3,7 @@ import { useEffect, useState, useRef } from "react";
 import { useParams } from "react-router-dom";
 import SockJS from "sockjs-client";
 import Stomp from "stompjs";
+import { toast } from "react-hot-toast";
 
 import CommentService from "../../../../usecases/CommetService";
 
@@ -96,6 +97,10 @@ export default function CommentSidebar({ isOpen, onClose }) {
 
   const handleComment = async () => {
     if (!comment.trim()) return;
+    if (localStorage.getItem("user").idUser === null) {
+      toast.error("Vui lòng đăng nhập để bình luận.");
+      return;
+    }
 
     try {
       const formData = {
