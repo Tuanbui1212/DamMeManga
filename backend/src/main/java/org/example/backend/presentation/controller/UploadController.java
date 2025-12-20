@@ -18,7 +18,7 @@ public class UploadController {
     public ResponseEntity<?> uploadImage(@RequestParam("file") MultipartFile file) {
         try {
             String url = imgBBService.upload(file);
-            return ResponseEntity.ok(url); // trả URL trực tiếp
+            return ResponseEntity.ok(url); 
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Upload lỗi: " + e.getMessage());
         }

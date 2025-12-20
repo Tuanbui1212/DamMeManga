@@ -1,4 +1,3 @@
-// src/components/author-management/SearchAndAddBar.jsx
 export default function SearchAndAddBar({ query, onQueryChange, onAdd }) {
   return (
     <div className="flex gap-3 items-center">

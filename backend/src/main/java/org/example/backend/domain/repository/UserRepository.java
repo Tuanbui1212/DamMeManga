@@ -1,16 +1,29 @@
 package org.example.backend.domain.repository;
 
 import org.example.backend.domain.model.User;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
-
+import java.util.List;
 import java.util.Optional;
 
-@Repository
-public interface UserRepository extends JpaRepository<User, String> {
+public interface UserRepository {
 
-    Optional<User> findByAccount(String account);
+    User registerUser(String account, String password);
+
+    User createAdmin(String account, String password);
+
+    User login(String account, String password);
+
+    List<User> getAllUsers();
+
+    User findByAccount(String account);
+
+    boolean changePassword(String account, String newHashedPassword);
 
     boolean existsByAccount(String account);
+
+    User save(User user);
+
+    Optional<User> findById(String id);
+
+    long countUsers();
 
 }

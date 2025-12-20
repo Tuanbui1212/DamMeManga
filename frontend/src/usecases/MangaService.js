@@ -35,4 +35,17 @@ export default class MangaService {
   async deleteManga(id) {
     return await this.mangaRepository.deleteManga(id); // string "Deleted"
   }
+
+  // Lấy danh sách manga theo danh sách thể loại
+  async getMangasByCategories(categories) {
+    return await this.mangaRepository.getMangasByCategories(categories); // list MangaDTO
+  }
+
+  async getTotalMangas() {
+    return await this.mangaRepository.getTotalMangas();
+  }
+
+  async getTotalViews() {
+    return await this.mangaRepository.getTotalViews();
+  }
 }

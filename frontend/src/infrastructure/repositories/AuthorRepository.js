@@ -28,4 +28,9 @@ export default class AuthorRepositoryImpl {
         const response = await axiosClient.delete(`/authors/${id}`);
         return response.data;
     }
+
+    async getTotalAuthors() {
+        const response = await axiosClient.get("/authors/count");
+        return response.data; 
+    }
 }

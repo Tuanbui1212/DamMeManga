@@ -17,6 +17,6 @@ export default class UploadImageRepositoryImpl {
             },
         });
 
-        return response.data; // backend trả về link string
+        return response.data;
     }
 }

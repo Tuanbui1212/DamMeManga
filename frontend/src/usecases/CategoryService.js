@@ -29,4 +29,8 @@ export default class CategoryService {
   async deleteCategory(id) {
     return await this.categoryRepository.deleteCategory(id);
   }
+
+  async getTotalCategories() {
+    return await this.categoryRepository.getTotalCategories();
+  }
 }

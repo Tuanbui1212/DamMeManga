@@ -19,14 +19,12 @@ public class MangaCategoryController {
         this.mangaCategoryUseCase = mangaCategoryUseCase;
     }
 
-    // Lấy tất cả manga-category
     @GetMapping
     public ResponseEntity<List<MangaCategoryDTO>> getAll() {
         List<MangaCategoryDTO> list = mangaCategoryUseCase.getAll();
         return ResponseEntity.ok(list);
     }
 
-    // Lấy theo ID
     @GetMapping("/{id}")
     public ResponseEntity<MangaCategoryDTO> getById(@PathVariable String id) {
         MangaCategoryDTO dto = mangaCategoryUseCase.getById(id);
@@ -42,14 +40,18 @@ public class MangaCategoryController {
         return ResponseEntity.ok(categories);
     }
 
-    // Tạo mới
+    @GetMapping("/count")
+    public ResponseEntity<Long> countByCategoryName(@RequestParam String category) {
+        long total = mangaCategoryUseCase.countMangaByCategoryName(category);
+        return ResponseEntity.ok(total);
+    }
+
     @PostMapping
     public ResponseEntity<MangaCategoryDTO> create(@RequestBody MangaCategoryRequest request) {
         MangaCategoryDTO dto = mangaCategoryUseCase.create(request);
         return ResponseEntity.ok(dto);
     }
 
-    // Cập nhật
     @PutMapping("/{id}")
     public ResponseEntity<MangaCategoryDTO> update(
             @PathVariable String id,
@@ -58,7 +60,6 @@ public class MangaCategoryController {
         return ResponseEntity.ok(dto);
     }
 
-    // Xóa
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable String id) {
         mangaCategoryUseCase.delete(id);

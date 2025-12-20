@@ -1,7 +1,25 @@
 package org.example.backend.domain.repository;
 
 import org.example.backend.domain.model.Manga;
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.example.backend.infrastructure.dto.MangaDTO;
+import java.util.List;
+import java.util.Optional;
 
-public interface MangaRepository extends JpaRepository<Manga, String> {
+public interface MangaRepository {
+
+    Manga save(Manga manga);
+
+    Optional<Manga> findById(String id);
+
+    void deleteById(String id);
+
+    List<Manga> findAll();
+
+    List<MangaDTO> findAllDTO();
+
+    List<Manga> findMangaByAllCategoryNames(List<String> categoryNames, long categoryCount);
+
+    long countMangas();
+
+    long countTotalViews();
 }

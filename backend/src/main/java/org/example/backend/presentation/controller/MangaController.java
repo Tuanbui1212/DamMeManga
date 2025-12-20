@@ -2,51 +2,69 @@ package org.example.backend.presentation.controller;
 
 import org.example.backend.domain.model.Manga;
 import org.example.backend.infrastructure.dto.MangaDTO;
-import org.example.backend.usecase.MangaService;
+import org.example.backend.usecase.MangaUseCase;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
+import org.springframework.web.bind.annotation.GetMapping;
+
 
 @RestController
 @RequestMapping("/api/mangas")
 @CrossOrigin(origins = "*")
 public class MangaController {
 
-    private final MangaService mangaService;
+    private final MangaUseCase mangaUseCase;
 
-    public MangaController(MangaService mangaService) {
-        this.mangaService = mangaService;
+    public MangaController(MangaUseCase mangaUseCase) {
+        this.mangaUseCase = mangaUseCase;
     }
 
     @PostMapping
     public MangaDTO create(@RequestBody Manga manga) {
-        return mangaService.create(manga); // trả MangaDTO
+        return mangaUseCase.create(manga);
     }
 
     @PutMapping("/{id}")
     public MangaDTO update(@PathVariable String id, @RequestBody Manga manga) {
-        return mangaService.update(id, manga); // trả MangaDTO
+        return mangaUseCase.update(id, manga);
     }
 
     @PatchMapping("/{id}")
     public MangaDTO patch(@PathVariable String id, @RequestBody Map<String, Object> updates) {
-        return mangaService.patchManga(id, updates); // trả MangaDTO
+        return mangaUseCase.patchManga(id, updates);
     }
 
     @DeleteMapping("/{id}")
     public String delete(@PathVariable String id) {
-        mangaService.delete(id);
+        mangaUseCase.delete(id);
         return "Deleted";
+    }
+
+    @PostMapping("/by-categories")
+    public List<MangaDTO> getByCategories(@RequestBody List<String> categories) {
+        return mangaUseCase.getByCategoryNames(categories);
     }
 
     @GetMapping
     public List<MangaDTO> getAll() {
-        return mangaService.getAll();
+        return mangaUseCase.getAll();
     }
 
     @GetMapping("/{id}")
     public MangaDTO getById(@PathVariable String id) {
-        return mangaService.getById(id);
+        return mangaUseCase.getById(id);
     }
+
+    @GetMapping("count")
+    public long getTotalMangas() {
+        return mangaUseCase.getTotalMangas();
+    }
+
+    @GetMapping("totalviews")
+    public long getTotalViews() {
+        return mangaUseCase.getTotalViews();
+    }
+    
 }

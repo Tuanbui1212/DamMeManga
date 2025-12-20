@@ -34,15 +34,13 @@ public class Manga {
     @Column(name = "count_view")
     private int countView;
 
-    @Column(name = "create_at")
+    @Column(name = "created_at")
     private LocalDateTime createAt;
 
-    @Column(name = "update_at")
+    @Column(name = "updated_at")
     private LocalDateTime updateAt;
 
-
     public Manga() {
-        // id + timestamp tự sinh khi tạo object
         this.idManga = UUID.randomUUID().toString();
         this.createAt = LocalDateTime.now();
         this.updateAt = LocalDateTime.now();
@@ -61,7 +59,6 @@ public class Manga {
     protected void onUpdate() {
         updateAt = LocalDateTime.now();
     }
-
 
     public String getIdManga() {
         return idManga;

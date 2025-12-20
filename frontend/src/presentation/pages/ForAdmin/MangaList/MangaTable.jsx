@@ -2,14 +2,22 @@
 import React from "react";
 import MangaRow from "./MangaRow";
 
-export default function MangaTable({ stories, currentPage, itemsPerPage, onViewDetail }) {
+export default function MangaTable({
+  stories,
+  currentPage,
+  itemsPerPage,
+  onViewDetail,
+}) {
   return (
     <table className="w-full">
       <thead className="bg-gray-800/70 border-b border-gray-700">
         <tr className="text-left text-sm text-gray-300">
-          <th className="sticky left-0 bg-gray-800/90 py-4 px-5 font-medium">#</th>
+          <th className="sticky left-0 bg-gray-800/90 py-4 px-5 font-medium">
+            #
+          </th>
           <th className="py-4 px-5 min-w-56 font-medium">Tên truyện</th>
-          <th className="py-4 px-5 min-w-80 font-medium">Mô tả</th>
+          <th className="py-4 px-5 min-w-30 font-medium">Thời gian tạo</th>
+          <th className="py-4 px-5 text-center font-medium">Thời gian cập nhật</th>
           <th className="py-4 px-5 text-center font-medium">Chapter</th>
           <th className="py-4 px-5 text-center font-medium">Lượt xem</th>
           <th className="py-4 px-5 text-center font-medium">Chi tiết</th>

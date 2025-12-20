@@ -29,7 +29,6 @@ public class MangaCategoryUseCase {
         this.categoryRepository = categoryRepository;
     }
 
-    // ---------------- Mapping Entity -> DTO ----------------
     private MangaCategoryDTO toDTO(MangaCategory mc) {
         return new MangaCategoryDTO(
                 mc.getId(),
@@ -37,7 +36,6 @@ public class MangaCategoryUseCase {
                 mc.getCategory().getNameCategory());
     }
 
-    // ---------------- CRUD ----------------
     public List<MangaCategoryDTO> getAll() {
         return mangaCategoryRepository.getAll().stream()
                 .map(this::toDTO)
@@ -55,7 +53,7 @@ public class MangaCategoryUseCase {
         Manga manga = mangaRepository.findById(request.getIdManga())
                 .orElseThrow(() -> new RuntimeException("Manga not found"));
 
-        Category category = categoryRepository.findById(request.getIdCategory())
+        Category category = categoryRepository.getCategoryById(request.getIdCategory())
                 .orElseThrow(() -> new RuntimeException("Category not found"));
 
         MangaCategory entity = new MangaCategory();
@@ -71,7 +69,7 @@ public class MangaCategoryUseCase {
         Manga manga = mangaRepository.findById(request.getIdManga())
                 .orElseThrow(() -> new RuntimeException("Manga not found"));
 
-        Category category = categoryRepository.findById(request.getIdCategory())
+        Category category = categoryRepository.getCategoryById(request.getIdCategory())
                 .orElseThrow(() -> new RuntimeException("Category not found"));
 
         MangaCategory entity = new MangaCategory();
@@ -86,61 +84,52 @@ public class MangaCategoryUseCase {
         mangaCategoryRepository.delete(id);
     }
 
-    // ---------------- Lấy category của 1 manga ----------------
     public List<MangaCategoryDTO> getCategoriesByMangaId(String idManga) {
-        return mangaCategoryRepository.getAll().stream()
-                .filter(mc -> mc.getManga().getIdManga().equals(idManga))
+        List<MangaCategory> existing = mangaCategoryRepository.findByMangaIdWithCategory(idManga);
+        return existing.stream()
                 .map(this::toDTO)
                 .toList();
     }
 
-    // ---------------- Lấy category theo id ----------------
     public MangaCategoryDTO getCategoryById(String idCategory) {
         return mangaCategoryRepository.getById(idCategory)
                 .map(this::toDTO)
                 .orElse(null);
     }
 
-    // ---------------- Đồng bộ category cho manga ----------------
     public void syncCategoriesForManga(String idManga, List<String> categoryIds) {
-        // Lấy manga
         Manga manga = mangaRepository.findById(idManga)
                 .orElseThrow(() -> new RuntimeException("Manga not found"));
 
-        // Lấy tất cả MangaCategory hiện tại của manga
-        List<MangaCategory> existing = mangaCategoryRepository.getAll().stream()
-                .filter(mc -> mc.getManga().getIdManga().equals(idManga))
-                .toList();
+        List<MangaCategory> existing = mangaCategoryRepository.findByMangaIdWithCategory(idManga);
 
-        // Xác định các categoryId hiện có
         List<String> existingCategoryIds = existing.stream()
                 .map(mc -> mc.getCategory().getIdCategory())
                 .toList();
 
-        // --- Xác định những category cần thêm ---
         List<String> toAdd = categoryIds.stream()
                 .filter(id -> !existingCategoryIds.contains(id))
                 .toList();
 
-        // --- Xác định những category cần xóa ---
         List<MangaCategory> toDelete = existing.stream()
                 .filter(mc -> !categoryIds.contains(mc.getCategory().getIdCategory()))
                 .toList();
 
-        // Xóa các category không còn
         toDelete.forEach(mc -> mangaCategoryRepository.delete(mc.getId()));
 
-        // Thêm các category mới
         List<MangaCategory> toSave = buildCategoriesToSave(manga, toAdd);
         if (!toSave.isEmpty()) {
             mangaCategoryRepository.addCategoriesToManga(toSave);
         }
     }
 
-    // ---------------- Private helper ----------------
+    public long countMangaByCategoryName(String nameCategory) {
+        return mangaCategoryRepository.countMangaByCategoryName(nameCategory);
+    }
+
     private List<MangaCategory> buildCategoriesToSave(Manga manga, List<String> toAddIds) {
         return toAddIds.stream().map(idCat -> {
-            Category category = categoryRepository.findById(idCat)
+            Category category = categoryRepository.getCategoryById(idCat)
                     .orElseThrow(() -> new RuntimeException("Category not found"));
             MangaCategory mc = new MangaCategory();
             mc.setId(UUID.randomUUID().toString());

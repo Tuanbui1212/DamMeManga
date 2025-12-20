@@ -9,7 +9,7 @@ import CategoryService from "../../../../usecases/CategoryService";
 import MangaCategoryService from "../../../../usecases/MangaCategoryService";
 import UploadImageService from "../../../../usecases/UploadImageService";
 
-import EditMangaHeader from "../EditManga/EditMangaHeader";
+import CreateMangaHeader from "./CreateMangaHeader";
 import ImageUploader from "../EditManga/ImageUploader";
 import AuthorDropdown from "../EditManga/AuthorDropdown";
 import CategoryMultiSelect from "../EditManga/CategoryMultiSelect";
@@ -136,7 +136,7 @@ export default function AddManga() {
     <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800 text-gray-100">
       <Toaster position="top-right" />
 
-      <EditMangaHeader
+      <CreateMangaHeader
         onBack={() => navigate(-1)}
         onSave={handleSave}
         isSaving={isSaving}
