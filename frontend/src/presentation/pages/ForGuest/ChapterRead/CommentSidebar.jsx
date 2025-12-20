@@ -97,7 +97,7 @@ export default function CommentSidebar({ isOpen, onClose }) {
 
   const handleComment = async () => {
     if (!comment.trim()) return;
-    if (localStorage.getItem("user").idUser === null) {
+    if (!user || !user.idUser) {
       toast.error("Vui lòng đăng nhập để bình luận.");
       return;
     }
