@@ -24,15 +24,21 @@ function MangaDetailPage() {
   const service = new MangaDetailService();
   const mangaCategoryService = new MangaCategoryService();
 
-  function timeAgo(timestamp) {
-    const diff = Date.now() - new Date(timestamp).getTime();
-    const minutes = Math.floor(diff / 60000);
-    const hours = Math.floor(minutes / 60);
-    const days = Math.floor(hours / 24);
+  function timeAgo(dateString) {
+    const now = new Date();
+    const date = new Date(dateString);
 
-    if (minutes < 60) return `${minutes} phút trước`;
-    if (hours < 24) return `${hours} giờ trước`;
-    return `${days} ngày trước`;
+    date.setHours(date.getHours() + 7);
+
+    const diff = (now - date) / 1000;
+
+    if (diff < 1) return "vừa xong";
+    if (diff < 60) return "vừa xong";
+    if (diff < 3600) return Math.floor(diff / 60) + " phút trước";
+    if (diff < 86400) return Math.floor(diff / 3600) + " giờ trước";
+    if (diff < 2592000) return Math.floor(diff / 86400) + " ngày trước";
+    if (diff < 31536000) return Math.floor(diff / 2592000) + " tháng trước";
+    return Math.floor(diff / 31536000) + " năm trước";
   }
 
   useEffect(() => {
@@ -101,13 +107,13 @@ function MangaDetailPage() {
                 <MangaChapters idManga={id} chapters={chapters} />
                 <div className="w-1/3">
                   <MangaStats stats={statsData} />
-                  <MangaComments
+                  {/* <MangaComments
                     comments={comments}
                     newComment={newComment}
                     setNewComment={setNewComment}
                     handleAddComment={handleAddComment}
                     key={comments.map((c) => c.id).join("-")}
-                  />
+                  /> */}
                 </div>
               </div>
             </div>

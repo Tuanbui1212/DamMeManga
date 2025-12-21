@@ -21,6 +21,9 @@ export default function CommentSidebar({ isOpen, onClose }) {
   function timeAgo(dateString) {
     const now = new Date();
     const date = new Date(dateString);
+
+    date.setHours(date.getHours() + 7);
+
     const diff = (now - date) / 1000; // tính bằng giây
 
     if (diff < 60) return "vừa xong";
@@ -99,6 +102,7 @@ export default function CommentSidebar({ isOpen, onClose }) {
     if (!comment.trim()) return;
     if (!user || !user.idUser) {
       toast.error("Vui lòng đăng nhập để bình luận.");
+      navigator("/login");
       return;
     }
 
