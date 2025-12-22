@@ -1,7 +1,6 @@
 import MangaRepositoryImpl from "../infrastructure/repositories/MangaRepository";
 
 export default class MangaService {
-
   constructor() {
     this.mangaRepository = new MangaRepositoryImpl();
   }
@@ -47,5 +46,9 @@ export default class MangaService {
 
   async getTotalViews() {
     return await this.mangaRepository.getTotalViews();
+  }
+
+  async incrementMangaViewCount(id) {
+    return await this.mangaRepository.incrementMangaViewCount(id);
   }
 }

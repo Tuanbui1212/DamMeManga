@@ -37,16 +37,21 @@ export default class MangaRepositoryImpl {
       "/mangas/by-categories",
       categories
     );
-    return response.data; 
+    return response.data;
   }
 
   async getTotalMangas() {
     const response = await axiosClient.get("/mangas/count");
-    return response.data; 
+    return response.data;
   }
 
   async getTotalViews() {
     const response = await axiosClient.get("/mangas/totalviews");
-    return response.data; 
+    return response.data;
+  }
+
+  async incrementMangaViewCount(id) {
+    const response = await axiosClient.post(`/mangas/${id}/view`);
+    return response.data;
   }
 }

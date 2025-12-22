@@ -48,7 +48,9 @@ function ChapterReadPage() {
       try {
         // Lấy ảnh chapter
         const data = await imgChapterService.getImgsByChapterId(chapterId);
-        const sortedData = (data.length ? data : []).sort((a, b) => a.stt - b.stt);
+        const sortedData = (data.length ? data : []).sort(
+          (a, b) => a.stt - b.stt
+        );
         setDataImgChapter(sortedData);
 
         // Lấy history user
@@ -57,14 +59,15 @@ function ChapterReadPage() {
           const history = await historyService.recordHistory(userId, id);
           const historyId = history?.idHistory;
           if (historyId) {
-            await historyChapterService.recordHistoryChapter(historyId, chapterId);
+            await historyChapterService.recordHistoryChapter(
+              historyId,
+              chapterId
+            );
           }
         }
 
         // Tăng countView
-        const manga = await mangaService.getMangaById(id);
-        const newCountView = (manga.countView || 0) + 1;
-        await mangaService.patchManga(id, { countView: newCountView });
+        await mangaService.incrementMangaViewCount(id);
       } catch (err) {
         console.error("🔥 Lỗi fetchChapterData:", err);
       } finally {

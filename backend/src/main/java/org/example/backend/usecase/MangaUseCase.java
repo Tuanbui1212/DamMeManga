@@ -119,4 +119,8 @@ public class MangaUseCase {
     public long getTotalViews() {
         return mangaRepository.countTotalViews();
     }
+
+    public void increaseView(String id) {
+        mangaRepository.increaseView(id);
+    }
 }

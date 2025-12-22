@@ -22,4 +22,6 @@ public interface MangaRepository {
     long countMangas();
 
     long countTotalViews();
+
+    void increaseView(String id);
 }

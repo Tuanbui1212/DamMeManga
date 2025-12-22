@@ -17,7 +17,6 @@ function MangaActions() {
   const chapterService = new ChapterService();
   const followService = new FollowService();
 
-  /* ================== LẤY CHAPTER ĐẦU TIÊN ================== */
   useEffect(() => {
     if (!id) return;
 
@@ -107,7 +106,11 @@ function MangaActions() {
         onClick={handleFollowToggle}
         disabled={isLoading}
         className={`mt-10 px-5 py-2 rounded-xl text-white font-bold flex items-center gap-2 transition
-          ${isFollowed ? "bg-red-400 hover:bg-red-600" : "bg-blue-400 hover:bg-blue-600"}
+          ${
+            isFollowed
+              ? "bg-red-400 hover:bg-red-600"
+              : "bg-blue-400 hover:bg-blue-600"
+          }
           ${isLoading ? "opacity-60 cursor-not-allowed" : ""}
         `}
       >

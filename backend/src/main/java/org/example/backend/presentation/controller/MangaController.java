@@ -3,6 +3,7 @@ package org.example.backend.presentation.controller;
 import org.example.backend.domain.model.Manga;
 import org.example.backend.infrastructure.dto.MangaDTO;
 import org.example.backend.usecase.MangaUseCase;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -66,5 +67,10 @@ public class MangaController {
     public long getTotalViews() {
         return mangaUseCase.getTotalViews();
     }
-    
+
+    @PostMapping("/{id}/view")
+    public ResponseEntity<Void> increaseView(@PathVariable String id) {
+        mangaUseCase.increaseView(id);
+        return ResponseEntity.ok().build();
+    }
 }

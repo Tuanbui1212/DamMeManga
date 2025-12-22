@@ -1,10 +1,12 @@
 package org.example.backend.infrastructure.repository;
 
+import jakarta.transaction.Transactional;
 import org.example.backend.domain.model.Manga;
 import org.example.backend.domain.repository.MangaRepository;
 import org.example.backend.infrastructure.dto.MangaDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -43,6 +45,11 @@ interface JpaMangaRepository extends JpaRepository<Manga, String> {
 
     @Query("SELECT SUM(m.countView) FROM Manga m")
     long countTotalViews();
+
+    @Modifying
+    @Transactional
+    @Query("UPDATE Manga m SET m.countView = COALESCE(m.countView, 0) + 1 WHERE m.idManga = :id")
+    void increaseView(@Param("id") String id);
 }
 
 @Repository
@@ -89,5 +96,10 @@ public class MangaRepositoryImpl implements MangaRepository {
     @Override
     public long countTotalViews() {
         return jpaMangaRepository.countTotalViews();
+    }
+
+    @Override
+    public void increaseView(String id) {
+        jpaMangaRepository.increaseView(id);
     }
 }
