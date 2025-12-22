@@ -7,6 +7,7 @@ import org.example.backend.domain.repository.HistoryRepository;
 import org.example.backend.domain.repository.UserRepository;
 import org.example.backend.domain.repository.MangaRepository;
 import org.example.backend.infrastructure.dto.HistoryDTO;
+import org.example.backend.infrastructure.dto.HistoryDetailDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -69,5 +70,12 @@ public class HistoryUseCase {
 
     public List<HistoryDTO> getHistoryByUser(String userId) {
         return historyRepository.findByUser(userId);
+    }
+
+    public List<HistoryDetailDTO> getFullHistory(String userId) {
+        if (userId == null || userId.isEmpty()) {
+            throw new IllegalArgumentException("User ID cannot be empty");
+        }
+        return historyRepository.getFullHistoryByUserId(userId);
     }
 }

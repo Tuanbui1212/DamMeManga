@@ -1,6 +1,7 @@
 package org.example.backend.presentation.controller;
 
 import org.example.backend.infrastructure.dto.HistoryDTO;
+import org.example.backend.infrastructure.dto.HistoryDetailDTO;
 import org.example.backend.usecase.HistoryUseCase;
 import org.example.backend.domain.model.History;
 import org.springframework.web.bind.annotation.*;
@@ -47,6 +48,11 @@ public class HistoryController {
     @GetMapping("/user/{idUser}")
     public List<HistoryDTO> getHistoryByUser(@PathVariable String idUser) {
         return useCase.getHistoryByUser(idUser);
+    }
+
+    @GetMapping("/full/{userId}")
+    public List<HistoryDetailDTO> getFullHistory(@PathVariable String userId) {
+        return useCase.getFullHistory(userId);
     }
 
     @DeleteMapping("/{id}")

@@ -2,6 +2,7 @@ package org.example.backend.domain.repository;
 
 import org.example.backend.domain.model.History;
 import org.example.backend.infrastructure.dto.HistoryDTO;
+import org.example.backend.infrastructure.dto.HistoryDetailDTO;
 
 import java.util.List;
 import java.util.Optional;
@@ -23,4 +24,6 @@ public interface HistoryRepository {
     List<History> findByUserOrderByLastRead(String userId);
 
     List<History> findByUserWithManga(String userId);
+
+    List<HistoryDetailDTO> getFullHistoryByUserId(String userId);
 }

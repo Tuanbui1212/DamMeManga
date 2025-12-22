@@ -21,6 +21,10 @@ export default class HistoryService {
     return await this.historyRepository.getHistoriesByUserId(idUser);
   }
 
+  async getFullHistoryByUserId(idUser) {
+    return await this.historyRepository.getFullHistoryByUserId(idUser);
+  }
+
   async deleteHistory(id) {
     return await this.historyRepository.deleteHistory(id);
   }

@@ -5,18 +5,12 @@ import { vi } from "date-fns/locale";
 import { Loader2 } from "lucide-react";
 import "../../../../styles/font.css";
 import HistoryService from "../../../../usecases/HistoryService";
-import HistoryChapterService from "../../../../usecases/HistoryChapterService";
-import MangaService from "../../../../usecases/MangaService";
-import ChapterService from "../../../../usecases/ChapterService";
 
 export default function App() {
   const [historyData, setHistoryData] = useState([]);
   const [loading, setLoading] = useState(false);
 
   const historyService = useRef(new HistoryService()).current;
-  const historyChapterService = useRef(new HistoryChapterService()).current;
-  const mangaService = useRef(new MangaService()).current;
-  const chapterService = useRef(new ChapterService()).current;
 
   const getRelativeDate = (date) => {
     const now = new Date();
@@ -34,119 +28,66 @@ export default function App() {
   }, []);
 
   const loadHistory = async () => {
-    setLoading(true); // <-- Bật loading
+    setLoading(true);
     try {
-      console.log("BẮT ĐẦU loadHistory() tối ưu - Nhóm theo ngày và manga");
+      console.log("🚀 BẮT ĐẦU loadHistory() - Dùng HistoryService tối ưu");
+
       const userId = localStorage.getItem("userId");
-      console.log("🆔 userId từ localStorage:", userId);
 
+      // Kiểm tra userId (Trong môi trường preview có thể không có)
       if (!userId) {
-        console.error("❌ Không tìm thấy userId trong localStorage");
+        console.warn("⚠️ Không tìm thấy userId trong localStorage");
         setHistoryData([]);
         return;
       }
 
-      const histories = await historyService.getHistoriesByUserId(userId);
-      console.log("Histories:", histories);
+      // --- GỌI API QUA SERVICE ---
+      const rawData = await historyService.getFullHistoryByUserId(userId);
+      console.log("📦 Dữ liệu từ Service:", rawData);
 
-      if (histories.length === 0) {
+      if (!rawData || rawData.length === 0) {
         setHistoryData([]);
         return;
       }
 
-      const allHistoryIds = histories.map((h) => h.idHistory);
-      const allHistoryChaptersResults = await Promise.all(
-        allHistoryIds.map((id) =>
-          historyChapterService.getHistoryChaptersByHistory(id)
-        )
-      );
-      const allHistoryChapters = allHistoryChaptersResults.flat();
-      console.log("All History Chapters:", allHistoryChapters);
-
-      const mangaCache = {};
-      const chapterCache = {};
-
-      const chapterEntries = await Promise.all(
-        allHistoryChapters
-          .map(async (chap) => {
-            const history = histories.find(
-              (h) => h.idHistory === chap.idHistory
-            );
-            if (!history || !history.mangaId) return null;
-
-            let manga = mangaCache[history.mangaId];
-            if (!manga) {
-              manga = await mangaService.getMangaById(history.mangaId);
-              if (!manga) return null;
-              mangaCache[history.mangaId] = manga;
-            }
-
-            let chapterInfo = chapterCache[chap.idChapter];
-            if (!chapterInfo) {
-              chapterInfo = await chapterService.getChapterById(chap.idChapter);
-              if (!chapterInfo) return null;
-              chapterCache[chap.idChapter] = chapterInfo;
-            }
-
-            const readAt = new Date(chap.readAt);
-            if (isNaN(readAt.getTime())) return null;
-
-            const dateKey = format(readAt, "yyyy-MM-dd", { locale: vi });
-
-            return {
-              dateKey,
-              readAt,
-              mangaId: history.mangaId,
-              title: manga.name,
-              cover: manga.bannerUrl,
-              chapterId: chap.idChapter,
-              chapterNumber: chapterInfo.chapterNumber,
-              chapterTitle: chapterInfo.title || "(Không có tiêu đề)",
-            };
-          })
-          .filter(Boolean)
-      );
-
-      if (chapterEntries.length === 0) {
-        setHistoryData([]);
-        return;
-      }
-
-      chapterEntries.sort((a, b) => new Date(b.readAt) - new Date(a.readAt));
-
+      // --- LOGIC GOM NHÓM (GROUPING) ---
       const sessionMap = new Map();
-      chapterEntries.forEach((entry) => {
-        const sessionKey = `${entry.dateKey}_${entry.mangaId}`;
+
+      rawData.forEach((entry) => {
+        const readAt = new Date(entry.readAt);
+        const dateKey = format(readAt, "yyyy-MM-dd", { locale: vi });
+        const sessionKey = `${dateKey}_${entry.mangaId}`;
+
         if (!sessionMap.has(sessionKey)) {
           sessionMap.set(sessionKey, {
-            date: new Date(entry.dateKey),
+            date: readAt,
             mangaId: entry.mangaId,
-            title: entry.title,
-            cover: entry.cover,
+            title: entry.mangaName,
+            cover: entry.mangaCover,
             chapters: [],
           });
         }
+
         const session = sessionMap.get(sessionKey);
         session.chapters.push({
           id: entry.chapterId,
           number: entry.chapterNumber,
           title: entry.chapterTitle,
-          readAt: entry.readAt,
+          readAt: readAt,
         });
       });
 
+      // Sắp xếp chapter trong nhóm (Mới nhất lên đầu)
       Array.from(sessionMap.values()).forEach((session) => {
-        session.chapters.sort((a, b) => a.number - b.number);
+        session.chapters.sort((a, b) => b.number - a.number);
       });
 
+      // Sắp xếp các nhóm theo thời gian (Mới nhất lên đầu)
       const finalList = Array.from(sessionMap.values()).sort((a, b) => {
-        const dateDiff = new Date(b.date) - new Date(a.date);
-        if (dateDiff !== 0) return dateDiff;
-        return a.title.localeCompare(b.title);
+        return new Date(b.date) - new Date(a.date);
       });
 
       setHistoryData(finalList);
-      console.log("🎉 FINAL (grouped by day-manga):", finalList);
     } catch (err) {
       console.error("Lỗi loadHistory:", err);
       setHistoryData([]);

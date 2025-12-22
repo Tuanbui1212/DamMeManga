@@ -3,6 +3,7 @@ package org.example.backend.infrastructure.repository;
 import org.example.backend.domain.model.History;
 import org.example.backend.domain.repository.HistoryRepository;
 import org.example.backend.infrastructure.dto.HistoryDTO;
+import org.example.backend.infrastructure.dto.HistoryDetailDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -40,6 +41,25 @@ interface JpaHistoryRepository extends JpaRepository<History, String> {
     List<History> findByUserWithManga(@Param("userId") String userId);
 
     List<History> findByUser_IdUserOrderByLastReadDesc(String userId);
+
+    @Query("""
+        SELECT new org.example.backend.infrastructure.dto.HistoryDetailDTO(
+            hc.readAt,
+            m.idManga, 
+            m.nameManga, 
+            m.bannerUrl, 
+            c.idChapter, 
+            c.title, 
+            c.chapterNumber
+        )
+        FROM HistoryChapter hc, History h, Manga m, Chapter c
+        WHERE hc.idHistory = h.idHistory
+          AND h.manga.idManga = m.idManga
+          AND hc.idChapter = c.idChapter
+          AND h.user.idUser = :userId
+        ORDER BY hc.readAt DESC
+    """)
+    List<HistoryDetailDTO> findFullHistoryDetails(@Param("userId") String userId);
 }
 
 @Repository
@@ -86,5 +106,10 @@ public class HistoryRepositoryImpl implements HistoryRepository {
     @Override
     public List<History> findByUserWithManga(String userId) {
         return jpa.findByUserWithManga(userId);
+    }
+
+    @Override
+    public List<HistoryDetailDTO> getFullHistoryByUserId(String userId) {
+        return jpa.findFullHistoryDetails(userId);
     }
 }
