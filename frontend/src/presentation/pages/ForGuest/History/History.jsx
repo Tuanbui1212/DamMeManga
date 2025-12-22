@@ -30,27 +30,21 @@ export default function App() {
   const loadHistory = async () => {
     setLoading(true);
     try {
-      console.log("🚀 BẮT ĐẦU loadHistory() - Dùng HistoryService tối ưu");
-
       const userId = localStorage.getItem("userId");
 
-      // Kiểm tra userId (Trong môi trường preview có thể không có)
       if (!userId) {
         console.warn("⚠️ Không tìm thấy userId trong localStorage");
         setHistoryData([]);
         return;
       }
 
-      // --- GỌI API QUA SERVICE ---
       const rawData = await historyService.getFullHistoryByUserId(userId);
-      console.log("📦 Dữ liệu từ Service:", rawData);
 
       if (!rawData || rawData.length === 0) {
         setHistoryData([]);
         return;
       }
 
-      // --- LOGIC GOM NHÓM (GROUPING) ---
       const sessionMap = new Map();
 
       rawData.forEach((entry) => {
@@ -77,12 +71,10 @@ export default function App() {
         });
       });
 
-      // Sắp xếp chapter trong nhóm (Mới nhất lên đầu)
       Array.from(sessionMap.values()).forEach((session) => {
         session.chapters.sort((a, b) => b.number - a.number);
       });
 
-      // Sắp xếp các nhóm theo thời gian (Mới nhất lên đầu)
       const finalList = Array.from(sessionMap.values()).sort((a, b) => {
         return new Date(b.date) - new Date(a.date);
       });
