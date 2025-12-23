@@ -1,6 +1,6 @@
 import { X, Send, Trash2 } from "lucide-react";
 import { useEffect, useState, useRef } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import SockJS from "sockjs-client";
 import Stomp from "stompjs";
 import { toast } from "react-hot-toast";
@@ -9,6 +9,7 @@ import CommentService from "../../../../usecases/CommetService";
 
 export default function CommentSidebar({ isOpen, onClose }) {
   const { chapterId } = useParams();
+  const navigate = useNavigate();
   const user = JSON.parse(localStorage.getItem("user")) || {};
 
   const [comment, setComment] = useState("");
@@ -102,7 +103,7 @@ export default function CommentSidebar({ isOpen, onClose }) {
     if (!comment.trim()) return;
     if (!user || !user.idUser) {
       toast.error("Vui lòng đăng nhập để bình luận.");
-      navigator("/login");
+      navigate("/login");
       return;
     }
 
