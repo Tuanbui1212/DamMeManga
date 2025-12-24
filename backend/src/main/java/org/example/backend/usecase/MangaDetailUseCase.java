@@ -18,7 +18,7 @@ public class MangaDetailUseCase {
     public List<MangaDetail> findAllManga() {
         List<MangaDetail> mangaDetails = mangaDetailRepository.findAll();
         for (MangaDetail manga : mangaDetails) {
-            manga.getChapters().size(); // trigger lazy loading
+            manga.getChapters().size();
         }
         return mangaDetails;
     }

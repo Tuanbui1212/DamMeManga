@@ -61,7 +61,7 @@ function MangaDetailPage() {
         );
 
         setStatsData({
-          chaptersCount: data.chapters?.length || 30,
+          chaptersCount: data.chapters?.length || 0,
           views: data.count_view || 0,
         });
 

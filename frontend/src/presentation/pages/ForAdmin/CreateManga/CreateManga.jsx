@@ -39,7 +39,9 @@ export default function AddManga() {
     const fetchData = async () => {
       try {
         const authorList = await new AuthorService().getAllAuthors();
-        setAuthors(authorList.map(a => ({ id: a.idAuthor, name: a.nameAuthor })));
+        setAuthors(
+          authorList.map((a) => ({ id: a.idAuthor, name: a.nameAuthor }))
+        );
 
         const categoryList = await new CategoryService().getAllCategories();
         setCategories(categoryList);
@@ -56,15 +58,17 @@ export default function AddManga() {
     const file = e.target.files[0];
     if (!file) return;
 
-    setTempFiles(prev => ({ ...prev, [type]: file }));
-    setFormData(prev => ({ ...prev, [type]: URL.createObjectURL(file) }));
+    setTempFiles((prev) => ({ ...prev, [type]: file }));
+    setFormData((prev) => ({ ...prev, [type]: URL.createObjectURL(file) }));
   };
 
   // Upload ảnh thật
   const uploadImageToBackend = async (file, type) => {
     try {
       const url = await uploadService.uploadImage(file);
-      toast.success(`${type === "cover" ? "Cover" : "Poster"} upload thành công!`);
+      toast.success(
+        `${type === "cover" ? "Cover" : "Poster"} upload thành công!`
+      );
       return url;
     } catch (err) {
       console.error(err);
@@ -82,7 +86,6 @@ export default function AddManga() {
     setIsSaving(true);
 
     try {
-      // 1️⃣ Upload ảnh nếu có
       let coverUrl = formData.cover;
       let posterUrl = formData.poster;
 
@@ -93,7 +96,6 @@ export default function AddManga() {
         posterUrl = await uploadImageToBackend(tempFiles.poster, "poster");
       }
 
-      // 2️⃣ Tạo manga mới
       const mangaService = new MangaService();
       const mangaCategoryService = new MangaCategoryService();
 
@@ -109,16 +111,20 @@ export default function AddManga() {
 
       const createdManga = await mangaService.createManga(payload);
 
-      // 3️⃣ Lấy ID manga vừa tạo từ DTO
-      const mangaId = createdManga.id; // ✅ Dùng đúng field DTO
+      const mangaId = createdManga.id;
 
-      // 4️⃣ Gắn thể loại nếu có
       const categoryIds = formData.tags
-        .map(tagName => categories.find(c => c.nameCategory === tagName)?.idCategory)
+        .map(
+          (tagName) =>
+            categories.find((c) => c.nameCategory === tagName)?.idCategory
+        )
         .filter(Boolean);
 
       if (categoryIds.length > 0) {
-        await mangaCategoryService.updateCategoriesToManga(mangaId, categoryIds);
+        await mangaCategoryService.updateCategoriesToManga(
+          mangaId,
+          categoryIds
+        );
       }
 
       toast.success("Thêm truyện thành công!");
@@ -130,7 +136,6 @@ export default function AddManga() {
       setIsSaving(false);
     }
   };
-
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800 text-gray-100">
@@ -152,11 +157,15 @@ export default function AddManga() {
 
         <div className="lg:col-span-2 space-y-6">
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">Tên truyện</label>
+            <label className="block text-sm font-medium text-gray-300 mb-2">
+              Tên truyện
+            </label>
             <input
               type="text"
               value={formData.title}
-              onChange={e => setFormData(prev => ({ ...prev, title: e.target.value }))}
+              onChange={(e) =>
+                setFormData((prev) => ({ ...prev, title: e.target.value }))
+              }
               className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 transition"
               placeholder="Nhập tên truyện..."
             />
@@ -165,23 +174,27 @@ export default function AddManga() {
           <AuthorDropdown
             selected={formData.author}
             options={authors}
-            onSelect={author => setFormData(prev => ({ ...prev, author }))}
+            onSelect={(author) => setFormData((prev) => ({ ...prev, author }))}
           />
 
           <CategoryMultiSelect
             selected={formData.tags}
             categories={categories}
-            onToggle={tagName => setFormData(prev => ({
-              ...prev,
-              tags: prev.tags.includes(tagName)
-                ? prev.tags.filter(t => t !== tagName)
-                : [...prev.tags, tagName]
-            }))}
+            onToggle={(tagName) =>
+              setFormData((prev) => ({
+                ...prev,
+                tags: prev.tags.includes(tagName)
+                  ? prev.tags.filter((t) => t !== tagName)
+                  : [...prev.tags, tagName],
+              }))
+            }
           />
 
           <DescriptionField
             value={formData.description}
-            onChange={e => setFormData(prev => ({ ...prev, description: e.target.value }))}
+            onChange={(e) =>
+              setFormData((prev) => ({ ...prev, description: e.target.value }))
+            }
           />
         </div>
       </div>

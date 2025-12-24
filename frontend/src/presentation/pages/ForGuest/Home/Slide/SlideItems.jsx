@@ -1,7 +1,9 @@
 import useDominantColor from "./hooks/useDominantColor";
+import { useNavigate } from "react-router-dom";
 
 export default function SlideItem({ banner }) {
   const dominantColor = useDominantColor(banner.image);
+  const navigate = useNavigate();
 
   return (
     <div className="relative h-full w-full overflow-hidden">
@@ -31,7 +33,10 @@ export default function SlideItem({ banner }) {
           {banner.description}
         </p>
 
-        <button className="px-7 py-3 bg-white text-black font-bold rounded-xl shadow-2xl hover:bg-gray-100 transition-all hover:scale-105 hover:shadow-xl pointer-events-auto z-30">
+        <button
+          onClick={() => navigate(`/mangas/${banner.id}`)}
+          className="px-7 py-3 bg-white text-black font-bold rounded-xl shadow-2xl hover:bg-gray-100 transition-all hover:scale-105 hover:shadow-xl pointer-events-auto z-30"
+        >
           Xem thông tin
         </button>
       </div>
