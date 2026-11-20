@@ -47,7 +47,7 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.POST, "/api/mangas/by-categories", "/api/mangas/*/view").permitAll()
                 .requestMatchers(HttpMethod.PATCH, "/api/mangas/*").permitAll()
                 // Root / health / error
-                .requestMatchers("/", "/health", "/error").permitAll()
+                .requestMatchers("/", "/health", "/api/health", "/error").permitAll()
                 // Admin-only management endpoints
                 .requestMatchers(HttpMethod.POST, "/api/mangas/**", "/api/chapters/**", "/api/authors/**", "/api/category/**", "/api/categories/**", "/api/manga-category/**", "/api/upload/**").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.PUT, "/api/mangas/**", "/api/chapters/**", "/api/authors/**", "/api/category/**", "/api/categories/**", "/api/manga-category/**").hasRole("ADMIN")
