@@ -7,6 +7,7 @@ import org.example.backend.infrastructure.dto.AuthRequest;
 import org.example.backend.infrastructure.dto.AuthResponse;
 import org.example.backend.infrastructure.dto.ChangePasswordRequest;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -65,12 +66,13 @@ public class UserController {
     }
 
     @GetMapping("/all")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> getAllUsers(@RequestHeader("Authorization") String authHeader) {
-        String token = authHeader.substring(7);
-        String role = jwtUtil.extractRole(token);
-        if (!"admin".equals(role)) {
-            return ResponseEntity.status(403).body("Chỉ admin mới xem được danh sách");
-        }
+        // String token = authHeader.substring(7);
+        // String role = jwtUtil.extractRole(token);
+        // if (!"admin".equals(role)) {
+        //     return ResponseEntity.status(403).body("Chỉ admin mới xem được danh sách");
+        // }
         List<User> users = userUseCase.getAllUsers();
         return ResponseEntity.ok(users);
     }

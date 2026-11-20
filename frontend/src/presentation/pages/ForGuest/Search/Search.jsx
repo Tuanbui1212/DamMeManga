@@ -19,6 +19,8 @@ const Search = () => {
 
   const [searchText, setSearchText] = useState(queryParam || "");
   const [mangas, setMangas] = useState([]);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalElements, setTotalElements] = useState(0);
   const [categories, setCategories] = useState([]);
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -31,7 +33,7 @@ const Search = () => {
   }, [queryParam]);
 
   const fetchMangas = useCallback(
-    async (categoryList = []) => {
+    async (pageToFetch = 1, categoryList = [], text = "") => {
       setIsLoading(true);
       try {
         const sanitizedCategories = Array.from(
@@ -42,14 +44,37 @@ const Search = () => {
           )
         );
 
-        const data =
-          sanitizedCategories.length > 0
-            ? await mangaService.getMangasByCategories(sanitizedCategories)
-            : await mangaService.getAllMangas();
-        setMangas(data || []);
+        if (sanitizedCategories.length > 1) {
+          const data = await mangaService.getMangasByCategories(sanitizedCategories);
+          const term = (text || "").trim().toLowerCase();
+          const filtered = (data || []).filter((manga) => {
+            const title = (manga.name || manga.nameManga || "").toLowerCase();
+            return term ? title.includes(term) : true;
+          });
+          const totalP = Math.max(1, Math.ceil(filtered.length / ITEMS_PER_PAGE));
+          setTotalPages(totalP);
+          setTotalElements(filtered.length);
+          const start = (pageToFetch - 1) * ITEMS_PER_PAGE;
+          setMangas(filtered.slice(start, start + ITEMS_PER_PAGE));
+        } else {
+          const pagedRes = await mangaService.getMangasPaged({
+            page: pageToFetch - 1,
+            size: ITEMS_PER_PAGE,
+            query: text || "",
+            category: sanitizedCategories[0] || "",
+            sort: "updateAt,desc",
+          });
+          if (pagedRes) {
+            setMangas(pagedRes.content || []);
+            setTotalPages(pagedRes.totalPages || 1);
+            setTotalElements(pagedRes.totalElements || 0);
+          }
+        }
       } catch (error) {
         console.error("Lỗi khi tải manga:", error);
         setMangas([]);
+        setTotalPages(1);
+        setTotalElements(0);
       } finally {
         setIsLoading(false);
       }
@@ -74,22 +99,8 @@ const Search = () => {
   }, [fetchCategoriesAndRelations]);
 
   useEffect(() => {
-    setCurrentPage(1);
-    fetchMangas(selectedCategories);
-  }, [fetchMangas, selectedCategories]);
-
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [searchText]);
-
-  const filteredMangas = useMemo(() => {
-    const term = searchText.trim().toLowerCase();
-
-    return (mangas || []).filter((manga) => {
-      const title = (manga.name || manga.nameManga || "").toLowerCase();
-      return term ? title.includes(term) : true;
-    });
-  }, [mangas, searchText]);
+    fetchMangas(currentPage, selectedCategories, searchText);
+  }, [fetchMangas, currentPage, selectedCategories, searchText]);
 
   const selectedCategoryNames = useMemo(
     () =>
@@ -99,10 +110,6 @@ const Search = () => {
     [categories, selectedCategories]
   );
 
-  const totalPages = Math.max(
-    1,
-    Math.ceil(filteredMangas.length / ITEMS_PER_PAGE)
-  );
   const pageNumbers = useMemo(() => {
     const maxButtons = 5;
     let start = Math.max(1, currentPage - 2);
@@ -117,12 +124,8 @@ const Search = () => {
     return pages;
   }, [currentPage, totalPages]);
 
-  const paginatedMangas = filteredMangas.slice(
-    (currentPage - 1) * ITEMS_PER_PAGE,
-    currentPage * ITEMS_PER_PAGE
-  );
-
   const handleCategoryToggle = (name) => {
+    setCurrentPage(1);
     const normalized = typeof name === "string" ? name.trim() : "";
     if (!normalized) return;
     setSelectedCategories((prev) =>
@@ -248,8 +251,8 @@ const Search = () => {
                       className="h-80 bg-gray-100 rounded-xl animate-pulse border border-gray-200"
                     />
                   ))
-                ) : paginatedMangas.length > 0 ? (
-                  paginatedMangas.map((manga) => {
+                ) : mangas.length > 0 ? (
+                  mangas.map((manga) => {
                     const mangaId = manga.id;
                     return (
                       <MangaCard
@@ -266,7 +269,7 @@ const Search = () => {
                 )}
               </div>
 
-              {filteredMangas.length > ITEMS_PER_PAGE && (
+              {totalElements > ITEMS_PER_PAGE && (
                 <div className="flex flex-wrap justify-between items-center gap-3 pt-4">
                   <button
                     type="button"

@@ -1,13 +1,15 @@
-import Home from "../pages/ForGuest/Home/Home";
-import AuthForm from "../pages/ForGuest/AuthForm/Auth";
-import MangaLibrary from "../pages/ForGuest/MangaLibrary/MangaLibrary";
+import { lazy } from "react";
 import OnlyHeader from "../Layouts/OnlyHeader";
-import MangaDetail from "../pages/ForGuest/MangaDetail/MangaDetail";
-import Chapter from "../pages/ForGuest/ChapterRead/Chapter";
-import Setting from "../pages/ForGuest/Setting/Setting";
-import History from "../pages/ForGuest/History/History";
-import Follow from "../pages/ForGuest/Follow/Follow";
-import Search from "../pages/ForGuest/Search/Search.jsx";
+
+const Home = lazy(() => import("../pages/ForGuest/Home/Home"));
+const AuthForm = lazy(() => import("../pages/ForGuest/AuthForm/Auth"));
+const MangaLibrary = lazy(() => import("../pages/ForGuest/MangaLibrary/MangaLibrary"));
+const MangaDetail = lazy(() => import("../pages/ForGuest/MangaDetail/MangaDetail"));
+const Chapter = lazy(() => import("../pages/ForGuest/ChapterRead/Chapter"));
+const Setting = lazy(() => import("../pages/ForGuest/Setting/Setting"));
+const History = lazy(() => import("../pages/ForGuest/History/History"));
+const Follow = lazy(() => import("../pages/ForGuest/Follow/Follow"));
+const Search = lazy(() => import("../pages/ForGuest/Search/Search.jsx"));
 
 export const mainRoutes = [
   { path: "/", component: Home },

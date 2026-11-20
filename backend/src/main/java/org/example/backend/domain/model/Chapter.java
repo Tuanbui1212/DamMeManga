@@ -13,10 +13,10 @@ public class Chapter {
     @Column(name = "id_chapter", nullable = false, updatable = false)
     private Long idChapter;
 
-    @ManyToOne(fetch = FetchType.LAZY, targetEntity = MangaDetail.class)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "manga_id")
     @JsonIgnore
-    private MangaDetail manga;
+    private Manga manga;
 
     @Column(name = "chapter_number")
     private Integer chapterNumber;
@@ -26,7 +26,7 @@ public class Chapter {
     public Chapter() {
     }
 
-    public Chapter(MangaDetail manga, Integer chapterNumber, String title) {
+    public Chapter(Manga manga, Integer chapterNumber, String title) {
         this.manga = manga;
         this.chapterNumber = chapterNumber;
         this.title = title;
@@ -40,7 +40,7 @@ public class Chapter {
     @JsonProperty("id_manga")
     public void setIdManga(String idManga) {
         if (this.manga == null) {
-            this.manga = new MangaDetail();
+            this.manga = new Manga();
         }
         this.manga.setIdManga(idManga);
     }
@@ -53,11 +53,11 @@ public class Chapter {
         this.idChapter = idChapter;
     }
 
-    public MangaDetail getManga() {
+    public Manga getManga() {
         return manga;
     }
 
-    public void setManga(MangaDetail manga) {
+    public void setManga(Manga manga) {
         this.manga = manga;
     }
 

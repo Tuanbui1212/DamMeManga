@@ -1,9 +1,9 @@
 package org.example.backend.usecase;
 
 import org.example.backend.domain.model.Chapter;
-import org.example.backend.domain.model.MangaDetail;
+import org.example.backend.domain.model.Manga;
 import org.example.backend.domain.repository.ChapterRepository;
-import org.example.backend.domain.repository.MangaDetailRepository;
+import org.example.backend.domain.repository.MangaRepository;
 import org.example.backend.infrastructure.dto.ChapterRequest;
 import org.springframework.stereotype.Service;
 
@@ -14,27 +14,25 @@ import java.util.List;
 public class ChapterUseCase {
 
     private final ChapterRepository chapterRepository;
-    private final MangaDetailRepository mangaRepository;
+    private final MangaRepository mangaRepository;
 
     public ChapterUseCase(ChapterRepository chapterRepository,
-                          MangaDetailRepository mangaRepository) {
+                          MangaRepository mangaRepository) {
         this.chapterRepository = chapterRepository;
         this.mangaRepository = mangaRepository;
     }
 
     public Chapter createChapter(ChapterRequest request) {
-        MangaDetail manga = mangaRepository.findById(request.getIdManga())
-                .orElseThrow(() -> new RuntimeException("Manga not found"));
+        Manga manga = mangaRepository.findById(request.getIdManga())
+                .orElseThrow(() -> new RuntimeException("Manga not found with id: " + request.getIdManga()));
         Chapter chapter = new Chapter(manga, request.getChapterNumber(), request.getTitle());
 
         Chapter savedChapter = chapterRepository.save(chapter);
-        manga.setUpdatedAt(LocalDateTime.now());
+        manga.setUpdateAt(LocalDateTime.now());
         mangaRepository.save(manga);
 
-        return chapterRepository.save(chapter);
+        return savedChapter;
     }
-
-
 
     public List<Chapter> getAllChapters() {
         return chapterRepository.findAll();
@@ -48,7 +46,7 @@ public class ChapterUseCase {
     public Chapter updateChapter(Long id, ChapterRequest request) {
         Chapter existing = chapterRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Chapter not found with id: " + id));
-        MangaDetail newManga = null;
+        Manga newManga = null;
         if (request.getIdManga() != null) {
             newManga = mangaRepository.findById(request.getIdManga())
                     .orElseThrow(() -> new RuntimeException("Manga not found with id: " + request.getIdManga()));

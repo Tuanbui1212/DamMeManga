@@ -10,6 +10,26 @@ export default class MangaService {
     return await this.mangaRepository.getAllMangas(); // trả về list MangaDTO
   }
 
+  // Lấy danh sách manga phân trang theo bộ lọc
+  async getMangasPaged(options = {}) {
+    return await this.mangaRepository.getMangasPaged(options);
+  }
+
+  // Lấy top manga theo lượt xem (được sort từ DB với limit)
+  async getTopMangas(limit = 30) {
+    return await this.mangaRepository.getTopMangas(limit);
+  }
+
+  // Lấy manga mới cập nhật (được sort từ DB với limit)
+  async getLatestMangas(limit = 30) {
+    return await this.mangaRepository.getLatestMangas(limit);
+  }
+
+  // Tìm kiếm manga theo từ khóa
+  async searchMangas(query, limit = 10) {
+    return await this.mangaRepository.searchMangas(query, limit);
+  }
+
   // Lấy 1 manga theo id
   async getMangaById(id) {
     return await this.mangaRepository.getMangaById(id); // MangaDTO

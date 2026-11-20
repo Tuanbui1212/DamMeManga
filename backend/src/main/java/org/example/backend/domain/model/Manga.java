@@ -1,7 +1,11 @@
 package org.example.backend.domain.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -39,6 +43,11 @@ public class Manga {
 
     @Column(name = "updated_at")
     private LocalDateTime updateAt;
+
+    @OneToMany(mappedBy = "manga", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("chapterNumber ASC")
+    @JsonIgnoreProperties({"manga"})
+    private List<Chapter> chapters = new ArrayList<>();
 
     public Manga() {
         this.idManga = UUID.randomUUID().toString();
@@ -138,5 +147,43 @@ public class Manga {
 
     public void setUpdateAt(LocalDateTime updateAt) {
         this.updateAt = updateAt;
+    }
+
+    @JsonProperty("createdAt")
+    public LocalDateTime getCreatedAt() {
+        return createAt;
+    }
+
+    @JsonProperty("createdAt")
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createAt = createdAt;
+    }
+
+    @JsonProperty("updatedAt")
+    public LocalDateTime getUpdatedAt() {
+        return updateAt;
+    }
+
+    @JsonProperty("updatedAt")
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updateAt = updatedAt;
+    }
+
+    public List<Chapter> getChapters() {
+        return chapters;
+    }
+
+    public void setChapters(List<Chapter> chapters) {
+        this.chapters = chapters;
+    }
+
+    public void addChapter(Chapter chapter) {
+        chapters.add(chapter);
+        chapter.setManga(this);
+    }
+
+    public void removeChapter(Chapter chapter) {
+        chapters.remove(chapter);
+        chapter.setManga(null);
     }
 }

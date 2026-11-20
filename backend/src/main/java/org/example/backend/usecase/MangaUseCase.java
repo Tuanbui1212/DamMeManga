@@ -2,9 +2,14 @@ package org.example.backend.usecase;
 
 import org.example.backend.domain.model.Author;
 import org.example.backend.domain.model.Manga;
-import org.example.backend.infrastructure.dto.MangaDTO;
-import org.example.backend.infrastructure.repository.MangaRepositoryImpl;
+import org.example.backend.domain.repository.MangaRepository;
 import org.example.backend.domain.repository.AuthorRepository;
+import org.example.backend.infrastructure.dto.MangaDTO;
+import org.example.backend.infrastructure.dto.PageResponse;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -13,10 +18,10 @@ import java.util.Map;
 @Service
 public class MangaUseCase {
 
-    private final MangaRepositoryImpl mangaRepository;
+    private final MangaRepository mangaRepository;
     private final AuthorRepository authorRepository;
 
-    public MangaUseCase(MangaRepositoryImpl mangaRepository, AuthorRepository authorRepository) {
+    public MangaUseCase(MangaRepository mangaRepository, AuthorRepository authorRepository) {
         this.mangaRepository = mangaRepository;
         this.authorRepository = authorRepository;
     }
@@ -28,6 +33,43 @@ public class MangaUseCase {
 
     public List<MangaDTO> getAll() {
         return mangaRepository.findAllDTO();
+    }
+
+    public PageResponse<MangaDTO> getMangasPaged(String query, String category, String status, int page, int size, String sort) {
+        Sort sortObj = Sort.by(Sort.Direction.DESC, "updateAt");
+        if (sort != null && !sort.isBlank()) {
+            String[] parts = sort.split(",");
+            String field = parts[0].trim();
+            Sort.Direction direction = (parts.length > 1 && "asc".equalsIgnoreCase(parts[1].trim()))
+                    ? Sort.Direction.ASC
+                    : Sort.Direction.DESC;
+            if ("views".equalsIgnoreCase(field) || "countView".equalsIgnoreCase(field)) {
+                field = "countView";
+            } else if ("name".equalsIgnoreCase(field) || "nameManga".equalsIgnoreCase(field)) {
+                field = "nameManga";
+            } else if ("createAt".equalsIgnoreCase(field)) {
+                field = "createAt";
+            } else {
+                field = "updateAt";
+            }
+            sortObj = Sort.by(direction, field);
+        }
+
+        Pageable pageable = PageRequest.of(Math.max(0, page), Math.max(1, Math.min(size, 100)), sortObj);
+        Page<MangaDTO> pageResult = mangaRepository.findMangasPaged(query, category, status, pageable);
+        return PageResponse.of(pageResult);
+    }
+
+    public List<MangaDTO> getTopMangas(int limit) {
+        return mangaRepository.findTopMangas(limit);
+    }
+
+    public List<MangaDTO> getLatestMangas(int limit) {
+        return mangaRepository.findLatestMangas(limit);
+    }
+
+    public List<MangaDTO> search(String query, int limit) {
+        return mangaRepository.search(query, limit);
     }
 
     public MangaDTO getById(String id) {
@@ -89,10 +131,14 @@ public class MangaUseCase {
     }
 
     private MangaDTO mapToDTO(Manga m) {
+        String authorName = (m.getAuthor() != null && m.getAuthor().getNameAuthor() != null)
+                ? m.getAuthor().getNameAuthor()
+                : "Unknown";
+
         return new MangaDTO(
                 m.getIdManga(),
                 m.getNameManga(),
-                m.getAuthor().getNameAuthor(),
+                authorName,
                 m.getDescription(),
                 m.getBannerUrl(),
                 m.getPosterUrl(),

@@ -2,7 +2,7 @@ import Slide from "./Slide/SlideShow";
 import MangaList from "./MangaList/MangaList";
 import TopManga from "./TopManga/TopManga";
 import { Helmet } from "react-helmet-async";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 
 import MangaService from "../../../../usecases/MangaService";
 
@@ -13,73 +13,68 @@ function Home() {
   const [mangasNew, setMangasNew] = useState([]);
   const [mangasMonster, setMangasMonster] = useState([]);
   const [mangasAdventure, setMangasAdventure] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    let isMounted = true;
     const fetchData = async () => {
       try {
-        const [data, dataMonster, dataAdventure] = await Promise.all([
-          mangaService.getAllMangas(),
+        setIsLoading(true);
+        const [topData, latestData, dataMonster, dataAdventure] = await Promise.all([
+          mangaService.getTopMangas(30),
+          mangaService.getLatestMangas(30),
           mangaService.getMangasByCategories(["Monster"]),
           mangaService.getMangasByCategories(["Adventure"]),
         ]);
 
-        const sortedDataMonster = [...dataMonster]
-          .sort((a, b) => new Date(b.updateAt) - new Date(a.updateAt))
-          .slice(0, 30);
-        setMangasMonster(sortedDataMonster);
-        const sortedDataAdventure = [...dataAdventure]
-          .sort((a, b) => new Date(b.updateAt) - new Date(a.updateAt))
-          .slice(0, 30);
-        setMangasAdventure(sortedDataAdventure);
+        if (!isMounted) return;
 
-        const sortedTop = [...data]
-          .sort((a, b) => b.countView - a.countView)
-          .slice(0, 30);
-        setMangasTop(sortedTop);
-
-        const sortedNew = [...data]
-          .sort((a, b) => new Date(b.updateAt) - new Date(a.updateAt))
-          .slice(0, 30);
-        setMangasNew(sortedNew);
+        setMangasTop(topData || []);
+        setMangasNew(latestData || []);
+        setMangasMonster((dataMonster || []).slice(0, 30));
+        setMangasAdventure((dataAdventure || []).slice(0, 30));
       } catch (err) {
-        console.error("Lỗi khi lấy manga:", err);
-        setMangasTop([]);
-        setMangasNew([]);
+        console.error("Lỗi khi lấy manga trang chủ:", err);
+      } finally {
+        if (isMounted) setIsLoading(false);
       }
     };
 
     fetchData();
+    return () => { isMounted = false; };
   }, []);
+
+  // Ổn định bannerData để tránh giật lag khi render lại
+  const bannerData = useMemo(() => {
+    return mangasTop.slice(0, 10);
+  }, [mangasTop]);
 
   return (
     <>
       <Helmet>
         <title>Trang chủ | DMManga</title>
       </Helmet>
-      <Slide
-        bannerData={mangasTop
-          .map((m) => ({ value: m, sort: Math.random() }))
-          .sort((a, b) => a.sort - b.sort)
-          .map(({ value }) => value)
-          .slice(0, 10)}
-      />
+
+      {bannerData.length > 0 && <Slide bannerData={bannerData} />}
+
       <MangaList
         mangaData={mangasNew}
-        title="Truyện mới"
+        title="Truyện mới cập nhật"
         colorBackground="bg-gray-50"
         category="all"
       />
 
       <TopManga mangas={mangasTop} />
+
       <MangaList
         mangaData={mangasMonster}
-        title="Monster"
+        title="Truyện thể loại Monster"
         colorBackground="bg-[#e1dac0]"
         category="Monster"
       />
       <MangaList
         mangaData={mangasAdventure}
-        title="Adventure"
+        title="Truyện thể loại Adventure"
         colorBackground="bg-[#b3c6d5]"
         category="Adventure"
       />

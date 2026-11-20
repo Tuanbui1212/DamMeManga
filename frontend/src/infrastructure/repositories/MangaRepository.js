@@ -6,6 +6,35 @@ export default class MangaRepositoryImpl {
     return response.data;
   }
 
+  async getMangasPaged({ page = 0, size = 18, category = "", status = "", query = "", sort = "updateAt,desc" } = {}) {
+    const params = new URLSearchParams();
+    params.append("page", page);
+    params.append("size", size);
+    if (category && category !== "Tất cả") params.append("category", category);
+    if (status && status !== "Tất cả") params.append("status", status);
+    if (query && query.trim()) params.append("query", query.trim());
+    if (sort) params.append("sort", sort);
+
+    const response = await axiosClient.get(`/mangas/paged?${params.toString()}`);
+    return response.data;
+  }
+
+  async getTopMangas(limit = 30) {
+    const response = await axiosClient.get(`/mangas/top?limit=${limit}`);
+    return response.data;
+  }
+
+  async getLatestMangas(limit = 30) {
+    const response = await axiosClient.get(`/mangas/latest?limit=${limit}`);
+    return response.data;
+  }
+
+  async searchMangas(query, limit = 10) {
+    if (!query || !query.trim()) return [];
+    const response = await axiosClient.get(`/mangas/search?q=${encodeURIComponent(query.trim())}&limit=${limit}`);
+    return response.data;
+  }
+
   async getMangaById(id) {
     const response = await axiosClient.get(`/mangas/${id}`);
     return response.data;

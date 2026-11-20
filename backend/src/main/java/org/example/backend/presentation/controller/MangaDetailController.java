@@ -1,6 +1,6 @@
 package org.example.backend.presentation.controller;
 
-import org.example.backend.domain.model.MangaDetail;
+import org.example.backend.domain.model.Manga;
 import org.example.backend.usecase.MangaDetailUseCase;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,12 +17,12 @@ public class MangaDetailController {
     }
 
     @GetMapping
-    public List<MangaDetail> getAllMangas(){
+    public List<Manga> getAllMangas(){
         return mangaDetailUseCase.findAllManga();
     }
 
     @GetMapping("/{idManga}")
-    public MangaDetail getMangaWithChapters(@PathVariable String idManga) {
+    public Manga getMangaWithChapters(@PathVariable String idManga) {
         return mangaDetailUseCase.getMangaWithChapters(idManga);
     }
 }

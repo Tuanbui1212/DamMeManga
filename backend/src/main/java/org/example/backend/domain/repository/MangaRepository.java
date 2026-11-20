@@ -17,6 +17,18 @@ public interface MangaRepository {
 
     List<MangaDTO> findAllDTO();
 
+    org.springframework.data.domain.Page<MangaDTO> findMangasPaged(String query, String category, String status, org.springframework.data.domain.Pageable pageable);
+
+    List<MangaDTO> findTopMangas(int limit);
+
+    List<MangaDTO> findLatestMangas(int limit);
+
+    List<MangaDTO> search(String query, int limit);
+
+    List<Manga> findAllWithChapters();
+
+    Optional<Manga> findByIdWithChapters(String id);
+
     List<Manga> findMangaByAllCategoryNames(List<String> categoryNames, long categoryCount);
 
     long countMangas();

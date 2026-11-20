@@ -5,6 +5,14 @@ public class ChapterRequest {
     private Integer chapterNumber;
     private String title;
 
+    public ChapterRequest() {}
+
+    public ChapterRequest(String idManga, Integer chapterNumber, String title) {
+        this.idManga = idManga;
+        this.chapterNumber = chapterNumber;
+        this.title = title;
+    }
+
     // getters + setters
     public String getIdManga() { return idManga; }
     public void setIdManga(String idManga) { this.idManga = idManga; }

@@ -4,17 +4,22 @@ import {
   ChevronUp,
   ArrowLeft,
   MessageCircle,
+  BookOpen,
+  ScrollText,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 export default function ChapterNavigation({
   mangaId,
-  // chapterId,
   allChapters,
   chapterNumber,
   scrollToTop,
   setShowChapterList,
   setShowComments,
+  readingMode = "webtoon",
+  onToggleReadingMode,
+  currentPage = 1,
+  totalPages = 0,
 }) {
   const navigate = useNavigate();
 
@@ -45,11 +50,11 @@ export default function ChapterNavigation({
   };
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-40 backdrop-blur-md bg-gray-900/90 text-white flex items-center justify-center gap-3 px-4 py-3 shadow-lg border-t border-gray-700">
+    <div className="fixed bottom-0 left-0 right-0 z-40 backdrop-blur-md bg-gray-950/95 text-white flex items-center justify-between sm:justify-center gap-2 sm:gap-3 px-3 sm:px-4 py-2.5 shadow-2xl border-t border-gray-800">
       {/* Quay lại trang manga */}
       <button
         onClick={() => navigate(`/mangas/${mangaId}`)}
-        className="bg-gray-700 hover:bg-gray-600 active:bg-gray-500 px-3 py-2 rounded-lg text-sm font-medium transition flex items-center gap-1"
+        className="bg-gray-800 hover:bg-gray-700 active:bg-gray-600 px-3 py-2 rounded-lg text-sm font-medium transition flex items-center gap-1"
         title="Quay lại truyện"
       >
         <ArrowLeft size={18} /> <span className="hidden sm:inline">Back</span>
@@ -59,42 +64,64 @@ export default function ChapterNavigation({
       <button
         onClick={() => handleNavigate(prevChapterId)}
         disabled={!prevChapterId}
-        className={`px-4 py-2 rounded-lg transition flex items-center ${
+        className={`px-3 sm:px-4 py-2 rounded-lg transition flex items-center ${
           !prevChapterId
-            ? "bg-gray-800 text-gray-500 cursor-not-allowed"
-            : "bg-gray-700 hover:bg-gray-600 active:bg-gray-500 text-white"
+            ? "bg-gray-900 text-gray-600 cursor-not-allowed"
+            : "bg-gray-800 hover:bg-gray-700 active:bg-gray-600 text-white"
         }`}
         title="Chapter trước"
       >
         <ChevronLeft size={20} />
       </button>
 
-      {/* Nút hiển thị chap hiện tại */}
+      {/* Nút danh sách chap */}
       <button
         onClick={() => setShowChapterList(true)}
-        className="min-w-[100px] px-4 py-2 bg-yellow-600 hover:bg-yellow-500 active:bg-yellow-700 rounded-lg font-bold text-sm transition shadow-md"
+        className="min-w-[80px] sm:min-w-[100px] px-3 sm:px-4 py-2 bg-amber-600 hover:bg-amber-500 active:bg-amber-700 rounded-lg font-bold text-sm transition shadow-md flex items-center justify-center gap-1"
       >
-        Chap {currentNum}
+        <span>Chap {currentNum}</span>
+        {totalPages > 0 && (
+          <span className="text-[11px] font-normal text-amber-100 hidden md:inline">
+            ({currentPage}/{totalPages})
+          </span>
+        )}
       </button>
 
       {/* Chap tiếp theo */}
       <button
         onClick={() => handleNavigate(nextChapterId)}
         disabled={!nextChapterId}
-        className={`px-4 py-2 rounded-lg transition flex items-center ${
+        className={`px-3 sm:px-4 py-2 rounded-lg transition flex items-center ${
           !nextChapterId
-            ? "bg-gray-800 text-gray-500 cursor-not-allowed"
-            : "bg-gray-700 hover:bg-gray-600 active:bg-gray-500 text-white"
+            ? "bg-gray-900 text-gray-600 cursor-not-allowed"
+            : "bg-gray-800 hover:bg-gray-700 active:bg-gray-600 text-white"
         }`}
         title="Chapter tiếp theo"
       >
         <ChevronRight size={20} />
       </button>
 
+      {/* Nút đổi chế độ đọc Webtoon / Single Page */}
+      {onToggleReadingMode && (
+        <button
+          onClick={onToggleReadingMode}
+          className={`px-3 py-2 rounded-lg text-sm font-medium transition flex items-center gap-1.5 ${
+            readingMode === "single"
+              ? "bg-indigo-600 hover:bg-indigo-500 text-white"
+              : "bg-gray-800 hover:bg-gray-700 text-gray-300"
+          }`}
+          title={readingMode === "single" ? "Chuyển sang cuộn dọc (Webtoon)" : "Chuyển sang đọc từng trang (Single page)"}
+        >
+          {readingMode === "single" ? <BookOpen size={18} /> : <ScrollText size={18} />}
+          <span className="hidden lg:inline">{readingMode === "single" ? "Từng trang" : "Cuộn dọc"}</span>
+        </button>
+      )}
+
       {/* Nút bình luận */}
       <button
         onClick={() => setShowComments(true)}
-        className="bg-green-600 hover:bg-green-700 active:bg-green-800 px-3 py-2 rounded-lg text-sm font-medium transition flex items-center gap-1"
+        className="bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 px-3 py-2 rounded-lg text-sm font-medium transition flex items-center gap-1"
+        title="Bình luận"
       >
         <MessageCircle size={18} />
       </button>
@@ -102,7 +129,7 @@ export default function ChapterNavigation({
       {/* Nút scroll lên đầu trang */}
       <button
         onClick={scrollToTop}
-        className="bg-blue-600 hover:bg-blue-700 active:bg-blue-800 px-3 py-2 rounded-lg text-sm font-medium transition flex items-center gap-1"
+        className="bg-sky-600 hover:bg-sky-500 active:bg-sky-700 px-3 py-2 rounded-lg text-sm font-medium transition flex items-center gap-1"
         title="Lên đầu trang"
       >
         <ChevronUp size={20} />

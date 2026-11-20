@@ -50,27 +50,32 @@ function Header() {
     return () => window.removeEventListener("storage", handleStorageChange);
   }, []);
 
-  useEffect(() => {
-    const fetchMangas = async () => {
-      try {
-        const service = new MangaService();
-        const mangas = await service.getAllMangas();
-        setMangaData(mangas);
-      } catch (error) {
-        console.error("Lỗi khi lấy danh sách manga:", error);
-      }
-    };
-    fetchMangas();
-  }, []);
+  const [filteredMangas, setFilteredMangas] = useState([]);
+  const [isSearching, setIsSearching] = useState(false);
 
-  const filteredMangas = useMemo(() => {
-    const query = searchQuery.trim().toLowerCase();
-    if (!query) return [];
-    return mangaData.filter((manga) => {
-      const name = (manga.name || "").toLowerCase();
-      return name.includes(query);
-    });
-  }, [searchQuery, mangaData]);
+  // Tìm kiếm manga tối ưu với Debounce 300ms gọi API trực tiếp
+  useEffect(() => {
+    const query = searchQuery.trim();
+    if (!query) {
+      setFilteredMangas([]);
+      return;
+    }
+
+    const timer = setTimeout(async () => {
+      try {
+        setIsSearching(true);
+        const service = new MangaService();
+        const results = await service.searchMangas(query, 8);
+        setFilteredMangas(results || []);
+      } catch (error) {
+        console.error("Lỗi khi tìm kiếm manga:", error);
+      } finally {
+        setIsSearching(false);
+      }
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
 
   useEffect(() => {
     const handleScroll = () => {
