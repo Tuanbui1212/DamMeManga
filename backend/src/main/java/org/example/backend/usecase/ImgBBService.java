@@ -1,5 +1,6 @@
 package org.example.backend.usecase;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
@@ -14,7 +15,9 @@ import java.util.Map;
 @Service
 public class ImgBBService {
 
-    private static final String API_KEY = "533ba84dac7419d3212919661d889836";
+    @Value("${imgbb.api-key:533ba84dac7419d3212919661d889836}")
+    private String apiKey;
+
     private static final String UPLOAD_URL = "https://api.imgbb.com/1/upload";
 
     public String upload(MultipartFile file) throws IOException {
@@ -24,7 +27,7 @@ public class ImgBBService {
         String base64 = Base64.getEncoder().encodeToString(file.getBytes());
 
         MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
-        body.add("key", API_KEY);
+        body.add("key", apiKey);
         body.add("image", base64);
 
         HttpHeaders headers = new HttpHeaders();
