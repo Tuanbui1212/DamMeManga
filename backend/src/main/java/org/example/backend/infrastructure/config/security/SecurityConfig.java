@@ -37,7 +37,9 @@ public class SecurityConfig {
                     "/api/mangas/**",
                     "/api/chapters/**",
                     "/api/authors/**",
+                    "/api/category/**",
                     "/api/categories/**",
+                    "/api/manga-category/**",
                     "/api/user/mangas/**",
                     "/api/comments/**"
                 ).permitAll()
@@ -47,9 +49,9 @@ public class SecurityConfig {
                 // Root / health / error
                 .requestMatchers("/", "/health", "/error").permitAll()
                 // Admin-only management endpoints
-                .requestMatchers(HttpMethod.POST, "/api/mangas/**", "/api/chapters/**", "/api/authors/**", "/api/categories/**", "/api/upload/**").hasRole("ADMIN")
-                .requestMatchers(HttpMethod.PUT, "/api/mangas/**", "/api/chapters/**", "/api/authors/**", "/api/categories/**").hasRole("ADMIN")
-                .requestMatchers(HttpMethod.DELETE, "/api/mangas/**", "/api/chapters/**", "/api/authors/**", "/api/categories/**").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.POST, "/api/mangas/**", "/api/chapters/**", "/api/authors/**", "/api/category/**", "/api/categories/**", "/api/manga-category/**", "/api/upload/**").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.PUT, "/api/mangas/**", "/api/chapters/**", "/api/authors/**", "/api/category/**", "/api/categories/**", "/api/manga-category/**").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.DELETE, "/api/mangas/**", "/api/chapters/**", "/api/authors/**", "/api/category/**", "/api/categories/**", "/api/manga-category/**").hasRole("ADMIN")
                 // All other endpoints require valid authenticated session
                 .anyRequest().authenticated()
             )
