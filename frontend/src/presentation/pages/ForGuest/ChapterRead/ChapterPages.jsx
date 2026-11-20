@@ -1,27 +1,27 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, memo } from "react";
 import { RefreshCw, AlertCircle, ChevronLeft, ChevronRight } from "lucide-react";
 
-function LazyMangaImage({ page, index, totalPages, onVisible }) {
+const LazyMangaImage = memo(function LazyMangaImage({ page, index, totalPages, onVisible }) {
   const [status, setStatus] = useState("loading"); // "loading" | "loaded" | "error"
   const [retryCount, setRetryCount] = useState(0);
   const imgRef = useRef(null);
 
   useEffect(() => {
+    const el = imgRef.current;
+    if (!el || !onVisible) return;
+
     const observer = new IntersectionObserver(
       (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting && onVisible) {
+        for (const entry of entries) {
+          if (entry.isIntersecting) {
             onVisible(index + 1);
           }
-        });
+        }
       },
       { threshold: 0.3 }
     );
 
-    if (imgRef.current) {
-      observer.observe(imgRef.current);
-    }
-
+    observer.observe(el);
     return () => observer.disconnect();
   }, [index, onVisible]);
 
@@ -62,17 +62,19 @@ function LazyMangaImage({ page, index, totalPages, onVisible }) {
           className={`max-w-full md:max-w-4xl h-auto object-contain rounded shadow-lg select-none transition-opacity duration-300 ${
             status === "loaded" ? "opacity-100" : "opacity-0"
           }`}
-          loading="lazy"
+          loading={index < 3 ? "eager" : "lazy"}
+          decoding="async"
           onLoad={() => setStatus("loaded")}
           onError={() => setStatus("error")}
         />
       )}
     </div>
   );
-}
+});
 
 export default function ChapterPages({
   pages = [],
+  isLoading = false,
   containerRef,
   showUI,
   readingMode = "webtoon", // "webtoon" | "single"
@@ -82,20 +84,22 @@ export default function ChapterPages({
   onNextChapter,
   onPrevChapter,
 }) {
-  // Preload ảnh kế tiếp trong chế độ Single page hoặc Webtoon
+  // Preload 2 ảnh kế tiếp
   useEffect(() => {
     if (!pages || pages.length === 0) return;
 
-    const nextIndex = readingMode === "single" ? singlePageIndex + 1 : 1;
-    if (nextIndex < pages.length && pages[nextIndex]?.imgLink) {
-      const img1 = new Image();
-      img1.src = pages[nextIndex].imgLink;
-    }
-    if (nextIndex + 1 < pages.length && pages[nextIndex + 1]?.imgLink) {
-      const img2 = new Image();
-      img2.src = pages[nextIndex + 1].imgLink;
+    const startIndex = readingMode === "single" ? singlePageIndex + 1 : 1;
+    for (let i = startIndex; i < Math.min(startIndex + 2, pages.length); i++) {
+      if (pages[i]?.imgLink) {
+        const img = new Image();
+        img.src = pages[i].imgLink;
+      }
     }
   }, [pages, singlePageIndex, readingMode]);
+
+  if (isLoading) {
+    return <div className="h-screen w-full bg-gray-950" />;
+  }
 
   if (!pages || pages.length === 0) {
     return (
@@ -118,6 +122,7 @@ export default function ChapterPages({
           <img
             src={currentPage?.imgLink}
             alt={`Trang ${singlePageIndex + 1}`}
+            decoding="async"
             className="max-h-[90vh] max-w-full object-contain rounded shadow-2xl transition"
           />
 
@@ -152,7 +157,7 @@ export default function ChapterPages({
           </button>
         </div>
 
-        {/* Thanh đếm trang phía dưới */}
+        {/* Thanh đếm trang phía trên phải */}
         <div className="absolute top-4 right-4 bg-black/70 backdrop-blur-md px-3 py-1 rounded-full text-xs text-white font-mono z-20">
           Trang {singlePageIndex + 1} / {pages.length}
         </div>

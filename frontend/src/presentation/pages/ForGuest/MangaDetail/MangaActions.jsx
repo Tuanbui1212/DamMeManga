@@ -5,49 +5,67 @@ import FollowService from "../../../../usecases/FollowService";
 import ChapterService from "../../../../usecases/ChapterService";
 import toast from "react-hot-toast";
 
-function MangaActions() {
+const chapterService = new ChapterService();
+const followService = new FollowService();
+
+/**
+ * @param {number|null|undefined} firstChapterId
+ *   - number: id chương đầu (đã có sẵn từ trang cha, không cần gọi API)
+ *   - null: truyện chưa có chương nào
+ *   - undefined: chưa biết -> tự gọi API để lấy
+ */
+function MangaActions({ firstChapterId: firstChapterIdProp }) {
   const { id } = useParams();
   const userId = localStorage.getItem("userId");
 
   const [isFollowed, setIsFollowed] = useState(false);
   const [followId, setFollowId] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [firstChapterId, setFirstChapterId] = useState(null);
+  const [fetchedFirstChapterId, setFetchedFirstChapterId] = useState(undefined);
 
-  const chapterService = new ChapterService();
-  const followService = new FollowService();
+  const hasProp = firstChapterIdProp !== undefined;
+  const firstChapterId = hasProp ? firstChapterIdProp : fetchedFirstChapterId;
 
   useEffect(() => {
-    if (!id) return;
+    if (!id || hasProp) return;
+    let cancelled = false;
 
     (async () => {
       try {
         const chapter = await chapterService.getFirstChapterByMangaId(id);
-
-        if (chapter?.idChapter) {
-          setFirstChapterId(chapter.idChapter);
-        }
+        if (!cancelled) setFetchedFirstChapterId(chapter?.idChapter ?? null);
       } catch (err) {
         console.error("❌ Lỗi lấy chapter đầu tiên:", err);
+        if (!cancelled) setFetchedFirstChapterId(null);
       }
     })();
-  }, [id]);
+
+    return () => {
+      cancelled = true;
+    };
+  }, [id, hasProp]);
 
   /* ================== KIỂM TRA THEO DÕI ================== */
   useEffect(() => {
     if (!userId) return;
+    let cancelled = false;
 
     (async () => {
       try {
         const follows = await followService.getFollowsByUser(userId);
-        const record = follows.find((f) => f.mangaId === id);
+        if (cancelled) return;
+        const record = (follows || []).find((f) => f.mangaId === id);
 
         setIsFollowed(!!record);
         setFollowId(record?.followId || null);
       } catch {
-        toast.error("Lỗi tải trạng thái theo dõi!");
+        if (!cancelled) toast.error("Lỗi tải trạng thái theo dõi!");
       }
     })();
+
+    return () => {
+      cancelled = true;
+    };
   }, [id, userId]);
 
   /* ================== FOLLOW / UNFOLLOW ================== */
@@ -69,7 +87,7 @@ function MangaActions() {
       } else {
         await followService.createFollow(userId, id);
         const follows = await followService.getFollowsByUser(userId);
-        const record = follows.find((f) => f.mangaId === id);
+        const record = (follows || []).find((f) => f.mangaId === id);
 
         setIsFollowed(true);
         setFollowId(record?.followId || null);
@@ -98,7 +116,7 @@ function MangaActions() {
           disabled
           className="mt-10 bg-gray-300 px-5 py-2 rounded-xl text-white font-bold cursor-not-allowed"
         >
-          ĐANG TẢI...
+          {firstChapterId === null ? "CHƯA CÓ CHƯƠNG" : "ĐANG TẢI..."}
         </button>
       )}
 

@@ -5,7 +5,8 @@ export default function ChapterList({
   onCreateChapter,
   onDeleteChapter,
 }) {
-  const sortedChapters = (chapters || []).sort(
+  // Copy trước khi sort để không làm thay đổi (mutate) props
+  const sortedChapters = [...(chapters || [])].sort(
     (a, b) => b.chapterNumber - a.chapterNumber
   );
 

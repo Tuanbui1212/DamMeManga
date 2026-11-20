@@ -44,31 +44,37 @@ export default function MangaDetail() {
   const fetchData = async () => {
     try {
       const mangaService = new MangaDetailRepository();
-      const mangaData = await mangaService.getMangaWithChapters(id);
+      const categoryService = new MangaCategoryService();
+
+      // Gọi song song manga + thể loại (trước đây gọi tuần tự)
+      const [mangaData, mangaCategories] = await Promise.all([
+        mangaService.getMangaWithChapters(id),
+        categoryService.getCategoriesByManga(id).catch(() => []),
+      ]);
 
       if (!mangaData) {
         setStory(null);
         return;
       }
 
-      // Lấy genres trực tiếp theo idManga
-      const categoryService = new MangaCategoryService();
-      const mangaCategories = await categoryService.getCategoriesByManga(id);
+      const chaptersList = Array.isArray(mangaData.chapters) ? mangaData.chapters : [];
+      const genres = Array.isArray(mangaCategories) ? mangaCategories : [];
 
       const mapped = {
         id: mangaData.id_manga,
         title: mangaData.name_manga,
-        author: mangaData.author_id,
+        // author_id đã được chuẩn hoá thành chuỗi (trước đây là object => trắng trang)
+        author: String(mangaData.author_id ?? ""),
         description: mangaData.description,
-        chapters: mangaData.chapters.length,
+        chapters: chaptersList.length,
         views: mangaData.count_view,
         cover: mangaData.poster_url,
         poster: mangaData.banner_url,
-        genres: mangaCategories.length > 0 ? mangaCategories : ["Updating..."],
+        genres,
         lastUpdate: mangaData.updated_at
           ? timeAgo(mangaData.updated_at)
           : "Updating...",
-        chaptersList: mangaData.chapters,
+        chaptersList,
         comments: [],
       };
 
@@ -82,8 +88,10 @@ export default function MangaDetail() {
   };
 
   useEffect(() => {
+    setIsLoading(true);
     fetchData();
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id]);
 
   const handleDeleteStory = async () => {
     try {

@@ -34,7 +34,7 @@ export default function MangaTable({
         ))}
         {stories.length === 0 && (
           <tr>
-            <td colSpan={6} className="py-12 text-center text-gray-500">
+            <td colSpan={7} className="py-12 text-center text-gray-500">
               Không tìm thấy truyện nào.
             </td>
           </tr>

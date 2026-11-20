@@ -43,7 +43,7 @@ export default function MangaList({
       container.removeEventListener("scroll", handle);
       window.removeEventListener("resize", checkScroll);
     };
-  }, []);
+  }, [mangaData]);
 
   const handleMangaClick = (id) => navigate(`/mangas/${id}`);
 
@@ -100,6 +100,8 @@ export default function MangaList({
                     <img
                       src={manga.posterUrl || manga.bannerUrl}
                       alt={manga.name || manga.nameManga}
+                      loading="lazy"
+                      decoding="async"
                       className="aspect-[2/3] w-full object-cover transition-transform duration-500"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent opacity-0 transition-opacity duration-300" />

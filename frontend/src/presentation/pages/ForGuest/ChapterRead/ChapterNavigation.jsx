@@ -11,8 +11,10 @@ import { useNavigate } from "react-router-dom";
 
 export default function ChapterNavigation({
   mangaId,
-  allChapters,
+  allChapters = [],
   chapterNumber,
+  prevChapterId: prevChapterIdProp,
+  nextChapterId: nextChapterIdProp,
   scrollToTop,
   setShowChapterList,
   setShowComments,
@@ -25,23 +27,22 @@ export default function ChapterNavigation({
 
   const currentNum = Number(chapterNumber) || 0;
 
-  const maxChapterNumber =
-    allChapters?.length > 0
-      ? [...allChapters].sort((a, b) => b.chapterNumber - a.chapterNumber)[0]
-          ?.chapterNumber
-      : 0;
+  // Ưu tiên dùng prev/nextChapterId theo thứ tự danh sách chương (tránh lỗi khi số chương không liên tục)
+  let prevChapterId = prevChapterIdProp;
+  let nextChapterId = nextChapterIdProp;
 
-  const prevChapterId =
-    currentNum > 1
-      ? allChapters.find((ch) => Number(ch.chapterNumber) === currentNum - 1)
-          ?.idChapter
-      : null;
-
-  const nextChapterId =
-    currentNum < maxChapterNumber
-      ? allChapters.find((ch) => Number(ch.chapterNumber) === currentNum + 1)
-          ?.idChapter
-      : null;
+  if (prevChapterId === undefined || nextChapterId === undefined) {
+    const sorted = [...allChapters].sort(
+      (a, b) => Number(a.chapterNumber) - Number(b.chapterNumber)
+    );
+    const idx = sorted.findIndex((ch) => Number(ch.chapterNumber) === currentNum);
+    if (prevChapterId === undefined) {
+      prevChapterId = idx > 0 ? sorted[idx - 1].idChapter : null;
+    }
+    if (nextChapterId === undefined) {
+      nextChapterId = idx >= 0 && idx < sorted.length - 1 ? sorted[idx + 1].idChapter : null;
+    }
+  }
 
   const handleNavigate = (targetId) => {
     if (targetId) {

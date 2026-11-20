@@ -215,7 +215,8 @@ function Header() {
                               key={manga.id}
                               onClick={() => {
                                 setSearchQuery("");
-                                navigate(`/manga/${manga.id}`);
+                                setIsSearchOpen(false);
+                                navigate(`/mangas/${manga.id}`);
                               }}
                               className="w-full border h-24 p-2 border-gray-300 rounded-md px-3 flex gap-10 text-sm font-medium text-gray-800 hover:bg-gray-100 transition-colors duration-200 cursor-pointer"
                             >

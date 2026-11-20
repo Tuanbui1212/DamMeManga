@@ -107,6 +107,8 @@ export default function TopManga({ mangas }) {
                 >
                   <img
                     src={manga.posterUrl || "/placeholder.jpg"}
+                    loading="lazy"
+                    decoding="async"
                     className="w-15 h-21 rounded-md object-cover"
                     alt={manga.name}
                   />
@@ -115,7 +117,7 @@ export default function TopManga({ mangas }) {
                       {manga.name}
                     </p>
                     <p className="text-[13px] font-semibold text-gray-600 uppercase">
-                      {dayjs(manga.updated_at).fromNow()}
+                      {dayjs(manga.updateAt || manga.updated_at).fromNow()}
                     </p>
                     <p className="text-[13px] text-gray-500 uppercase">
                       {manga.countView} LƯỢT XEM

@@ -1,12 +1,16 @@
+import { memo } from "react";
 import { Link } from "react-router-dom";
 
-function MangaChapters({ idManga, chapters }) {
+function MangaChapters({ idManga, chapters = [] }) {
   return (
     <div className="w-2/3">
       <div className="text-xs font-bold text-gray-600 uppercase mb-3">
         Danh sách chương
       </div>
-      <div className="border border-gray-200 rounded-lg p-3 bg-gray-50 max-h-[600px] overflow-y-scroll">
+      <div className="border border-gray-200 rounded-lg p-3 bg-gray-50 max-h-[600px] overflow-y-auto">
+        {chapters.length === 0 && (
+          <p className="text-sm text-gray-500 text-center py-6">Truyện chưa có chương nào.</p>
+        )}
         {chapters.map((ch) => (
           <Link
             key={ch.idChapter}
@@ -14,9 +18,10 @@ function MangaChapters({ idManga, chapters }) {
             className="flex justify-between items-center bg-white hover:bg-blue-50 p-3 mb-2 rounded-lg border border-gray-100 transition"
           >
             <span className="font-semibold text-gray-700">
-              Chapter {ch.chapterNumber}: {ch.title}
+              Chapter {ch.chapterNumber}
+              {ch.title && ch.title.trim() ? `: ${ch.title.trim()}` : ""}
             </span>
-            <span className="text-xs text-gray-500">{ch.date}</span>
+            {ch.date && <span className="text-xs text-gray-500">{ch.date}</span>}
           </Link>
         ))}
       </div>
@@ -24,4 +29,4 @@ function MangaChapters({ idManga, chapters }) {
   );
 }
 
-export default MangaChapters;
+export default memo(MangaChapters);

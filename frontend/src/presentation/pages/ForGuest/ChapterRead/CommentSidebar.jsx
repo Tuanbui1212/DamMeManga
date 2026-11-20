@@ -7,17 +7,26 @@ import { toast } from "react-hot-toast";
 
 import CommentService from "../../../../usecases/CommetService";
 
+const commentService = new CommentService();
+
+function readUserSafe() {
+  try {
+    return JSON.parse(localStorage.getItem("user") || "null") || {};
+  } catch {
+    return {};
+  }
+}
+
 export default function CommentSidebar({ isOpen, onClose }) {
   const { chapterId } = useParams();
   const navigate = useNavigate();
-  const user = JSON.parse(localStorage.getItem("user")) || {};
+  const user = readUserSafe();
 
   const [comment, setComment] = useState("");
   const [commentsData, setCommentsData] = useState([]);
 
   const messagesEndRef = useRef(null);
   const stompClientRef = useRef(null);
-  const commentService = new CommentService();
 
   function timeAgo(dateString) {
     const now = new Date();
@@ -53,45 +62,63 @@ export default function CommentSidebar({ isOpen, onClose }) {
     };
     fetchComments();
 
-    const socket = new SockJS(`${import.meta.env.VITE_API_URL}/ws`);
+    const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:8080";
+    const socket = new SockJS(`${apiUrl}/ws`);
     const stompClient = Stomp.over(socket);
     stompClient.debug = null;
 
-    stompClient.connect({}, () => {
-      stompClient.subscribe(`/topic/chapter/${chapterId}`, (message) => {
-        const incomingData = JSON.parse(message.body);
-
-        setCommentsData((prevComments) => {
-          const isDeleted = incomingData.deleted === true;
-
-          if (isDeleted) {
-            return prevComments.map((cmt) =>
-              cmt.idComment === incomingData.idComment
-                ? { ...cmt, deleted: true }
-                : cmt
-            );
-          }
-
-          const exists = prevComments.some(
-            (c) => c.idComment === incomingData.idComment
-          );
-          if (exists) return prevComments;
-
-          return [...prevComments, incomingData];
-        });
-
-        if (!incomingData.deleted) {
-          setTimeout(scrollToBottom, 100);
+    let isActive = true;
+    stompClient.connect(
+      {},
+      () => {
+        if (!isActive) {
+          if (stompClient.connected) stompClient.disconnect(() => {});
+          return;
         }
-      });
-    });
+        stompClient.subscribe(`/topic/chapter/${chapterId}`, (message) => {
+          const incomingData = JSON.parse(message.body);
+
+          setCommentsData((prevComments) => {
+            const isDeleted = incomingData.deleted === true;
+
+            if (isDeleted) {
+              return prevComments.map((cmt) =>
+                cmt.idComment === incomingData.idComment
+                  ? { ...cmt, deleted: true }
+                  : cmt
+              );
+            }
+
+            const exists = prevComments.some(
+              (c) => c.idComment === incomingData.idComment
+            );
+            if (exists) return prevComments;
+
+            return [...prevComments, incomingData];
+          });
+
+          if (!incomingData.deleted) {
+            setTimeout(scrollToBottom, 100);
+          }
+        });
+      },
+      () => {
+        // Bỏ qua lỗi kết nối WebSocket để không làm ảnh hưởng trang đọc truyện
+      }
+    );
 
     stompClientRef.current = stompClient;
 
     return () => {
-      if (stompClientRef.current) {
-        stompClientRef.current.disconnect();
+      isActive = false;
+      if (stompClientRef.current?.connected) {
+        try {
+          stompClientRef.current.disconnect(() => {});
+        } catch {
+          // ignore
+        }
       }
+      stompClientRef.current = null;
     };
   }, [chapterId]);
 

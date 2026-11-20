@@ -7,12 +7,21 @@ const axiosClient = axios.create({
   headers: {
     "Content-Type": "application/json",
   },
+  // Render free tier có thể mất ~50s để "thức dậy"; tránh request treo vô hạn
+  timeout: 60000,
 });
 
-axiosClient.interceptors.request.use((config) => {
-  const user = JSON.parse(localStorage.getItem("user")); // lấy user object
-  const token = user?.token || localStorage.getItem("token"); // ưu tiên user.token
+function getToken() {
+  try {
+    const user = JSON.parse(localStorage.getItem("user") || "null");
+    return user?.token || localStorage.getItem("token");
+  } catch {
+    return localStorage.getItem("token");
+  }
+}
 
+axiosClient.interceptors.request.use((config) => {
+  const token = getToken();
   if (token) {
     config.headers["Authorization"] = `Bearer ${token}`;
   }
